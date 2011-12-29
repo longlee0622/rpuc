@@ -64,16 +64,10 @@ int RPUConfig::createPatchFile(const String &fileName)
 		patchFile<<
 			"\t\t\t"<<templiststring<<"_DIN\\\n";
 	}
+	
+	patchFile<<"\t\t\t"<<"GROUP"<<RPUGroupNum<<"_CWI\\\n";
+	//patchFile<<"\t\t\t"<<"while(!RPU0_done){ }\\\n";
 
-	/*for(zz = 0; zz < GroupRCANum; zz++)
-	{
-		patchFile<<"\t\t\t"<<"write_cw_packet("<<onRPUNum<<","<<locateGroupDFGList[zz]<<"_CwiPacketIn);\\\n";
-	}
-	*/
-	patchFile<<
-		"\t\t\t"<<"GROUP"<<RPUGroupNum<<"_CWI\\\n";
-	patchFile<<
-		"\t\t\t"<<"while(!RPU_done){ }\\\n";
 	for(zz = 0; zz < GroupRCANum; zz++)
 	{
 		//upper locateGroupDFGList
@@ -93,6 +87,9 @@ int RPUConfig::createPatchFile(const String &fileName)
 			patchFile<<"\t\t\t"<<templiststring<<"_DOUT\n";
 		}
 	}
+
+	patchFile<<std::endl;
+	patchFile.close();
 
 	/*
 	patchFile<<

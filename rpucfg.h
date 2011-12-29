@@ -97,7 +97,7 @@ public:
 
 	int createPatchFile(const String & fileName);
 
-	int createCL0File(const String & fileName);
+	//int createCL0File(const String & fileName);
 
 	int createCL1File(const String & fileName);
 
@@ -108,9 +108,9 @@ public:
 
 	
 //20110716 liuxie	
-	Vector<reg32> CL0ContextCopy() {return CL0Context;}
+	Vector<Vector<reg32> > CL0ContextCopy() {return CL0Context;}
 
-	void pasteCL0Context(Vector<reg32> CL0ContextTemp) { CL0Context = CL0ContextTemp;}
+	//void pasteCL0Context(Vector<reg32> CL0ContextTemp) { CL0Context = CL0ContextTemp;}
 
 	Vector<Vector<reg32> > CL1ContextCopy() {return CL1Context;}
 
@@ -219,7 +219,7 @@ private:
 	// Store context
     Vector<Vector<reg32> > CLOGroup;
     
-	Vector<reg32> CL0Context;
+	Vector<Vector<reg32> > CL0Context;
 
 	Vector<Vector<reg32> > CL1Context;
 

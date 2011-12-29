@@ -174,7 +174,7 @@ int RPUConfig::createCL0File(const String &fileName){
 
 #endif
 
-int RPUConfig::createCL0File(const String &fileName){
+/*int RPUConfig::createCL0File(const String &fileName){
 
 	std::ofstream CL0File(fileName.c_str());
 
@@ -207,4 +207,4 @@ int RPUConfig::createCL0File(const String &fileName){
 
 	return 0;
 }
-
+*/

@@ -313,11 +313,15 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	cfgPtkHead = cfgPtkHead|(REDSNum<<7);
 
 	std::cout<<"cfgPtkHead = "<<cfgPtkHead<<std::endl;
+	
+	Vector<reg32> CL0Context_temp;
 
-	CL0Context.push_back(cfgPtkHead);        //将cfgPtkHead压入CL0 Contect的配置信息中
+	CL0Context_temp.push_back(cfgPtkHead);        //将cfgPtkHead压入CL0 Contect的配置信息中
 
 	for(unsigned int assign2CL0Ctx =0; assign2CL0Ctx < CL0ContextTemp.size(); assign2CL0Ctx++)      //获得除包头外的 CL0的配置信息
-		CL0Context.push_back(CL0ContextTemp[assign2CL0Ctx]);
+		CL0Context_temp.push_back(CL0ContextTemp[assign2CL0Ctx]);
+
+	CL0Context.push_back(CL0Context_temp);
 
 	
 #if 0
@@ -329,8 +333,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	REDS.word1().setSSRAMJump(0);
 	REDS.word1().setMode(REDS_MODE_ML);
 
-	CL0Context.push_back(REDS.word0().reg());
-	CL0Context.push_back(REDS.word1().reg());
+	CL0Context_temp.push_back(REDS.word0().reg());
+	CL0Context_temp.push_back(REDS.word1().reg());
 	
 	 /* update SSRAM Load & Store Address */
 	SSRAMLoadBase = SSRAMSToreBase + SSRAMStoreOffset ;

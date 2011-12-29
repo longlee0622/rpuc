@@ -126,6 +126,11 @@ int main(int argc, char *argv[])
 		for(int ll = 0; ll < DFGroupNumber; ll++)   //遍历多套DFG Group
 		{
 
+			allPatchfile<<"#include \"GROUP"<<ll<<"_link.h\""<<std::endl;
+			char buf[20];
+			sprintf(buf,"GROUP%d_link.h",ll);
+			std::ofstream GRPLink(buf);
+			GRPLink<<"#define GROUP"<<ll<<"_CWI \\"<<std::endl;
 			String DFGName[4];   //DFG图的名称
 
 			//当前组的组号
@@ -221,10 +226,10 @@ int main(int argc, char *argv[])
 					"#include \""<<patchFile<<"\"\n";
 
 
-				err |= config.createPatchFile(patchFile);
-
 				err |= config.mapDFGraph(OptimizeMethod(), SplitMethod());
 				err |= config.genContext();
+
+				err |= config.createPatchFile(patchFile);
 
 				RCAformerNumTemp = config.RCANumBefore();
 
@@ -427,39 +432,30 @@ int main(int argc, char *argv[])
 					SSRAMinterfaceFile<<portNameNew<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 				}
 
-				/*
-				SSRAMinterfaceFile <<
-					"\n\n\n"
-					"#define "<< tempUperString<<"_FLAG\t1\n\n"
-					"#define "<< tempUperString<<"_VAR_DEC \\\n\n";
-					*/
-
 				SSRAMinterfaceFile<<std::endl;
 
 				/**************************** end ***************************************************/
 
-				Vector<reg32> curCL0 = config.CL0ContextCopy();
-				CL0ContextTemp.insert(CL0ContextTemp.end(),curCL0.begin(),curCL0.end());
-				//start write CWI file
-
-				/*std::size_t cl0size = config.CL0ContextCopy().size();
-
-				CL0file<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0size<<"\n";
-
-				CL0ContextTemp = config.CL0ContextCopy();
-
-				CL0file.fill('0');
-
-				for(std::size_t i =0; i <cl0size ; ++i)
-					//CL0file<<"\t\t\t"<<"ConfigWord["<<std::dec<<i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
-					CL0file<<"ConfigWord["<<std::dec<<CL0Size+i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
-
-				CL0file<<
-					"\n\n\n\n";
-
-					*/
-
-
+				Vector<Vector<reg32> > curCL0 = config.CL0ContextCopy();
+				for(Vector<Vector<reg32> >::iterator CL0GrpIter = curCL0.begin(); CL0GrpIter != curCL0.end(); ++CL0GrpIter)
+				{
+					Vector<reg32> curCtx = * CL0GrpIter;
+					CL0file<<"#define GROUP"<<config.RPUGroupNumber()<<"_"<<config.onRCANumber()<<"_"<<(CL0GrpIter-curCL0.begin())<<"_CWI\\\n";
+					char buf[30];
+					sprintf(buf,"GROUP%d_%d_%d_CWI",config.RPUGroupNumber(),config.onRCANumber(),CL0GrpIter-curCL0.begin());
+					GRPLink<<"\t\t\t"<<buf<<"\\"<<std::endl;
+					GRPLink<<"\t\t\twhile(!RPU0_done){}\\"<<std::endl;
+					GRPLink<<"\t\t\tRPU0_done = 0;\\"<<std::endl;
+					CL0file.fill('0');
+					for(Vector<reg32>::iterator CtxIter = curCtx.begin(); CtxIter != curCtx.end(); ++CtxIter)
+					{
+						CL0file<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x"<<std::setw(8)<<std::hex<<(*CtxIter)<<");\\\n";
+					}
+					
+					CL0file<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x0000000"<<std::setw(1)<<std::hex<<config.onRCANumber()<<");\\\n";
+					CL0file<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x00008000);\n\n\n\n\n";
+				}
+				
 				//CL0ContextTemp = config.CL0ContextCopy();
 				CL1ContextTemp = config.CL1ContextCopy();
 				CL2ContextTemp = config.CL2ContextCopy();
@@ -468,17 +464,6 @@ int main(int argc, char *argv[])
 				PseudoRCANum =0;
 				CL0Size += CL0ContextTemp.size();
 			}
-
-			CL0file<<"#define GROUP"<<DFGroupNum<<"_CWI \\\n";
-			std::size_t cl0size = CL0ContextTemp.size();
-
-			CL0file.fill('0');
-
-			for(std::size_t i =0; i <cl0size ; ++i)
-				CL0file<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<");\\\n";
-
-			CL0file<<"\n\n\n\n";
-			CL0ContextTemp.clear();
 		}
 
 		//configTotal.pasteCL0Context(CL0ContextTemp);
@@ -491,6 +476,7 @@ int main(int argc, char *argv[])
 
 		//end of CL0file
 		CL0file <<std::endl;
+		CL0file.close();
 
 		//处理RPU1的信息
 
