@@ -97,8 +97,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			REDL.word1().setSSRAMJump(0);
 			REDL.word1().setMode(REDL_MODE_1L);        //单行拼接，即不拼接
 
-			CL0ContextTemp.push_back(REDL.word0().reg());
 			CL0ContextTemp.push_back(REDL.word1().reg());
+			CL0ContextTemp.push_back(REDL.word0().reg());
 			
 		}
 
@@ -141,8 +141,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			REDL.word1().setSSRAMJump(0);
 			REDL.word1().setMode(REDL_MODE_1L);
 
-			CL0ContextTemp.push_back(REDL.word0().reg());
 			CL0ContextTemp.push_back(REDL.word1().reg());
+			CL0ContextTemp.push_back(REDL.word0().reg());
 		}
 				
 
@@ -257,8 +257,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 				REDS.word1().setSSRAMJump(0);
 				REDS.word1().setMode(REDS_MODE_ML);
 
-				CL0ContextTemp.push_back(REDS.word0().reg());
 				CL0ContextTemp.push_back(REDS.word1().reg());
+				CL0ContextTemp.push_back(REDS.word0().reg());
 	
 		}
 		else//temp area output to ssram
@@ -270,8 +270,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			REDS.word1().setSSRAMJump(0);
 			REDS.word1().setMode(REDS_MODE_ML);
 
-			CL0ContextTemp.push_back(REDS.word0().reg());
 			CL0ContextTemp.push_back(REDS.word1().reg());
+			CL0ContextTemp.push_back(REDS.word0().reg());
 		
 		}
 	}

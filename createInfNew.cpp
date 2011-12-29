@@ -73,7 +73,7 @@ int RPUConfig::createPatchFile(const String &fileName)
 	patchFile<<
 		"\t\t\t"<<"GROUP"<<RPUGroupNum<<"_CWI\\\n";
 	patchFile<<
-		"\t\t\t"<<"while(!IRQ_RPU){ }\\\n";
+		"\t\t\t"<<"while(!RPU_done){ }\\\n";
 	for(zz = 0; zz < GroupRCANum; zz++)
 	{
 		//upper locateGroupDFGList
