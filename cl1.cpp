@@ -11,7 +11,7 @@ CL1RIM::CL1RIM(){
 
 }
 
-CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum)
+CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag)
 {
 	assert(RCAIndex >= 0);
 
@@ -29,58 +29,79 @@ CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum)
 	if(minTempHeight == 0)minTempHeight = 1;
 
 	//outport在RIM中的放置策略
-	for(int height = minTempHeight; height <RIM_HEIGHT; ++ height)
+	if(remapFlag)		//对于remapRCA的RIM排布策略
 	{
-		const int outSize = outNum/height + (outNum%height? 1: 0);
-
-		int baseAddr = 0;      //从SSRAM的首地址开始找是否有合适的地址暂存数据
-
-		for(int i =0; i < RIM_HEIGHT; ++i)
+		for (int i = 31; i >= minTempHeight - 1 ; --i)
 		{
-			/* find the appropriate baseAddr */
-			if(memoryRecord[i] != -1 || freeOutSpace[i] < outSize )
-			{  
-				baseAddr = i + 1;         //不满足，换下一行
-			} 
-
-			/* based on one baseAddr locate enough momery block */
-			//当某一行满足时候，则将i++,这样找到满足条件的连续行空间来存储这块数据
-			if( i - baseAddr + 1 == height )
+			if (memoryRecord[i] != -1) continue;
+			bool fit = true;
+			for (int j = 0; j < minTempHeight; ++j)
 			{
-				/* Find the line with minimal free space */
-				int minOutLength = freeOutSpace[baseAddr];
-
-				for(int j = 0; j <height; ++ j)
-					if(freeOutSpace[baseAddr + j] < minOutLength)
-						minOutLength = freeOutSpace[baseAddr + j];
-				
-				/* Calculate the waste space */
-				int wastSpace = 0;
-
-				for(int j =0; j <height; ++ j)
-				{
-
-					int curAddr = baseAddr + j;
-					wastSpace += freeOutSpace[curAddr] - minOutLength;
-				}
-
-				const int wastThreshold = 8; // This variable used to make the data 
-											 // more compact in horizontal direction.
-
-				if(wastSpace + wastThreshold < minWastSpace)
-				{
-					bestBaseAddr = baseAddr;
-					bestHeight = height;
-					bestMinOutLength = minOutLength;
-
-					minWastSpace = wastSpace;
-				}
-
-				++ baseAddr;
-			}		
-			
+				if (memoryRecord[i - j] != -1) fit = false;
+			}
+			if (fit == false) continue;
+			else {
+				bestBaseAddr = i - minTempHeight + 1;
+				bestHeight = minTempHeight;
+				break;
+			}
 		}
+	}
+	else		//对于正常RCA的RIM排布策略
+	{
+		for(int height = minTempHeight; height <RIM_HEIGHT; ++ height)
+		{
+			const int outSize = outNum/height + (outNum%height? 1: 0);
 
+			int baseAddr = 0;      //从SSRAM的首地址开始找是否有合适的地址暂存数据
+
+			for(int i =0; i < RIM_HEIGHT; ++i)
+			{
+				/* find the appropriate baseAddr */
+				if(memoryRecord[i] != -1 || freeOutSpace[i] < outSize )
+				{  
+					baseAddr = i + 1;         //不满足，换下一行
+				} 
+
+				/* based on one baseAddr locate enough momery block */
+				//当某一行满足时候，则将i++,这样找到满足条件的连续行空间来存储这块数据
+				if( i - baseAddr + 1 == height )
+				{
+					/* Find the line with minimal free space */
+					int minOutLength = freeOutSpace[baseAddr];
+
+					for(int j = 0; j <height; ++ j)
+						if(freeOutSpace[baseAddr + j] < minOutLength)
+							minOutLength = freeOutSpace[baseAddr + j];
+				
+					/* Calculate the waste space */
+					int wastSpace = 0;
+
+					for(int j =0; j <height; ++ j)
+					{
+
+						int curAddr = baseAddr + j;
+						wastSpace += freeOutSpace[curAddr] - minOutLength;
+					}
+
+					const int wastThreshold = 8; // This variable used to make the data 
+												 // more compact in horizontal direction.
+
+					if(wastSpace + wastThreshold < minWastSpace)
+					{
+						bestBaseAddr = baseAddr;
+						bestHeight = height;
+						bestMinOutLength = minOutLength;
+
+						minWastSpace = wastSpace;
+					}
+
+					++ baseAddr;
+				}		
+			
+			}
+
+		}
 	}
 
 	if(bestBaseAddr != -1)    //当RIM中不为空时
@@ -99,7 +120,7 @@ CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum)
 		for(int j =0; j <outNum % bestHeight; ++ j)
 		{
 			/* FIXME : it may should get revised */
-			-- freeOutSpace[bestBaseAddr + j];
+			-- memoryRecord[bestBaseAddr + j];
 		}
 	}
 

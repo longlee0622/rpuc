@@ -203,13 +203,27 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		Vector<int> outAreaCounter_backup = outAreaCounter;
 		
 		RIM_backup.copy(RIM);
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort);
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag());
 
 
 		if(CDSData.baseAddress() == -1) 
 		{ // Allocation fail
-			thisRCA->setMappedFlag(false);
-			continue;
+			if(thisRCA->getRemapFlag())
+			{
+				Vector<RCA*>::iterator thisIter = rcas.begin();
+				for (;thisIter != rcas.end() ; ++thisIter)
+				{
+					(*thisIter)->setMappedFlag(false);
+					(*thisIter)->setState(STA_OVER);
+				}
+				break;
+				//continue;
+			}
+			else
+			{
+				thisRCA->setMappedFlag(false);
+				continue;
+			}
 		}
 		/////////////////////////////////////////////////////////////////////////////////
 		//
@@ -941,7 +955,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		Vector<int> outAreaCounter_backup = outAreaCounter;
 
 		RIM_backup.copy(RIM);
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort);
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag());
 
 
 		if(CDSData.baseAddress() == -1) 
@@ -964,11 +978,13 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 				//2011.6.9 liuxie
 				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+				//portIter->setROFRow(tempRegionIndex / FIFO_WIDTH_DATA);
 				int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
 				portIter->setRIMRow(CDSData.baseAddress() + a_temp);
 
 				//2011.5.11 liuxie
 				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+				//portIter->setROFCol(tempRegionIndex % FIFO_WIDTH_DATA);
 				int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
 				portIter->setRIMCol(b_temp *2);
 
@@ -1002,11 +1018,13 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			{
 				//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
 				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+				//portIter->setROFRow(tempRegionIndex / FIFO_WIDTH_DATA);
 				int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
 				portIter->setRIMRow(CDSData.baseAddress() + c_temp);
 
 				//2011.5.11 liuxie
 				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+				//portIter->setROFCol(tempRegionIndex % FIFO_WIDTH_DATA);
 				int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
 				portIter->setRIMCol(d_temp * 2);
 
@@ -1246,7 +1264,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
-		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
+ 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
 
 			std:: cout<<"RCA SEQNo is "<<thisRCA->seqNo()<<std::endl;
@@ -1662,9 +1680,9 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 			//FIXME : aglrithm can be better
 			for(portIter = rcaOutport.begin(); 
 			    portIter != rcaOutport.end(); ++ portIter)
-			if (IsInnerPort(portIter->dfgPort()))
+				if (thisRCA->getRemapFlag())	//remapRCA的所有输出口都可以释放
 				{
-				for(tempPortIter = tempPortInRIM.begin(); tempPortIter != tempPortInRIM.end(); ++tempPortIter )
+					for(tempPortIter = tempPortInRIM.begin(); tempPortIter != tempPortInRIM.end(); ++tempPortIter )
 					if(  (*tempPortIter)->RIMRow() ==  portIter->RIMRow() &&  (*tempPortIter)->RIMCol() ==  portIter->RIMCol()  
 						&& (*tempPortIter)->dfgPort() == portIter->dfgPort())
  
@@ -1674,6 +1692,23 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 						tempPortInRIM.erase( tempPortIter );
 						break;
 						}
+					
+				}
+				else
+				{
+					if (IsInnerPort(portIter->dfgPort()))		//正常RCA的内部输出可以释放
+					{
+					for(tempPortIter = tempPortInRIM.begin(); tempPortIter != tempPortInRIM.end(); ++tempPortIter )
+						if(  (*tempPortIter)->RIMRow() ==  portIter->RIMRow() &&  (*tempPortIter)->RIMCol() ==  portIter->RIMCol()  
+							&& (*tempPortIter)->dfgPort() == portIter->dfgPort())
+ 
+							{						
+							(portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]--
+																: tempAreaCounter[1]-- ;
+							tempPortInRIM.erase( tempPortIter );
+							break;
+							}
+					}
 				}
 			//else
 				//continue;
@@ -2053,7 +2088,7 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas)
 		updateRCAState(rcas, ScheduleFlaseFlag,remainRCANum);
 		
 		if(ScheduleFlaseFlag == 1)  break;
-
+		if(rcas.size() > 25 ) break;
 		const Vector<CL1Block> 
 			blocks = PreMapRCA(readyRCA(rcas),tmpGroupRCA,rcas,config_fake);
 		

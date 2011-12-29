@@ -208,7 +208,7 @@ public:
 
 	CL1RIM();
 
-	CL1Data allocate(int RCAIndex, int tempNum, int outNum);
+	CL1Data allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag);
 
 	CL1Data getRCACIDLData(int RCAIndex) const;
 

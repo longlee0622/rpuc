@@ -14,7 +14,6 @@ static bool VecSort(
 		return left.front() <  right.front();
 }
 
-
 #if 0
 int RPUConfig::createCL2File(const String &fileName){
 

@@ -54,12 +54,16 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	int ExTempTop = -1;
 	int ExTempRow = 0;
 	bool ExTempEnable = false;
+	Vector<int> rowCnt(32,0);		//统计RIF中行号的分布，以便确定需要多少remapRCA
+	int maxRow = -1;
 	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 	{
 						
 		DFGPort * port = portIter->dfgPort();
 		assert( port!=0 );
-				
+		++rowCnt.at(portIter->RIFRow());
+		if (portIter->RIFRow() > maxRow) maxRow = portIter->RIFRow();
+		
 		// for inner port
 		if( IsInnerPort( portIter->dfgPort() ) || ((IsTempExternPort(portIter->dfgPort())) && portIter->IsInSameGroup()))
 		{
@@ -85,14 +89,39 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 		}
 	}
 
+	rowCnt.resize(maxRow+1);
+	int buf1Base = 0;
+	int buf2Base = 7;
+	int buf3Base;
+	Vector<int>::iterator rowIter = rowCnt.begin()+ buf1Base + 7;
+	for (;rowIter != rowCnt.end(); ++rowIter)
+	{
+		int row = * rowIter;
+		if (row == 0) continue;
+		buf2Base = rowIter - rowCnt.begin();
+		break;
+	}
+
 	bool buf2Enable = true;
-	bool buf3Enable = false;
+	bool buf3Enable = true;
+	if (buf2Base + 7 >=  rowCnt.size()) buf3Enable = false;
+	if(buf3Enable)
+	{
+		Vector<int>::iterator rowIter = rowCnt.begin()+ buf2Base + 7;
+		for (;rowIter != rowCnt.end(); ++rowIter)
+		{
+			int row = * rowIter;
+			if (row == 0) continue;
+			buf3Base = rowIter - rowCnt.begin();
+			break;
+		}
+	}
 
 	//如果除外部直接端口外的所有其余端口在RIF中的总和不足8行，只需一个新加入的RCA即可
 	//删除第二个新加入的RCA，之后的RCA序号顺次减小1
 	//if ((ExTempEnable?ExTempRow:0) + (InnerEnable?InnerRow:0) <= 8 ) buf2Enable = false;
-	if (InnerRow + ExTempRow + ExRow <= 8) buf2Enable = false;
-	if (InnerRow + ExTempRow + ExRow > 14) buf3Enable = true;
+	//if (InnerRow + ExTempRow + ExRow <= 8) buf2Enable = false;
+	//if (InnerRow + ExTempRow + ExRow > 14) buf3Enable = true;
 
 	if(buf2Enable)					//判断加入remapRCA后会不会导致CL1RCA个数越界
 	{
@@ -116,12 +145,12 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	//将inports按照每8个RIFRow为单位分组，为往新RCA上映射做准备
 	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter)
 	{
-		if ((portIter->RIFRow() >= 0) && (portIter->RIFRow() < 7))
+		if ((portIter->RIFRow() >= buf1Base) && (portIter->RIFRow() < buf1Base + 7))
 		{
 			buf1Inport.push_back(portIter->dfgPort());
 			buf1Inport.at(buf1Inport.size()-1).setInSameGroup(portIter->IsInSameGroup());	//准备将新RCA设成与原始RCA相同
 		}
-		else if ((portIter->RIFRow() >= 7) && (portIter->RIFRow() <14))
+		else if ((portIter->RIFRow() >= buf2Base) && (portIter->RIFRow() < buf2Base +7))
 		{
 			buf2Inport.push_back(portIter->dfgPort());
 			buf2Inport.at(buf2Inport.size()-1).setInSameGroup(portIter->IsInSameGroup());	//准备将新RCA设成与原始RCA相同
