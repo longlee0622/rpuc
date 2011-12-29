@@ -102,7 +102,7 @@ private:
 
 	Vector<CL1Block> mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig &config);
 
-	const Vector<CL1Block> PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig &config);
+	const Vector<CL1Block> PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig &config,int &REDLCnt);
 	
 	void freeRIMSpace(const Vector<RCA*> rcas);
 

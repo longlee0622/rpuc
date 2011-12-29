@@ -152,7 +152,7 @@ void CL1Config::updateRCAState(const Vector<RCA*> & rcas , int & ScheduleFlaseFl
 }
 
 //longlee
-const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config)
+const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config,int &REDLCnt)
 {
 	Vector<CL1Block> mapBlocks;
 
@@ -753,6 +753,44 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			mapBlocks.push_back(RemapBlock);
 			return mapBlocks;
 		}
+
+		for( Vector<RCAPort>::iterator RCAInportIter = rcaInport.begin(); RCAInportIter != rcaInport.end(); ++  RCAInportIter)
+		{
+			DFGPort * port = RCAInportIter->dfgPort();
+			assert( port!=0 );
+			// for inner port
+			if( IsInnerPort( RCAInportIter->dfgPort() ) ) continue;
+			else if(IsTempExternPort( RCAInportIter->dfgPort()) && RCAInportIter->IsInSameGroup()) continue;
+			else //external temp data
+			{
+				if( IsTempExternPort( RCAInportIter->dfgPort()) )   //external temp port
+				{
+					REDLCnt ++;
+					break;
+				}
+			}
+		}
+
+		for( Vector<RCAPort>::iterator RCAInportIter = rcaInport.begin(); RCAInportIter != rcaInport.end(); ++  RCAInportIter)
+		{
+			DFGPort * port = RCAInportIter->dfgPort();
+			assert( port!=0 );
+			// for inner port
+			if( IsInnerPort( RCAInportIter->dfgPort() ) ) continue;
+			else if(IsTempExternPort( RCAInportIter->dfgPort()) && RCAInportIter->IsInSameGroup()) continue;
+			else //external temp data
+			{
+				if( IsTempExternPort( RCAInportIter->dfgPort()) )   //external temp port
+					continue;
+				else //external port
+				{
+					REDLCnt ++;
+					break;
+				}
+			}
+		}
+
+		if (REDLCnt > 8) return mapBlocks;
 		//******************************************start**********************************************************************
 		
 		//由于直接从片外SSRAM输入的基地址为0，所以要遍历所有的inport找到离基地址最远的那个port的位置为top address提供给REDL
@@ -2097,6 +2135,8 @@ int i;
 
 int CL1Config::PreGenCL1(Vector<RCA*> & rcas, int DFGInBase)
 {
+	int REDLCnt = 0;
+	
 	// Initialize the schedule states
 	Vector<RCA*>::iterator rcaIter;
 
@@ -2129,7 +2169,7 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas, int DFGInBase)
 		
 		if(ScheduleFlaseFlag == 1)  break;
 		if(rcas.size() > 25 ) break;
-		const Vector<CL1Block>	blocks = PreMapRCA(readyRCA(rcas),tmpGroupRCA,rcas,config_fake);
+		const Vector<CL1Block>	blocks = PreMapRCA(readyRCA(rcas),tmpGroupRCA,rcas,config_fake,REDLCnt);
 		
          //yin20101119 revised begin
 
