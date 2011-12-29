@@ -134,7 +134,7 @@ void CL1Config::updateRCAState(const Vector<RCA*> & rcas , int & ScheduleFlaseFl
 
 			RCA * thisSrcRCA = *srcRCAIter;
 			
-			if(thisSrcRCA->state() != STA_OVER)
+			if((thisSrcRCA->state() != STA_OVER) || (!thisSrcRCA->getMappedFlag()))
 			{
 				thisRCAReady = false;
 				break;
@@ -718,6 +718,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			if(RemapBefore)
 			{
 				thisRCA->setState(STA_OVER);
+				RIM.free(thisRCA->seqNo());
 				continue;
 			}
 			//RIM×´Ì¬»Ø¹ö

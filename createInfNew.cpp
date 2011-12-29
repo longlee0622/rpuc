@@ -35,9 +35,6 @@ int RPUConfig::createPatchFile(const String &fileName)
 	char templiststring[256];
 	int listlength;
 
-	patchFile<<
-		"#include \"_HWRegs.h\"\n"
-		"#include \"_TypeDef.h\"\n\n\n";
 	//		"#include \"RPU"<<onRPUNum<<"_CWI.h\"\n\n\n";
 
 	for(zz = 0; zz < GroupRCANum; zz++)
@@ -67,13 +64,16 @@ int RPUConfig::createPatchFile(const String &fileName)
 		patchFile<<
 			"\t\t\t"<<templiststring<<"_DIN\\\n";
 	}
-	for(zz = 0; zz < GroupRCANum; zz++)
+
+	/*for(zz = 0; zz < GroupRCANum; zz++)
 	{
-		patchFile<<
-			"\t\t\t"<<"write_cw_packet("<<onRPUNum<<","<<locateGroupDFGList[zz]<<"_CwiPacketIn);\\\n";
+		patchFile<<"\t\t\t"<<"write_cw_packet("<<onRPUNum<<","<<locateGroupDFGList[zz]<<"_CwiPacketIn);\\\n";
 	}
+	*/
 	patchFile<<
-		"\t\t\t"<<"while(IRQ_RPU"<<onRPUNum<<" != IRQ_RPU"<<onRPUNum<<"_INT_N){ }\\\n";
+		"\t\t\t"<<"GROUP"<<RPUGroupNum<<"_CWI\\\n";
+	patchFile<<
+		"\t\t\t"<<"while(!IRQ_RPU){ }\\\n";
 	for(zz = 0; zz < GroupRCANum; zz++)
 	{
 		//upper locateGroupDFGList

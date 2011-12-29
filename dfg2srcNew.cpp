@@ -90,8 +90,7 @@ int main(int argc, char *argv[])
 		//使用的RPU的编号
 		RPUSeqNo = std::atoi(& a[3]);
 
-		allPatchfile<<
-			"#include \"RPU"<<RPUSeqNo<<"_CWI.h\"\n\n\n";
+		allPatchfile<<"#include \"RPU"<<RPUSeqNo<<"_CWI.h\"\n\n\n";
 
 		String CL0FileName;
 		String CL1FileName;
@@ -381,14 +380,14 @@ int main(int argc, char *argv[])
 						portNameNew = newChar;
 
 						portSSRAM = (*currInport).SSRAMAddress();
-						SSRAMinterfaceFile<<"*(RP)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portNameNew<<";\\\n";
+						SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portNameNew<<";\\\n";
 					}
 					else
 					{
 						immPort = static_cast<DFGImmPort*>(currInport);
 						immPortValue = immPort->value();
 						portSSRAM = (*currInport).SSRAMAddress();
-						SSRAMinterfaceFile<<"*(RP)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";
+						SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";
 					}
 				}
 
@@ -425,7 +424,7 @@ int main(int argc, char *argv[])
 
 					portSSRAM = (*currOutport).SSRAMAddress();
 					//SSRAMinterfaceFile<<portName<<" = "<<"*(RP)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
-					SSRAMinterfaceFile<<portNameNew<<" = "<<"*(RP)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
+					SSRAMinterfaceFile<<portNameNew<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 				}
 
 				/*
@@ -469,20 +468,16 @@ int main(int argc, char *argv[])
 				PseudoRCANum =0;
 				CL0Size += CL0ContextTemp.size();
 			}
-			char buf[10];
-			sprintf(buf,"%d.txt",DFGroupNum);
-			std::ofstream tempCL0(buf);
+
+			CL0file<<"#define GROUP"<<DFGroupNum<<"_CWI \\\n";
 			std::size_t cl0size = CL0ContextTemp.size();
 
-			tempCL0<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0size<<"\n";
-
-			tempCL0.fill('0');
+			CL0file.fill('0');
 
 			for(std::size_t i =0; i <cl0size ; ++i)
-				tempCL0<<"ConfigWord["<<std::dec<<i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
+				CL0file<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<");\\\n";
 
-			tempCL0<<"\n\n\n\n";
-			tempCL0.close();
+			CL0file<<"\n\n\n\n";
 			CL0ContextTemp.clear();
 		}
 
@@ -495,22 +490,16 @@ int main(int argc, char *argv[])
 		err |= configTotal.createCL2File(CL2FileName);
 
 		//end of CL0file
-		CL0file
-			<<std::endl;
+		CL0file <<std::endl;
 
 		//处理RPU1的信息
 
 		//To do...
-		allPatchfile
-			<<"\n\n";
+		allPatchfile <<"\n\n";
 
-		if( RPUSeqNo == 1)
-			break;
-
+		if( RPUSeqNo == 1) break;
 	}
-
-	allPatchfile
-		<<std::endl;
+	allPatchfile<<std::endl;
 }
 
 
