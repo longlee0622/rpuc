@@ -439,17 +439,7 @@ inline void RCACoreReg::setCoreIndex(int index) {
 
 	regst &= 0xffffdf80;   //initialize
 	//20110720 liuxie
-	//regst |= static_cast<reg32>( ((index>>7)<<13) | (index & 0x0000007f) );
-	if(index <= 127)
-	{
-		regst &= 0xffffdf80;
-		regst |= static_cast<reg32>(index);
-	}
-	else
-	{
-		regst &= 0xffffff80;
-		regst |= static_cast<reg32>(index-128);
-	}
+	regst |= static_cast<reg32>( ((index>>7)<<13) | (index & 0x0000007f) );
 }
 
 inline int RCACoreReg::coreLoop() const {

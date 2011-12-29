@@ -149,9 +149,9 @@ int main(int argc, char *argv[])
 				else
 					onRCANum[cc] = 3;
 
-				multiDfgFile >> DFGName[cc];
+				multiDfgFile >> DFGName[onRCANum[cc]];
 
-				DFGList[DFGroupNum][cc] = DFGName[cc].c_str();
+				DFGList[DFGroupNum][onRCANum[cc]] = DFGName[onRCANum[cc]].c_str();
 			}
 
 			for(int hh = 0; hh < GroupRCANum; hh++)
