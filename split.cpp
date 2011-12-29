@@ -508,7 +508,7 @@ int SplitMethod::splitDFG( RPUConfig & config ) const {
 
 							for(int i = lastBypsRCANode->row() + 1; i <= curRow; ++ i){
 
-								if(curColIndex[i] >= RCA_COL -1){ // No empty blank cell in this row
+								if(curColIndex[i] > RCA_COL -1){ // No empty blank cell in this row
 									canPlaced = false; 
 									break;
 								}
