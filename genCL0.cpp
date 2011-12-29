@@ -91,8 +91,16 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			
 			REDL.word0().setSSRAMAddress( currentRCA->rcaSSRAMInBaseAddr() );	
 
-			REDL.word1().setSSRAMHeight( (delta / FIFO_WIDTH_DATA) - 1 );//20101117added "-1"
-	
+			//FIXME:此处没有考虑到如果delta小于等于FIFO_WIDTH_DATA的情况，导致Height为负数出错
+			//修改完成，与264原版配置无差异，mpeg和avs代码效果待检验
+			if(delta < FIFO_WIDTH_DATA)
+			{
+				REDL.word1().setSSRAMHeight(0);//modified 20111229 by longlee
+			}
+			else
+			{
+				REDL.word1().setSSRAMHeight( (delta / FIFO_WIDTH_DATA) - 1 );//20101117added "-1"
+			}
 			REDL.word1().setSSRAMLength(FIFO_WIDTH-1);
 			REDL.word1().setSSRAMJump(0);
 			REDL.word1().setMode(REDL_MODE_1L);        //单行拼接，即不拼接

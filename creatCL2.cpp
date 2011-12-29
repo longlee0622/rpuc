@@ -95,9 +95,9 @@ int RPUConfig::createCL2File(const String &fileName){
 //	std::transform(GRAPHNAME.begin(), GRAPHNAME.end(), 
 //		GRAPHNAME.begin(), ::toupper);
 
-	CL2File<<
-	"[Core Context Memory]\n"
-	"Context Cnt="<<std::dec<<CL2Context.size()<<"\n";
+//	CL2File<<
+//	"[Core Context Memory]\n"
+//	"Context Cnt="<<std::dec<<CL2Context.size()<<"\n";
 
 	int cl2SeqNo = 0;
 	Vector<Vector<reg32> >::iterator cl2Iter;
@@ -126,15 +126,20 @@ int RPUConfig::createCL2File(const String &fileName){
 
 		for(std::size_t i =1; i <cl2size; ++ i)
 		{
-			CL2File<<"ContextWord["<<std::dec<<(cl2SeqNo+1)<<"."<<std::dec<<(i-1)<<"]=0x"<<std::setw(8)<<std::hex<<curCL2Context[i]<<"\n";
+			CL2File<<std::setw(8)<<std::hex<<curCL2Context[i]<<"\n";
 
 			//if( i + 1 != cl2size)CL2File<<",";
 		}
+		for(int i = 0; i < 21; ++ i)
+		{
+			CL2File<<"ffffffff\n";
+		}
 
-		CL2File<<"\n\n"<<std::endl;
+//		CL2File<<"\n\n"<<std::endl;
 	}
 
 	//CL2File<<"#endif"<<std::endl;
+
 
 	return 0;
 }
