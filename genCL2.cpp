@@ -11,6 +11,7 @@ log:
 
 extern bool IsInnerPort(DFGPort * port);
 extern bool IsTempExternPort (DFGPort *port);
+extern int totalRCA;
 
 int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 {
@@ -599,7 +600,7 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 
 		//20110719 liuxie begin
 		//pushback the rcaindex at the beginning of each CL2 context for creatCL2.cpp
-		context.push_back(thisRCA->seqNo());
+		context.push_back(thisRCA->seqNo() + totalRCA);
 		//end
 
 		for(int i =0; i <IN_OP_REG_SUM; ++i)

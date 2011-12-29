@@ -23,7 +23,7 @@ public:
 
     Vector<CL1Block> genCL1Block(RPUConfig & config, Vector<RCA*> & rcas);
 
-	int PreGenCL1(Vector<RCA*> & rcas);
+	int PreGenCL1(Vector<RCA*> & rcas,int DFGInBase);
 	
 	const Vector<reg32> & genRegs(const Vector<CL1Block> & blocks);
 
@@ -61,7 +61,6 @@ public:
 
 	int getSSRAMTempTopAddrIn() const { return SSRAMTempInTopAddr; }
 	void setSSRAMTempTopAddrIn(int addr){SSRAMTempInTopAddr =addr;}
-
 
     Vector<RCAPort *> getTempPortInRIM() const { return tempPortInRIM ; }
 

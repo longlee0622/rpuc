@@ -20,10 +20,16 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
+//#include "remap.h"
 
 
 #include <iostream>
 #include <fstream>
+
+int totalRCA = 0;
+int CL0Size = 0;
+extern int remapSeqNo;
+extern int PseudoRCANum;
 
 int main(int argc, char *argv[])  
 {
@@ -445,7 +451,7 @@ int main(int argc, char *argv[])
 
 				for(std::size_t i =0; i <cl0size ; ++i)
 					//CL0file<<"\t\t\t"<<"ConfigWord["<<std::dec<<i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
-					CL0file<<"ConfigWord["<<std::dec<<i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
+					CL0file<<"ConfigWord["<<std::dec<<CL0Size+i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
 
 				CL0file<<
 					"\n\n\n\n";
@@ -454,6 +460,10 @@ int main(int argc, char *argv[])
 				//CL0ContextTemp = config.CL0ContextCopy();
 				CL1ContextTemp = config.CL1ContextCopy();
 				CL2ContextTemp = config.CL2ContextCopy();
+				totalRCA += config.allRCAs().size();
+				remapSeqNo = 0;
+				PseudoRCANum =0;
+				CL0Size += CL0ContextTemp.size();
 
 			}
 		}

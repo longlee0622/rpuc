@@ -15,8 +15,8 @@
 extern bool IsInnerPort(DFGPort * port);
 extern bool IsTempExternPort (DFGPort *port);
 extern void ChangeName(DFGPort * port);
-static int remapSeqNo = 0;
-static int PseudoRCANum = 0;
+int remapSeqNo = 0;
+int PseudoRCANum = 0;
 
 static bool PortSort(
 	RCAPort left, RCAPort right){

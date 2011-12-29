@@ -169,6 +169,7 @@ int RPUConfig::genGroupContext()
 		cl1config.setSSRAMTempBaseAddrOut(actualSSRAMBaseAddr + varSSRAMTempOutBaseAddr);
 		//cl1config.setSSRAMTempBaseAddrOut(768);  //起始地址0x300
 		cl1config.setSSRAMTempTopAddrOut(actualSSRAMBaseAddr + varSSRAMTempOutTopAddr);
+
 		//yin0915end
 			 
 		int RIMFullFlag = 0,RIMUsedNum = 0;
@@ -384,7 +385,7 @@ int RPUConfig::genGroupContext()
 		}
 
 		CL1Config cl1config_copy;
-		int Total = cl1config_copy.PreGenCL1(CL1RCACopy);
+		int Total = cl1config_copy.PreGenCL1(CL1RCACopy, this->DFGInBaseAddress());
 		for(CL1RCAIter = CL1RCA.begin()+ Total; CL1RCAIter != CL1RCA.end();)
 		{
 			(*CL1RCAIter)->setCL0GroupNumber(0);
@@ -576,22 +577,22 @@ int RPUConfig::genGroupContext()
 		//20110719 liuxie 记录整个RPU组已经映射了多少个RCA
 
 
-		if(cl1config.getSSRAMTopAddrIn() < 192 )
+		if(cl1config.getSSRAMTopAddrIn() < this->DFGInBaseAddress() + 192 )
 		{
 			//varSSRAMInBaseAddr = cl1config.getSSRAMTopAddrIn();
 			varSSRAMInBaseAddr = 0;
 			varSSRAMInTopAddr = 192;
 		}
 
-		if(cl1config.getSSRAMTopAddrOut() < 1024)
+		if(cl1config.getSSRAMTopAddrOut() < this->DFGInBaseAddress() + 1024)
 		{
-			varSSRAMOutBaseAddr = cl1config.getSSRAMTopAddrOut();	    
+			varSSRAMOutBaseAddr = cl1config.getSSRAMTopAddrOut() - this->DFGInBaseAddress();	    
 			varSSRAMOutTopAddr = 1024;
 		}
 
-		if(cl1config.getSSRAMTempTopAddrOut() < 816)
+		if(cl1config.getSSRAMTempTopAddrOut() < this->DFGInBaseAddress() + 816)
 		{
-			varSSRAMTempOutBaseAddr = cl1config.getSSRAMTempTopAddrOut();
+			varSSRAMTempOutBaseAddr = cl1config.getSSRAMTempTopAddrOut() - this->DFGInBaseAddress();
 			varSSRAMTempOutTopAddr = 816;
 		}
 

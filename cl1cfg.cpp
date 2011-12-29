@@ -21,6 +21,9 @@ extern bool IsTempExternPort (DFGPort *port);
 	
 extern void PortStyleSwitch(DFGPort * port);
 
+extern int totalRCA;
+
+
 // shedule state
 
 #define STA_WAIT	0
@@ -366,8 +369,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		tempRIMBaseRow = RIM_HEIGHT;
 		tempRIMTopRow  = 0;
 
-		int MaxPortSSRAMAddress = 0;                //针对externTemp Port
-		int MinPortSSRAMAddress = 0x800;            //针对externTemp Port
+		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();                //针对externTemp Port
+		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();            //针对externTemp Port
 
 		int MaxExPortNo = -1;              //针对Extern Port
 		int MinExPortNo = 10000;          //针对Extern Port
@@ -464,8 +467,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 		int externInportSize;
 
-		if(MaxExPortNo >= 0 && MinExPortNo>=0)
-			externInportSize = MaxExPortNo- 0 + 1;  //从最初的基地址取值
+		if(MaxExPortNo >= 0  && MinExPortNo>=0)
+			externInportSize = MaxExPortNo - 0 + 1;  //从最初的基地址取值
 		else
 			externInportSize = 0;
 
@@ -479,8 +482,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		int externalTempRow;
 		externalTempRow=0;		
 		
-		int ExterntempSSRAMBaseAddr = 816;
-		int ExterntempSSRAMTopAddr = 192;
+		int ExterntempSSRAMBaseAddr = 816 + config.DFGInBaseAddress();
+		int ExterntempSSRAMTopAddr = 192 + config.DFGInBaseAddress();
 		
 		if( totalTempExternPort !=0 )
 		{
@@ -525,8 +528,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 		int internFIFOIndex=0;
 		int externTempFIFOIndex;
-		int farestexterndata = 0;        //externdata在SSRAM中最远地址（离externdata的起始地址： 0x00）
-		int faresttempexterndata = 0;    //tempexterndata在SSRAM中最远地址（离tempexterndata的起始地址 地址未定义）
+		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdata在SSRAM中最远地址（离externdata的起始地址： 0x00）
+		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndata在SSRAM中最远地址（离tempexterndata的起始地址 地址未定义）
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
@@ -592,7 +595,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 					portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
 					
                     //2011.5.11 liuxie  数据位宽为16bit
-					portIter->dfgPort()->setSSRAMAddress(SSRAMInBaseAddr + DFGInportSeq*2);
+					portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
 				
 					++ externFIFOIndex;
 				} 
@@ -780,9 +783,9 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 		
 		//2011.5.28 liuxie for extern input Port		
-		thisRCA->setRCASSRAMInBaseAddr(0);//设置当前RCA外部直接输入的基地址		
+		thisRCA->setRCASSRAMInBaseAddr(0 + config.DFGInBaseAddress());//设置当前RCA外部直接输入的基地址		
         
-        if(farestexterndata!=0)
+        if(farestexterndata!=0 + config.DFGInBaseAddress())
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
 		else
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
@@ -792,7 +795,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		//2011.5.28 liuxie for ExternTemp input Port
 		thisRCA->setRCASSRAMTempInBaseAddr((ExterntempSSRAMBaseAddr/FIFO_WIDTH)*FIFO_WIDTH);
 
-		if(faresttempexterndata >= 192)
+		if(faresttempexterndata >= 192 + config.DFGInBaseAddress())
 			SSRAMTempInTopAddr = (faresttempexterndata/FIFO_WIDTH + ((faresttempexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
 		else
 			SSRAMTempInTopAddr = (faresttempexterndata/FIFO_WIDTH + ((faresttempexterndata)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
@@ -1113,8 +1116,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		tempRIMBaseRow = RIM_HEIGHT;
 		tempRIMTopRow  = 0;
 		
-		int MaxPortSSRAMAddress = 0;		//针对externTemp Port
-		int MinPortSSRAMAddress = 0x330;	//针对externTemp Port
+		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();		//针对externTemp Port
+		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();	//针对externTemp Port
 
 		int MaxExPortNo = -1;              //针对Extern Port
 		int MinExPortNo = 10000;          //针对Extern Port
@@ -1205,12 +1208,12 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		
 		int externFIFOIndex = 0;
 
-		if(MinExPortNo == 10000)
+		if(MinExPortNo == 10000 )
 			MinExPortNo = -1;
 
 		int externInportSize;
 
-		if(MaxExPortNo >= 0 && MinExPortNo>=0)
+		if(MaxExPortNo >= 0 && MinExPortNo>=0 )
 			externInportSize = MaxExPortNo- 0 + 1;  //从最初的基地址取值
 		else
 			externInportSize = 0;
@@ -1225,8 +1228,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		int externalTempRow;
 		externalTempRow=0;		
 		
-		int ExterntempSSRAMBaseAddr = 816;
-		int ExterntempSSRAMTopAddr = 192;
+		int ExterntempSSRAMBaseAddr = 816 + config.DFGInBaseAddress();
+		int ExterntempSSRAMTopAddr = 192 + config.DFGInBaseAddress();
 		
 		if( totalTempExternPort !=0 )
 		{
@@ -1251,7 +1254,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			//int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
 			ExterntempSSRAMBaseAddr = (ExterntempSSRAMBaseAddr/FIFO_WIDTH) * FIFO_WIDTH;
 			int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
-			assert(ExterntempSSRAMTopAddr >= 192);
+			assert(ExterntempSSRAMTopAddr >= 192 + config.DFGInBaseAddress());
 			std::cout<<"FixedMaxPortSSRAMAddress = "<<ExterntempSSRAMTopAddr<<std::endl;
 			std::cout<<"FixedMinPortSSRAMAddress = "<<ExterntempSSRAMBaseAddr<<std::endl;
 			
@@ -1273,8 +1276,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		int internFIFOIndex=0;
 		int externTempFIFOIndex;
-		int farestexterndata = 0;        //externdata在SSRAM中最远地址（离externdata的起始地址： 0x00）
-		int faresttempexterndata = 0;    //tempexterndata在SSRAM中最远地址（离tempexterndata的起始地址 地址未定义）
+		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdata在SSRAM中最远地址（离externdata的起始地址： 0x00）
+		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndata在SSRAM中最远地址（离tempexterndata的起始地址 地址未定义）
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
@@ -1534,7 +1537,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		//2011.5.28 liuxie for extern input Port		
 		thisRCA->setRCASSRAMInBaseAddr(SSRAMInBaseAddr);//设置当前RCA外部直接输入的基地址		
         
-        if(farestexterndata!=0)
+        if(farestexterndata!=0 + config.DFGInBaseAddress())
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
 		else
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
@@ -2091,7 +2094,7 @@ int i;
 
 } //end of insertPseudoRCA
 
-int CL1Config::PreGenCL1(Vector<RCA*> & rcas)
+int CL1Config::PreGenCL1(Vector<RCA*> & rcas, int DFGInBase)
 {
 	// Initialize the schedule states
 	Vector<RCA*>::iterator rcaIter;
@@ -2118,6 +2121,7 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas)
 
 	int remapSeqNo_backup = remapSeqNo;
 	RPUConfig config_fake;
+	config_fake.setDFGInBaseAddress(DFGInBase);
 	while(!scheduleOver(rcas))
 	{
 		updateRCAState(rcas, ScheduleFlaseFlag,remainRCANum);
@@ -2273,7 +2277,7 @@ const Vector<reg32> & CL1Config::genRegs(const Vector<CL1Block> & blocks){
 		
 
 		//curCoreReg.setCoreIndex(BlcokMappedBefore + curBlock.RCAIndex());    //选择相应的CL2，通过当前block所代表的当前组的RCA编号
-		curCoreReg.setCoreIndex(curBlock.RCAIndex());    //选择相应的CL2，通过当前block所代表的当前组的RCA编号
+		curCoreReg.setCoreIndex(totalRCA + curBlock.RCAIndex());    //选择相应的CL2，通过当前block所代表的当前组的RCA编号
 		curCoreReg.setCoreLoop(curBlock.RCACoreLoop());
 		curCoreReg.setConst1Address(curBlock.const1Address());
 		curCoreReg.setConst2Address(curBlock.const2Address());
