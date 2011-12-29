@@ -1635,7 +1635,19 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		thisRCA->setMappedFlag(true);
 
 		tmpGrpRCA.push_back(thisRCA);	
-		freeRIMSpace(RCAS);
+		//longlee 只释放当前RCA的source
+		Vector<RCA*> srcVec = thisRCA->sources();
+		if(!thisRCA->getRemapFlag()) freeRIMSpace(srcVec);
+		else 
+		{
+			Vector<RCA*>::iterator srcVecIter = srcVec.begin();
+			Vector<RCA*> thisGrpSrc;
+			for (; srcVecIter != srcVec.end(); ++srcVecIter)
+			{
+				if((*srcVecIter)->CL0GroupNumber() == thisRCA->CL0GroupNumber()) thisGrpSrc.push_back(*srcVecIter);
+			}
+			if (thisGrpSrc.size() != 0) freeRIMSpace(thisGrpSrc);
+		}
 		
 	}
 
