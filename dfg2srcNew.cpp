@@ -481,7 +481,7 @@ int main(int argc, char *argv[])
 				CL0Size += CL0ContextTemp.size();
 			}
 			char Cbuf[10];
-			sprintf(Cbuf,"%d.txt",DFGroupNum);
+			sprintf(Cbuf,"GROUP%d.txt",DFGroupNum);
 			std::ofstream tempCL0(Cbuf);
 			std::size_t cl0cnt = 0;
 			
