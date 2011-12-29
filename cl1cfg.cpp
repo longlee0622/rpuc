@@ -1899,6 +1899,7 @@ int i;
 		config.addRCAToAllRCAVec(thisRCA);//yin0901-把伪RCA加到Vec中存储起来
 	}
 
+	int curTempSSRAMBase = 0;
 	for(i=2; i< MAX_AREA_SUM ; ++i)
 	{
 		bool isUpArea = (i & 0x01)? false : true;
@@ -1928,6 +1929,8 @@ int i;
 		const int edgeRow = RIM_HEIGHT/2;
 		int rcIndex = 0;
 		int ROFHeight = 0;
+
+		SSRAMTempOutBaseAddr += curTempSSRAMBase;
 
 		for(outIter = tempPortInRIM.begin();outIter != tempPortInRIM.end(); ++ outIter)
 		{
@@ -2010,6 +2013,7 @@ int i;
 		thisRCA->setRCASSRAMTempOutBaseAddr(SSRAMTempOutBaseAddr);
 
 		SSRAMTempOutTopAddr = SSRAMTempOutBaseAddr + ROFHeight * FIFO_WIDTH;
+		curTempSSRAMBase = ROFHeight * FIFO_WIDTH;
 
 		thisRCA->setRCASSRAMTempOutTopAddr(SSRAMTempOutTopAddr);
 			
