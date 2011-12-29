@@ -449,6 +449,7 @@ inline void ControlReg::setLoopInterval(int interval) {
 
 	assert(0 <= interval && interval <= 15);
 
+	interval = 15;
 	regst &= 0xfffe1fff;
 	regst |= ( static_cast<reg32>(interval) << 13 );
 }
@@ -501,6 +502,7 @@ inline void ControlReg::setOutputCycle(int cycle) {
 
 	assert(0 <= cycle && cycle <= 15);
 
+	if (cycle <= 7) cycle = 8;
 	regst &= 0xfe1fffff;
 	regst |= ( static_cast<reg32>(cycle) << 21 );
 }
