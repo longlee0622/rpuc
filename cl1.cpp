@@ -120,7 +120,7 @@ CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag)
 		for(int j =0; j <outNum % bestHeight; ++ j)
 		{
 			/* FIXME : it may should get revised */
-			-- memoryRecord[bestBaseAddr + j];
+			-- freeOutSpace[bestBaseAddr + j];
 		}
 	}
 
@@ -222,6 +222,7 @@ Vector<int> CL1RIM::free(int RCAIndex){
 		if(memoryRecord[baseAddr] == RCAIndex)
 			{
 			memoryRecord[baseAddr] = -1;
+			//freeOutSpace[baseAddr] = -1;
 			FreeLineInRIM.push_back(baseAddr);
 			}
 		else break;
@@ -242,6 +243,6 @@ void CL1RIM::copy(CL1RIM RIM) {
 	
 	for(int i =0; i < RIM_HEIGHT; ++ i){
 		memoryRecord[i] = RIM.memoryRecord[i];
-		freeOutSpace[i] = freeOutSpace[i]; 
+		freeOutSpace[i] = RIM.freeOutSpace[i]; 
 	}
 }

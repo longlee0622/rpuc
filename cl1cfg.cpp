@@ -2165,10 +2165,10 @@ CL1Config::genCL1Block( RPUConfig & config, Vector<RCA*> & rcas){
 				blockIter->setRemapFlag(false);
 			}
 		}
-		if(blocks.begin()->getRemapFlag()) continue;
+		
         //yin20101119 revised begin
-
 		if(blocks.empty()) break;
+		if(blocks.begin()->getRemapFlag()) continue;
 		if(blocks.begin()->getTMFlag()) break;
 		//yin20101119 revised end
 

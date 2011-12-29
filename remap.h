@@ -17,6 +17,13 @@ extern bool IsTempExternPort (DFGPort *port);
 extern void ChangeName(DFGPort * port);
 static int remapSeqNo = 0;
 static int PseudoRCANum = 0;
+
+static bool PortSort(
+	RCAPort left, RCAPort right){
+		if(left.RIFRow() != right.RIFRow()) return left.RIFRow() <  right.RIFRow();
+		else return left.RIFCol() < right.RIFCol();
+}
+
 void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPUConfig & config,int PreFlag) {
 
 	
@@ -39,10 +46,44 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 
 	RCA* thisRCA =*(rcas.begin()+index+3);	//thisRCA指针固定，专指需要remap的目标RCA，便于RCA间的定位
 	Vector<RCAPort> & rcaInport = thisRCA->inports();
+	sort(rcaInport.begin(),rcaInport.end(),PortSort);
 	Vector<RCAPort>::iterator portIter;
 	Vector<RCAPort*>::iterator outIter;
+	
+	int buf1portCnt = 0;
+	int buf2portCnt = 0;
+	int buf3portCnt = 0;
+	int buf1Base = 0;
+	bool buf2Enable = true;
+	bool buf3Enable = false;		//需要时再开启buf3
+	int Cnt = 0;
+	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter, ++Cnt) 
+	{
+		if((portIter->RIFRow() > 7) || Cnt >= 64) break;
+		++buf1portCnt;
+	}
+	Cnt = 0;
+	int buf2Base = (rcaInport.begin() + buf1portCnt)->RIFRow();
+	for(portIter = rcaInport.begin() + buf1portCnt; portIter != rcaInport.end(); ++portIter,++Cnt)
+	{
+		if((portIter->RIFRow() > buf2Base + 7) || Cnt >= 64) break;
+		++buf2portCnt;
+	}
+	if (buf1portCnt + buf2portCnt < rcaInport.size()) buf3Enable = true;	//说明前两个RCA未能放下所有的inports，需要第三个
+	Cnt = 0;
+	if(buf3Enable)
+	{
+		int buf3Base = (rcaInport.begin() + buf1portCnt + buf2portCnt)->RIFRow();
+		for(portIter = rcaInport.begin() + buf1portCnt; portIter != rcaInport.end(); ++portIter,++Cnt)
+		{
+			if((portIter->RIFRow() > buf3Base + 7) || Cnt >= 64) break;
+			++buf3portCnt;
+		}
+	}
 
-	int InnerBase = RIM_HEIGHT;
+
+
+/*	int InnerBase = RIM_HEIGHT;
 	int InnerTop = -1;
 	int InnerRow = 0;
 	bool InnerEnable = false; 
@@ -116,7 +157,7 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 			break;
 		}
 	}
-
+	*/
 	//如果除外部直接端口外的所有其余端口在RIF中的总和不足8行，只需一个新加入的RCA即可
 	//删除第二个新加入的RCA，之后的RCA序号顺次减小1
 	//if ((ExTempEnable?ExTempRow:0) + (InnerEnable?InnerRow:0) <= 8 ) buf2Enable = false;
@@ -143,14 +184,15 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	Vector<RCAPort> buf1Inport,buf2Inport,buf1Outport,buf2Outport,buf3Inport,buf3Outport;
 		
 	//将inports按照每8个RIFRow为单位分组，为往新RCA上映射做准备
-	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter)
+	Cnt = 0;
+	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter,++Cnt)
 	{
-		if ((portIter->RIFRow() >= buf1Base) && (portIter->RIFRow() < buf1Base + 7))
+		if (Cnt < buf1portCnt)
 		{
 			buf1Inport.push_back(portIter->dfgPort());
 			buf1Inport.at(buf1Inport.size()-1).setInSameGroup(portIter->IsInSameGroup());	//准备将新RCA设成与原始RCA相同
 		}
-		else if ((portIter->RIFRow() >= buf2Base) && (portIter->RIFRow() < buf2Base +7))
+		else if (Cnt < buf1portCnt + buf2portCnt)
 		{
 			buf2Inport.push_back(portIter->dfgPort());
 			buf2Inport.at(buf2Inport.size()-1).setInSameGroup(portIter->IsInSameGroup());	//准备将新RCA设成与原始RCA相同
@@ -370,8 +412,11 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 		Vector<RCA*>::iterator TgtIter = sourceRCA->targets().begin();
 		for(;TgtIter != sourceRCA->targets().end(); ++TgtIter)
 		{
-			if(*TgtIter == thisRCA)	sourceRCA->targets().erase(TgtIter); //erase操作单独处理
-			break;
+			if(*TgtIter == thisRCA)	
+			{
+				sourceRCA->targets().erase(TgtIter); //erase操作单独处理
+				break;
+			}
 		}
 	}
 	thisRCA->sources().clear();
