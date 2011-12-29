@@ -81,12 +81,14 @@ int RPUConfig::createCL2File(const String &fileName){
 #endif
 
 //生成esl仿真格式
-int RPUConfig::createCL2File(const String &fileName){
+int RPUConfig::createCL2File(const String &fileName,const String &C_fileName){
 
 	// Create file
 	std::ofstream CL2File(fileName.c_str());
+	std::ofstream C_CL2File(C_fileName.c_str());
 
 	assert(CL2File);
+	assert(C_CL2File);
 
 //	const String & graphName = dfgGraph.name();
 
@@ -95,9 +97,7 @@ int RPUConfig::createCL2File(const String &fileName){
 //	std::transform(GRAPHNAME.begin(), GRAPHNAME.end(), 
 //		GRAPHNAME.begin(), ::toupper);
 
-//	CL2File<<
-//	"[Core Context Memory]\n"
-//	"Context Cnt="<<std::dec<<CL2Context.size()<<"\n";
+	C_CL2File<<"[Core Context Memory]\n"<<"Context Cnt="<<std::dec<<CL2Context.size()<<"\n";
 
 	int cl2SeqNo = 0;
 	Vector<Vector<reg32> >::iterator cl2Iter;
@@ -119,6 +119,7 @@ int RPUConfig::createCL2File(const String &fileName){
 		
 
 		CL2File.fill('0');
+		C_CL2File.fill('0');
 
 		std::size_t cl2size = curCL2Context.size();
 
@@ -128,6 +129,7 @@ int RPUConfig::createCL2File(const String &fileName){
 		{
 			CL2File<<std::setw(8)<<std::hex<<curCL2Context[i]<<"\n";
 
+			C_CL2File<<"ContextWord["<<std::dec<<(cl2SeqNo+1)<<"."<<std::dec<<(i-1)<<"]=0x"<<std::setw(8)<<std::hex<<curCL2Context[i]<<"\n";
 			//if( i + 1 != cl2size)CL2File<<",";
 		}
 		for(int i = 0; i < 21; ++ i)
@@ -135,6 +137,7 @@ int RPUConfig::createCL2File(const String &fileName){
 			CL2File<<"ffffffff\n";
 		}
 
+		C_CL2File<<"\n\n"<<std::endl;
 //		CL2File<<"\n\n"<<std::endl;
 	}
 

@@ -77,12 +77,14 @@ int RPUConfig::createCL1File(const String &fileName){
 #endif
 
 
-int RPUConfig::createCL1File(const String &fileName){
+int RPUConfig::createCL1File(const String &fileName,const String &C_fileName){
 
 	// Create file
 	std::ofstream CL1File(fileName.c_str());
+	std::ofstream C_CL1File(C_fileName.c_str());
 
 	assert(CL1File);
+	assert(C_CL1File);
 
 	//const String & graphName = dfgGraph.name();
 
@@ -91,7 +93,7 @@ int RPUConfig::createCL1File(const String &fileName){
 	//std::transform(GRAPHNAME.begin(), GRAPHNAME.end(), 
 	//	GRAPHNAME.begin(), ::toupper);
 
-	//CL1File<<"[Context Group Memory]\n";
+	C_CL1File<<"[Context Group Memory]\n";
 	
 
 	int cl1SeqNo = 0;
@@ -106,7 +108,7 @@ int RPUConfig::createCL1File(const String &fileName){
 	}
 
 
-	//CL1File<<"Group Cnt="<<std::dec<<cl1SizeCount<<"\n\n";
+	C_CL1File<<"Group Cnt="<<std::dec<<cl1SizeCount<<"\n\n";
 
 
 	cl1SizeCount=0;
@@ -126,12 +128,14 @@ int RPUConfig::createCL1File(const String &fileName){
 
 
 		CL1File.fill('0');
+		C_CL1File.fill('0');
 
 		std::size_t cl1size = curCL1Context.size();
 
 		for(std::size_t i =0; i <cl1size; ++ i)
 		{
 			CL1File<<std::setw(8)<<std::hex<<curCL1Context[i]<<"\n";
+			C_CL1File<<"GroupWord["<<std::dec<<(i+cl1SizeCount)<<"]=0x"<<std::setw(8)<<std::hex<<curCL1Context[i]<<";\n";
 		}
 
 		cl1SizeCount +=cl1size;
@@ -140,6 +144,8 @@ int RPUConfig::createCL1File(const String &fileName){
 	}
 
 	//CL1File<<"#endif"<<std::endl;
+	CL1File.close();
+	C_CL1File.close();
 
 	return 0;
 }

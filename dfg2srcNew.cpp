@@ -11,6 +11,7 @@
 //
 ////////////////////////////////////////////////////////////
 
+
 #include "dfgraph.h"
 #include "rpucfg.h"
 #include "optmz.h"
@@ -73,6 +74,7 @@ int main(int argc, char *argv[])
 		RPUConfig configTotal;
 
 		Vector<reg32> CL0ContextTemp;
+		Vector<Vector<reg32> > C_CL0ContextTemp;
 		Vector<Vector<reg32> > CL1ContextTemp;
 		Vector<Vector<reg32> > CL2ContextTemp;
 
@@ -95,18 +97,28 @@ int main(int argc, char *argv[])
 		String CL0FileName;
 		String CL1FileName;
 		String CL2FileName;
+		String C_CL0_Name;
+		String C_CL1_Name;
+		String C_CL2_Name;
 
 
 		if(RPUSeqNo == 0)
 		{
 			CL0FileName ="RPU0_CWI.h";
 
-			CL1FileName ="RPU0_GCGM.bin";
+			C_CL0_Name ="CWIPacket.txt";
 
-			CL2FileName ="RPU0_GCCM.bin";
+			CL1FileName ="ContextGroupMem_ini.txt_Data.data";
+
+			C_CL1_Name ="ContextGroupMem_ini.txt";
+
+			CL2FileName ="CoreContextMem_ini.txt_Data.data";
+
+			C_CL2_Name = "CoreContextMem_ini.txt";
 		}
 		else
 		{
+			break;	//对于RPU1直接跳出
 			CL0FileName ="RPU1_CWI.h";
 
 			CL1FileName ="RPU1_GCGM.bin";
@@ -251,11 +263,13 @@ int main(int argc, char *argv[])
 				//   baseAddr+1023 ---------------------------------------end
 
 				/*
-				   RPU 0:   RCA0 baseAddr = 0;
+				   RPU 0:   
+				   RCA0 baseAddr = 0;
 				   RCA1 baseAddr = 1024;
 				   RCA2 baseAddr = 2048;
 				   RCA3 baseAddr = 3072;
-				   RPU 1:   RCA0 baseAddr = 4096;
+				   RPU 1:   
+				   RCA0 baseAddr = 4096;
 				   RCA1 baseAddr = 5120;
 				   RCA2 baseAddr = 6144;
 				   RCA3 baseAddr = 7168;
@@ -437,6 +451,8 @@ int main(int argc, char *argv[])
 				/**************************** end ***************************************************/
 
 				Vector<Vector<reg32> > curCL0 = config.CL0ContextCopy();
+				Vector<Vector<reg32> > C_CL0 = config.C_CL0ContextCopy();
+				C_CL0ContextTemp.insert(C_CL0ContextTemp.end(),C_CL0.begin(),C_CL0.end());
 				for(Vector<Vector<reg32> >::iterator CL0GrpIter = curCL0.begin(); CL0GrpIter != curCL0.end(); ++CL0GrpIter)
 				{
 					Vector<reg32> curCtx = * CL0GrpIter;
@@ -464,16 +480,47 @@ int main(int argc, char *argv[])
 				PseudoRCANum =0;
 				CL0Size += CL0ContextTemp.size();
 			}
+			char Cbuf[10];
+			sprintf(Cbuf,"%d.txt",DFGroupNum);
+			std::ofstream tempCL0(Cbuf);
+			std::size_t cl0cnt = 0;
+			
+			for(Vector<Vector<reg32> >::iterator CtxGrpIter = C_CL0ContextTemp.begin(); CtxGrpIter != C_CL0ContextTemp.end(); ++ CtxGrpIter)
+			{
+				Vector<reg32> CtxGrp = * CtxGrpIter;
+				cl0cnt += CtxGrp.size();
+			}
+
+			tempCL0<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0cnt<<"\n";
+
+			tempCL0.fill('0');
+
+			std::size_t ctxCnt = 0;
+			for(Vector<Vector<reg32> >::iterator CtxGrpIter = C_CL0ContextTemp.begin(); CtxGrpIter != C_CL0ContextTemp.end(); ++ CtxGrpIter)
+			{
+				Vector<reg32> CtxGrp = * CtxGrpIter;
+				for(Vector<reg32>::iterator CtxIter = CtxGrp.begin(); CtxIter != CtxGrp.end(); ++CtxIter)
+				{
+					tempCL0<<"ConfigWord["<<std::dec<<ctxCnt<<"]=0x"<<std::setw(8)<<std::hex<<(*CtxIter)<<";\n";
+					ctxCnt++;
+				}
+			}
+
+			tempCL0<<"\n\n\n\n";
+			tempCL0.close();
+			C_CL0ContextTemp.clear();
 		}
 
 		//configTotal.pasteCL0Context(CL0ContextTemp);
 		configTotal.pasteCL1Context(CL1ContextTemp);
 		configTotal.pasteCL2Context(CL2ContextTemp);
 
-		//err |= configTotal.createCL0File(CL0FileName);
-		err |= configTotal.createCL1File(CL1FileName);
-		err |= configTotal.createCL2File(CL2FileName);
-
+		if( RPUSeqNo != 1)
+		{
+			//err |= configTotal.createCL0File(CL0FileName);
+			err |= configTotal.createCL1File(CL1FileName,C_CL1_Name);
+			err |= configTotal.createCL2File(CL2FileName,C_CL2_Name);
+		}
 		//end of CL0file
 		CL0file <<std::endl;
 		CL0file.close();

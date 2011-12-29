@@ -9,7 +9,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 {
 
 	Vector<reg32> CL0ContextTemp;//先暂存配置字，REDL,REDS的配置信息，最后再赋值给CL0Context；因为前面要加入“包头”
-
+	Vector<reg32> C_CL0ContextTemp;//Cmodel版本
 	// Set Head
 	CL0HeadReg headReg;
 	
@@ -27,7 +27,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	headReg.setSynMode(SYN_MODE_0);      //设置同步模式
 	
 	CL0ContextTemp.push_back(headReg.reg());
-
+	C_CL0ContextTemp.push_back(headReg.reg());
 	 /************************  for CL0 choose the right CL1  (end) ********************/
 
 	// Set REDL & REDS
@@ -108,6 +108,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			CL0ContextTemp.push_back(REDL.word1().reg());
 			CL0ContextTemp.push_back(REDL.word0().reg());
 			
+			C_CL0ContextTemp.push_back(REDL.word0().reg());
+			C_CL0ContextTemp.push_back(REDL.word1().reg());
+			
 		}
 
 
@@ -151,6 +154,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 
 			CL0ContextTemp.push_back(REDL.word1().reg());
 			CL0ContextTemp.push_back(REDL.word0().reg());
+
+			C_CL0ContextTemp.push_back(REDL.word0().reg());
+			C_CL0ContextTemp.push_back(REDL.word1().reg());
 		}
 				
 
@@ -267,6 +273,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 
 				CL0ContextTemp.push_back(REDS.word1().reg());
 				CL0ContextTemp.push_back(REDS.word0().reg());
+				
+				C_CL0ContextTemp.push_back(REDS.word0().reg());
+				C_CL0ContextTemp.push_back(REDS.word1().reg());
 	
 		}
 		else//temp area output to ssram
@@ -280,6 +289,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 
 			CL0ContextTemp.push_back(REDS.word1().reg());
 			CL0ContextTemp.push_back(REDS.word0().reg());
+
+			C_CL0ContextTemp.push_back(REDS.word0().reg());
+			C_CL0ContextTemp.push_back(REDS.word1().reg());
 		
 		}
 	}
@@ -323,35 +335,18 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	std::cout<<"cfgPtkHead = "<<cfgPtkHead<<std::endl;
 	
 	Vector<reg32> CL0Context_temp;
+	Vector<reg32> C_CL0Context_temp;
 
 	CL0Context_temp.push_back(cfgPtkHead);        //将cfgPtkHead压入CL0 Contect的配置信息中
+	C_CL0Context_temp.push_back(cfgPtkHead);        //将cfgPtkHead压入CL0 Contect的配置信息中
 
 	for(unsigned int assign2CL0Ctx =0; assign2CL0Ctx < CL0ContextTemp.size(); assign2CL0Ctx++)      //获得除包头外的 CL0的配置信息
+	{
 		CL0Context_temp.push_back(CL0ContextTemp[assign2CL0Ctx]);
-
+		C_CL0Context_temp.push_back(C_CL0ContextTemp[assign2CL0Ctx]);
+	}
 	CL0Context.push_back(CL0Context_temp);
-
-	
-#if 0
-	// REDS setting
-	REDS.word0().setSSRAMAddress(SSRAMSToreBase + SSRAMStoreOffset);
-	
-	REDS.word1().setSSRAMHeight((cl1config.getSSRAMTopAddrOut())/FIFO_WIDTH);//yin0906 -1
-	REDS.word1().setSSRAMLength(FIFO_WIDTH-1);	
-	REDS.word1().setSSRAMJump(0);
-	REDS.word1().setMode(REDS_MODE_ML);
-
-	CL0Context_temp.push_back(REDS.word0().reg());
-	CL0Context_temp.push_back(REDS.word1().reg());
-	
-	 /* update SSRAM Load & Store Address */
-	SSRAMLoadBase = SSRAMSToreBase + SSRAMStoreOffset ;
-	SSRAMLoadOffset = cl1config.getSSRAMTempBaseAddrOut();
-	//SSRAMLoadOffset = SSRAMSToreBase + cl1config.getSSRAMTempBaseAddrOut();
-	
-	SSRAMStoreOffset += cl1config.getSSRAMTempTopAddrOut();
-
-#endif
+	C_CL0Context.push_back(C_CL0Context_temp);
 
 	return 0;
 }

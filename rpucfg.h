@@ -99,9 +99,9 @@ public:
 
 	//int createCL0File(const String & fileName);
 
-	int createCL1File(const String & fileName);
+	int createCL1File(const String & fileName,const String &C_fileName);
 
-	int createCL2File(const String & fileName);
+	int createCL2File(const String & fileName,const String &C_fileName);
 
 	// Create file for debug
 	int printNodeInfo(const String & fileName);
@@ -109,6 +109,7 @@ public:
 	
 //20110716 liuxie	
 	Vector<Vector<reg32> > CL0ContextCopy() {return CL0Context;}
+	Vector<Vector<reg32> > C_CL0ContextCopy() {return C_CL0Context;}
 
 	//void pasteCL0Context(Vector<reg32> CL0ContextTemp) { CL0Context = CL0ContextTemp;}
 
@@ -220,6 +221,7 @@ private:
     Vector<Vector<reg32> > CLOGroup;
     
 	Vector<Vector<reg32> > CL0Context;
+	Vector<Vector<reg32> > C_CL0Context;
 
 	Vector<Vector<reg32> > CL1Context;
 
