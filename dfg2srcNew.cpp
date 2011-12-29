@@ -146,8 +146,6 @@ int main(int argc, char *argv[])
 
 				multiDfgFile >> DFGName[cc];
 
-				DFGName[cc]=DFGName[cc];
-
 				DFGList[DFGroupNum][cc] = DFGName[cc].c_str();
 			}
 

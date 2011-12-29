@@ -35,6 +35,12 @@ extern void PortStyleSwitch(DFGPort * port);
 
 #define BYTE_PER_LINE 16
 
+static bool RdyRCASort(
+	RCA* left, RCA* right){
+		if (!left->getRemapFlag() && right->getRemapFlag()) return left->getRemapFlag() && !right->getRemapFlag();
+		else return left->seqNo() < right->seqNo();
+}
+
 
 
 // Basic routine
@@ -90,6 +96,7 @@ Vector<RCA*> CL1Config::readyRCA(const Vector<RCA*> & rcas) {
 		if(thisRCA->state() == STA_REDY) 
 			{
 			readyRCAs.push_back(thisRCA);
+			if(!thisRCA->getRemapFlag()) break;
 			}
 	}
 	
@@ -145,6 +152,8 @@ void CL1Config::updateRCAState(const Vector<RCA*> & rcas , int & ScheduleFlaseFl
 const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config)
 {
 	Vector<CL1Block> mapBlocks;
+
+	sort(rcas.begin(),rcas.end(),RdyRCASort);
 
 	Vector<RCA*>::iterator rcaIter;
 	for(rcaIter = rcas.begin(); rcaIter != rcas.end(); ++ rcaIter)
@@ -682,6 +691,16 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				
 			}
 		}
+
+		//2011.11.1 longlee 防止二次Remap
+		bool RemapBefore = false;
+		int srcRemapCnt = 0;
+		for(Vector<RCA*>::iterator srcIter = thisRCA->sources().begin(); srcIter != thisRCA->sources().end(); ++ srcIter)
+		{
+			if (!(*srcIter)->getRemapFlag()) break;
+			++srcRemapCnt;
+		}
+		if((srcRemapCnt != 0) &&(srcRemapCnt == thisRCA->sources().size())) RemapBefore = true;
 		
 		//2011.7.19 longlee RIF越界检查及重排操作
         int maxRIFRow = 0;
@@ -689,51 +708,47 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
 			maxRIFRow = (portIter->RIFRow() > maxRIFRow)? portIter->RIFRow():maxRIFRow;
-			if ( maxRIFRow > 7) 
-			{
-				remapFlag = true;	//说明需要进行remap;
-				//RIM状态回滚
-				RIM.copy(RIM_backup);
-				tempPortInRIM.clear();
-				outPortInRIM.clear();
-				for (tempPortInRIMIter = tempPortInRIM_backup.begin(); tempPortInRIMIter != tempPortInRIM_backup.end(); ++tempPortInRIMIter)
-				{
-					tempPortInRIM.push_back(*tempPortInRIMIter);
-				}
-				for (outPortInRIMIter = outPortInRIM_backup.begin(); outPortInRIMIter != outPortInRIM_backup.end(); ++outPortInRIMIter)
-				{
-					outPortInRIM.push_back(*outPortInRIMIter);
-				}
-
-				//longlee:20111005
-				tempAreaCounter = tempAreaCounter_backup;
-				outAreaCounter = outAreaCounter_backup;
-
-				//获取当前RCA在组内位置
-				Vector<RCA*>::iterator RCAIter;
-				int index = 0;
-				for (RCAIter = RCAS.begin();RCAIter != RCAS.end(); RCAIter++,index ++)
-				{
-					if(*RCAIter != *rcaIter) continue;
-					else break;
-				}
-				//重新排布组内RCA，修改端口关系
-				//int index = (*RCAIter)->seqNo();
-				remap(RCAS,index,tempPortInRIM,config,1);
-				//标记当前RCAmap失败，跳出
-				break;
-			}
+			if (maxRIFRow >7)	remapFlag = true;	//说明需要进行remap;
 		}
-
-		if (remapFlag) 
+		if ( remapFlag) 
 		{
+			if(RemapBefore)
+			{
+				thisRCA->setState(STA_OVER);
+				continue;
+			}
+			//RIM状态回滚
+			RIM.copy(RIM_backup);
+			tempPortInRIM.clear();
+			outPortInRIM.clear();
+			for (tempPortInRIMIter = tempPortInRIM_backup.begin(); tempPortInRIMIter != tempPortInRIM_backup.end(); ++tempPortInRIMIter)
+				tempPortInRIM.push_back(*tempPortInRIMIter);
+			for (outPortInRIMIter = outPortInRIM_backup.begin(); outPortInRIMIter != outPortInRIM_backup.end(); ++outPortInRIMIter)
+				outPortInRIM.push_back(*outPortInRIMIter);
+
+			//longlee:20111005
+			tempAreaCounter = tempAreaCounter_backup;
+			outAreaCounter = outAreaCounter_backup;
+
+			//获取当前RCA在组内位置
+			Vector<RCA*>::iterator RCAIter;
+			int index = 0;
+			for (RCAIter = RCAS.begin();RCAIter != RCAS.end(); RCAIter++,index ++)
+			{
+				if(*RCAIter != *rcaIter) continue;
+				else break;
+			}
+			//重新排布组内RCA，修改端口关系
+			//int index = (*RCAIter)->seqNo();
+			remap(RCAS,index,tempPortInRIM,config,1);
+			//标记当前RCAmap失败，跳出
+
 			thisRCA->setMappedFlag(false);
 			CL1Block RemapBlock;
 			RemapBlock.setRemapFlag(true);
 			mapBlocks.push_back(RemapBlock);
 			return mapBlocks;
 		}
-
 		//******************************************start**********************************************************************
 		
 		//由于直接从片外SSRAM输入的基地址为0，所以要遍历所有的inport找到离基地址最远的那个port的位置为top address提供给REDL
@@ -896,6 +911,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config)
 {
 	Vector<CL1Block> mapBlocks;
+
+	sort(rcas.begin(),rcas.end(),RdyRCASort);
 
 	Vector<RCA*>::iterator rcaIter;
 	for(rcaIter = rcas.begin(); rcaIter != rcas.end(); ++ rcaIter)
@@ -2107,8 +2124,7 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas)
 		
 		if(ScheduleFlaseFlag == 1)  break;
 		if(rcas.size() > 25 ) break;
-		const Vector<CL1Block> 
-			blocks = PreMapRCA(readyRCA(rcas),tmpGroupRCA,rcas,config_fake);
+		const Vector<CL1Block>	blocks = PreMapRCA(readyRCA(rcas),tmpGroupRCA,rcas,config_fake);
 		
          //yin20101119 revised begin
 
