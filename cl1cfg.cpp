@@ -456,8 +456,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		int externalTempRow;
 		externalTempRow=0;		
 		
-		int ExterntempSSRAMBaseAddr = 2048;
-		int ExterntempSSRAMTopAddr = 768;
+		int ExterntempSSRAMBaseAddr = 816;
+		int ExterntempSSRAMTopAddr = 192;
 		
 		if( totalTempExternPort !=0 )
 		{
@@ -482,7 +482,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			//int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
 			ExterntempSSRAMBaseAddr = (ExterntempSSRAMBaseAddr/FIFO_WIDTH) * FIFO_WIDTH;
 			int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
-			assert(ExterntempSSRAMTopAddr >= 768);
+			assert(ExterntempSSRAMTopAddr >= 192);
 			std::cout<<"FixedMaxPortSSRAMAddress = "<<ExterntempSSRAMTopAddr<<std::endl;
 			std::cout<<"FixedMinPortSSRAMAddress = "<<ExterntempSSRAMBaseAddr<<std::endl;
 			//int Addrdelta = ExterntempSSRAMTopAddr  - 768;
@@ -763,7 +763,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		//2011.5.28 liuxie for ExternTemp input Port
 		thisRCA->setRCASSRAMTempInBaseAddr((ExterntempSSRAMBaseAddr/FIFO_WIDTH)*FIFO_WIDTH);
 
-		if(faresttempexterndata >= 768)
+		if(faresttempexterndata >= 192)
 			SSRAMTempInTopAddr = (faresttempexterndata/FIFO_WIDTH + ((faresttempexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
 		else
 			SSRAMTempInTopAddr = (faresttempexterndata/FIFO_WIDTH + ((faresttempexterndata)%FIFO_WIDTH?1:0))*FIFO_WIDTH;

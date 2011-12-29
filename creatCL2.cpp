@@ -9,6 +9,11 @@
 #include <map>
 #include <algorithm>
 
+static bool VecSort(
+	Vector<reg32> left, Vector<reg32> right){
+		return left.front() <  right.front();
+}
+
 
 #if 0
 int RPUConfig::createCL2File(const String &fileName){
@@ -97,6 +102,7 @@ int RPUConfig::createCL2File(const String &fileName){
 
 	int cl2SeqNo = 0;
 	Vector<Vector<reg32> >::iterator cl2Iter;
+	sort(CL2Context.begin(),CL2Context.end(), VecSort);
 
 	for(cl2Iter = CL2Context.begin();cl2Iter != CL2Context.end(); ++ cl2Iter)
 	{
