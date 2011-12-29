@@ -480,8 +480,8 @@ int main(int argc, char *argv[])
 				PseudoRCANum =0;
 				CL0Size += CL0ContextTemp.size();
 			}
-			char Cbuf[10];
-			sprintf(Cbuf,"GROUP%d.txt",DFGroupNum);
+			char Cbuf[20];
+			sprintf(Cbuf,"GROUP%d_CWI.txt",DFGroupNum);
 			std::ofstream tempCL0(Cbuf);
 			std::size_t cl0cnt = 0;
 			
