@@ -45,6 +45,9 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	rcas.insert(rcas.begin()+index+2,buf3);
 
 	RCA* thisRCA =*(rcas.begin()+index+3);	//thisRCA指针固定，专指需要remap的目标RCA，便于RCA间的定位
+	buf1->setCL0GroupNumber(thisRCA->CL0GroupNumber());
+	buf2->setCL0GroupNumber(thisRCA->CL0GroupNumber());
+	buf3->setCL0GroupNumber(thisRCA->CL0GroupNumber());
 	Vector<RCAPort> & rcaInport = thisRCA->inports();
 	sort(rcaInport.begin(),rcaInport.end(),PortSort);
 	Vector<RCAPort>::iterator portIter;
@@ -421,7 +424,7 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	}
 	thisRCA->sources().clear();
 	thisRCA->sources().push_back(buf1);
-	if(buf2Enable) thisRCA->sources().push_back(buf2);
+	if(buf2Enable)	thisRCA->sources().push_back(buf2);
 	else 
 	{
 		rcas.erase(rcas.begin()+index+1);

@@ -895,7 +895,6 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 //2011.4.20 liuxie mapRCA函数规定了RIF，RIM的分配原则
 Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config)
 {
-	
 	Vector<CL1Block> mapBlocks;
 
 	Vector<RCA*>::iterator rcaIter;
@@ -903,7 +902,6 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 	{
 
 		RCA * thisRCA = * rcaIter;
-
 		assert(thisRCA != 0);
 
 		Vector<RCAPort> & rcaOutport = thisRCA->outports();
@@ -953,15 +951,16 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		//longlee:20111005
 		Vector<int> tempAreaCounter_backup = tempAreaCounter;
 		Vector<int> outAreaCounter_backup = outAreaCounter;
-
+		
 		RIM_backup.copy(RIM);
 		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag());
 
 
-		if(CDSData.baseAddress() == -1) 
+ 		if(CDSData.baseAddress() == -1) 
 		{ // Allocation fail
 			thisRCA->setMappedFlag(false);
 			continue;
+
 		}
 		
 		/////////////////////////////////////////////////////////////////////////////////
@@ -978,13 +977,11 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 				//2011.6.9 liuxie
 				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				//portIter->setROFRow(tempRegionIndex / FIFO_WIDTH_DATA);
 				int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
 				portIter->setRIMRow(CDSData.baseAddress() + a_temp);
 
 				//2011.5.11 liuxie
 				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				//portIter->setROFCol(tempRegionIndex % FIFO_WIDTH_DATA);
 				int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
 				portIter->setRIMCol(b_temp *2);
 
@@ -1018,13 +1015,11 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			{
 				//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
 				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				//portIter->setROFRow(tempRegionIndex / FIFO_WIDTH_DATA);
 				int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
 				portIter->setRIMRow(CDSData.baseAddress() + c_temp);
 
 				//2011.5.11 liuxie
 				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				//portIter->setROFCol(tempRegionIndex % FIFO_WIDTH_DATA);
 				int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
 				portIter->setRIMCol(d_temp * 2);
 
@@ -1101,8 +1096,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		tempRIMBaseRow = RIM_HEIGHT;
 		tempRIMTopRow  = 0;
 		
-		int MaxPortSSRAMAddress = 0;				  //针对externTemp Port
-		int MinPortSSRAMAddress = 0x330;			  //针对externTemp Port
+		int MaxPortSSRAMAddress = 0;		//针对externTemp Port
+		int MinPortSSRAMAddress = 0x330;	//针对externTemp Port
 
 		int MaxExPortNo = -1;              //针对Extern Port
 		int MinExPortNo = 10000;          //针对Extern Port
@@ -1141,7 +1136,6 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					else
 					{
 						for(r_tempPortInRIMIter = tempPortInRIM.rbegin(); r_tempPortInRIMIter != tempPortInRIM.rend(); r_tempPortInRIMIter ++ )
-						
 						{
 							if((*r_tempPortInRIMIter)->dfgPort() == portIter->dfgPort())
 							{
@@ -1186,7 +1180,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		std::cout<<"MaxPortSSRAMAddress = "<<MaxPortSSRAMAddress<<std::endl;
 		std::cout<<"MinPortSSRAMAddress = "<<MinPortSSRAMAddress<<std::endl;
-		
+
 		std::cout<<"MaxExPortNo = "<<MaxExPortNo<<std::endl;
 		std::cout<<"MinExPortNo = "<<MinExPortNo<<std::endl;
 
@@ -1214,8 +1208,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		int externalTempRow;
 		externalTempRow=0;		
 		
-		int ExterntempSSRAMBaseAddr = 0x330;
-		int ExterntempSSRAMTopAddr =192;
+		int ExterntempSSRAMBaseAddr = 816;
+		int ExterntempSSRAMTopAddr = 192;
 		
 		if( totalTempExternPort !=0 )
 		{
@@ -1223,6 +1217,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			//List<List<int> >::iterator listIter2 =tempDataBlockList.begin();
 			List<int>::iterator listIntIter;
 			//List<int>::iterator listIntIter2;
+			
 			//for extern temp inport
 			for( ; listIter !=tempDataBlockList.end(); listIter++)
 			{
@@ -1239,10 +1234,12 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			//int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
 			ExterntempSSRAMBaseAddr = (ExterntempSSRAMBaseAddr/FIFO_WIDTH) * FIFO_WIDTH;
 			int Addrdelta = ExterntempSSRAMTopAddr - ExterntempSSRAMBaseAddr;
+			assert(ExterntempSSRAMTopAddr >= 192);
 			std::cout<<"FixedMaxPortSSRAMAddress = "<<ExterntempSSRAMTopAddr<<std::endl;
 			std::cout<<"FixedMinPortSSRAMAddress = "<<ExterntempSSRAMBaseAddr<<std::endl;
 			
 			assert(ExterntempSSRAMTopAddr - SSRAMInBaseAddr >= 192);
+
 
 			Addrdelta = Addrdelta/2 + 1;
 			
@@ -1264,7 +1261,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
- 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
+		
+		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
 
 			std:: cout<<"RCA SEQNo is "<<thisRCA->seqNo()<<std::endl;
@@ -1427,7 +1425,6 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					{
 						externTempFIFOIndex = (externalRowNum + thisPortLocalRow - 1) * FIFO_WIDTH_DATA + deltaValue;
 					}
-
 					portIter->setRIFRow( externTempFIFOIndex / FIFO_WIDTH_DATA );
 					portIter->setRIFCol( externTempFIFOIndex % FIFO_WIDTH_DATA );
 
@@ -1435,6 +1432,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				
 			}
 		}
+
 		//2011.7.19 longlee RIF越界检查及重排操作
         int maxRIFRow = 0;
 		bool remapFlag = false;
@@ -1485,6 +1483,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			mapBlocks.push_back(RemapBlock);
 			return mapBlocks;
 		}
+
 		//******************************************start**********************************************************************
 		
 		//由于直接从片外SSRAM输入的基地址为0，所以要遍历所有的inport找到离基地址最远的那个port的位置为top address提供给REDL
@@ -1513,6 +1512,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				}
 		}
 		//******************************************end**********************************************************************
+
+
 		//2011.5.28 liuxie for extern input Port		
 		thisRCA->setRCASSRAMInBaseAddr(SSRAMInBaseAddr);//设置当前RCA外部直接输入的基地址		
         
@@ -1635,7 +1636,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		thisRCA->setMappedFlag(true);
 
 		tmpGrpRCA.push_back(thisRCA);	
-		//longlee 只释放当前RCA的source
+/*		//longlee 只释放当前RCA的source
+		//freeRIMSpace(RCAS);
 		Vector<RCA*> srcVec = thisRCA->sources();
 		if(!thisRCA->getRemapFlag()) freeRIMSpace(srcVec);
 		else 
@@ -1648,7 +1650,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			}
 			if (thisGrpSrc.size() != 0) freeRIMSpace(thisGrpSrc);
 		}
-		
+		*/
 	}
 
 	return mapBlocks;
