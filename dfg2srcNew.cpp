@@ -439,9 +439,11 @@ int main(int argc, char *argv[])
 
 				/**************************** end ***************************************************/
 
+				Vector<reg32> curCL0 = config.CL0ContextCopy();
+				CL0ContextTemp.insert(CL0ContextTemp.end(),curCL0.begin(),curCL0.end());
 				//start write CWI file
 
-				std::size_t cl0size = config.CL0ContextCopy().size();
+				/*std::size_t cl0size = config.CL0ContextCopy().size();
 
 				CL0file<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0size<<"\n";
 
@@ -456,6 +458,8 @@ int main(int argc, char *argv[])
 				CL0file<<
 					"\n\n\n\n";
 
+					*/
+
 
 				//CL0ContextTemp = config.CL0ContextCopy();
 				CL1ContextTemp = config.CL1ContextCopy();
@@ -464,8 +468,22 @@ int main(int argc, char *argv[])
 				remapSeqNo = 0;
 				PseudoRCANum =0;
 				CL0Size += CL0ContextTemp.size();
-
 			}
+			char buf[10];
+			sprintf(buf,"%d.txt",DFGroupNum);
+			std::ofstream tempCL0(buf);
+			std::size_t cl0size = CL0ContextTemp.size();
+
+			tempCL0<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0size<<"\n";
+
+			tempCL0.fill('0');
+
+			for(std::size_t i =0; i <cl0size ; ++i)
+				tempCL0<<"ConfigWord["<<std::dec<<i<<"]=0x"<<std::setw(8)<<std::hex<<CL0ContextTemp[i]<<";\n";
+
+			tempCL0<<"\n\n\n\n";
+			tempCL0.close();
+			CL0ContextTemp.clear();
 		}
 
 		//configTotal.pasteCL0Context(CL0ContextTemp);
