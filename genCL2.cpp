@@ -512,7 +512,14 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 				if(thisRCA->rcaSSRAMInTopAddr() >= thisRCA->rcaSSRAMInBaseAddr())
 				{
 					temp1 = thisRCA->rcaSSRAMInTopAddr() - DFGInBaseAddr;
-					temp1 = temp1 / 2;
+					if (temp1 == 0  && thisRCA->inports().begin()->dfgPort()->id() == 0)
+					{
+						temp1=1;    //20120223:temp1=0说明只有一个外部输入，也应有一行，没这个case就会导致少一行输入
+					}
+					else
+					{
+						temp1 = temp1 / 2;
+					}
 					tempRow1 = temp1/FIFO_WIDTH_DATA + ((temp1 % FIFO_WIDTH_DATA)?1:0);
 				}
 			}

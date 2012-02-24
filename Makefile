@@ -4,4 +4,4 @@ $(EXE):
 	g++ -o $(EXE) *.cpp
 
 clean:
-	rm -rf $(EXE) *.o
+	rm -rf $(EXE) *.o *~
