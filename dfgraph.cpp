@@ -31,6 +31,8 @@
 #define ID_DST      1
 #define ID_NODE     2
 
+extern int ConstMem[];
+
 
 // Copy construction function
 DFGraph::DFGraph(const DFGraph & graph)
@@ -125,7 +127,7 @@ int DFGraph::parse(std::istream & dfgFile){
 	inports.resize(numSource);
 
 	Vector<Vector<int> > srcTargets(numSource); // used later
-
+	int j=0,k=-10;
 	for(int i=0; i<numSource; ++i)
 	{
 		int indexSrc, immdt;
@@ -146,18 +148,40 @@ int DFGraph::parse(std::istream & dfgFile){
 			dfgFile>>immdt;
 			inports[i].reset(new DFGImmPort(immdt));
 			inports[i]->setPortType(true);
+			inports[i]->setSeqNo(k--);			//2012.5.7 longlee 立即数从-10递减编号
+			
+			int exist=0;
+			int m=0;
+			for (;ConstMem[m]!=-1;++m)
+			{
+				if(ConstMem[m]==immdt)
+				{
+					exist=1;//说明CM中已经有了这个立即数
+					break;
+				}
+			}
+
+			if(!exist)
+			{
+				if(m<=15) ConstMem[m]=immdt;
+				else 
+				{
+					std::cerr<<"too many immdt inputs(>16),no more room for it!!"<<std::endl;
+					exit(0);
+				}
+			}
 
 		} else { // It's a variable 
 
 			dfgFile>>varName;
 			inports[i].reset(new DFGVarPort(varName));
+			inports[i]->setSeqNo(j++);			//2012.5.7 longlee 外部输入从0开始递增编号
 		}
-
-		inports[i]->setSeqNo(i);
 
 		while(dfgFile.get() != '\n'); // ignore the rest part
 	}
 
+	assert(-10 -k+ j==numSource);		//2012.5.7 longlee 确认immdt 和ext输入的个数符合实际情况
 	// Read DFG
 	//------------------------------------------------
 	int numNodes;

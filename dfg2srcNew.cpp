@@ -21,7 +21,6 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-//#include "remap.h"
 
 
 #include <iostream>
@@ -29,6 +28,8 @@
 
 int totalRCA = 0;
 int CL0Size = 0;
+int ConstMem[16];		//2012.5.7 longlee 模拟一个常数存储器
+
 extern int remapSeqNo;
 extern int PseudoRCANum;
 
@@ -39,10 +40,10 @@ int main(int argc, char *argv[])
 	using std::endl;
 
 	int err = 0;
+	for (int i= 0;i <16;++i) ConstMem[i]=-1;
 
 	char * MultifileName = "dfg.list";
 
-	//char *  MultifileName = argv[1];
 
 	std::ifstream multiDfgFile(MultifileName);
 	if(!multiDfgFile)
@@ -64,7 +65,6 @@ int main(int argc, char *argv[])
 		int DFGroupNumber;//当前RPU的DFG Group的套数
 		int DFGroupNum;   //当前RPU的DFG Group的所在套的编号
 		int onRCANum[4];       //当前DFG所用的RCA编号
-		//String DFGName;   //DFG图的名称
 		const char * DFGList[100][100];
 		int curGCGMAddr = 0;
 		int RCAformerNumTemp = 0; //当前RPU已经映射的RCA的数量
@@ -328,17 +328,12 @@ int main(int argc, char *argv[])
 				std::ofstream SSRAMinterfaceFile(SSRAM_interface.c_str());
 				assert(SSRAMinterfaceFile);
 
-				//SSRAMinterfaceFile<<config.graph().name()<<"\n\n\n";
-
 
 				DFGraph dfg_graph;
 				dfg_graph = config.graph();
 
 				String graphName=dfg_graph.name();
 
-
-				//Vector<DFGPort> & DFGInports =  (*dfg_graph).inports();
-				//Vector<DFGPort> & DFGOutports = (*dfg_graph).outports();
 				int inportSize = dfg_graph.inSize();
 				int outportSize = dfg_graph.outSize();
 				int z;
@@ -347,8 +342,6 @@ int main(int argc, char *argv[])
 				String portName;
 				int immPortValue;
 				int  portSSRAM;
-				//Vector<DFGPort>::iterator inportIter;
-				//Vector<DFGPort>::iterator outportIter;
 				DFGPort * currInport;
 				DFGPort * currOutport;
 				DFGVarPort * varPort;
@@ -366,9 +359,6 @@ int main(int argc, char *argv[])
 				SSRAMinterfaceFile<<
 					"#define "<<tempUperString<<"_DIN \\\n";
 
-				//SSRAMinterfaceFile<<"SSRAMInBaseAddr = "<<std::hex<<SSRAMInBaseAddr<<"\n\n";
-
-				//for(inportIter = DFGInports.begin(); inportIter != DFGInports.end(); inportIter++)
 				for(z=0; z< inportSize ; z++)
 				{
 					currInport = (&dfg_graph.inport(z));
@@ -403,17 +393,16 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						immPort = static_cast<DFGImmPort*>(currInport);
-						immPortValue = immPort->value();
-						portSSRAM = (*currInport).SSRAMAddress();
-						SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";
+						//2012.5.7 longlee 立即数不进入SSRAM输入区
+						//immPort = static_cast<DFGImmPort*>(currInport);
+						//immPortValue = immPort->value();
+						//portSSRAM = (*currInport).SSRAMAddress();
+						//SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";
 					}
 				}
 
 				SSRAMinterfaceFile<<"\n\n\n";
-
 				SSRAMinterfaceFile<<"#define "<<tempUperString<<"_DOUT \\\n";
-				//for(outportIter = DFGOutports.begin(); outportIter != DFGOutports.end() ; outportIter++)
 				for(z=0; z< outportSize ; z++)
 				{
 					currOutport = (&dfg_graph.outport(z));
@@ -442,7 +431,6 @@ int main(int argc, char *argv[])
 
 
 					portSSRAM = (*currOutport).SSRAMAddress();
-					//SSRAMinterfaceFile<<portName<<" = "<<"*(RP)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 					SSRAMinterfaceFile<<portNameNew<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 				}
 
@@ -533,6 +521,16 @@ int main(int argc, char *argv[])
 		if( RPUSeqNo == 1) break;
 	}
 	allPatchfile<<std::endl;
+	FILE* CMfile=fopen("ConstMem_ini.txt","w");
+	fprintf(CMfile,"[Const Memory]\nConst Cnt=4\n");
+	for (int i = 0;i < 4;++i)
+	{
+		fprintf(CMfile,"Const[%d]=[0x%02x]0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",i,i*8,
+			ConstMem[i*4+0]&0xff,(ConstMem[i*4+0]>>8)&0xff,ConstMem[i*4+1]&0xff,(ConstMem[i*4+1]>>8)&0xff,
+			ConstMem[i*4+2]&0xff,(ConstMem[i*4+2]>>8)&0xff,ConstMem[i*4+3]&0xff,(ConstMem[i*4+3]>>8)&0xff);
+	}
+	fclose(CMfile);
+	//system("pause");
 }
 
 

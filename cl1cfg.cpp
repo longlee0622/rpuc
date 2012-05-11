@@ -23,6 +23,8 @@ extern void PortStyleSwitch(DFGPort * port);
 
 extern int totalRCA;
 
+extern int ConstMem[];
+
 
 // shedule state
 
@@ -439,12 +441,15 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 					} 
 					else //external input port
 					{
-						++ totalExternPort;
-						if( port->seqNo() > MaxExPortNo)
-							MaxExPortNo = port->seqNo();	
+						if (!port->isImmPort())
+						{
+							++ totalExternPort;
+							if( port->seqNo() > MaxExPortNo)
+								MaxExPortNo = port->seqNo();	
 
-						if( port->seqNo() <  MinExPortNo)
-							 MinExPortNo = port->seqNo();	
+							if( port->seqNo() <  MinExPortNo)
+								MinExPortNo = port->seqNo();
+						}	
 					}
 				}
 		}
@@ -479,8 +484,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		const int externalRowNum = (externInportSize/FIFO_WIDTH_DATA + ((externInportSize % FIFO_WIDTH_DATA)? 1:0));
 
 		//计算外部temp输入的行数 计算temp Extern Port占用的最小空间
-		int externalTempRow;
-		externalTempRow=0;		
+		int externalTempRow=0;	
 		
 		int ExterntempSSRAMBaseAddr = 816 + config.DFGInBaseAddress();
 		int ExterntempSSRAMTopAddr = 192 + config.DFGInBaseAddress();
@@ -584,66 +588,41 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 					//2011.4.22 liuxie
 					//REDL完全顺序读入（无选择），CIDL完全顺序读入（无选择），则选不到相应的值
 					//如：在deblocking的简化函数中，第一个RCA读入13个外部port，顺序已经和DFG外部输入的17个输入不一样，不能单纯地一个个地读进RIF
-                    int DFGInportSeq;
-					DFGInportSeq = portIter->dfgPort()->seqNo();
-					                  	
-					//20110615 liuxie
-					//portIter->setRIFRow( externFIFOIndex / FIFO_WIDTH_DATA);
-					//2011.5.11 liuxie for 16bit data
-					//portIter->setRIFCol(externFIFOIndex % FIFO_WIDTH_DATA);
-					portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
-					portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
-					
-                    //2011.5.11 liuxie  数据位宽为16bit
-					portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
-				
-					++ externFIFOIndex;
+                    if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee 变量输入
+                    {
+						int DFGInportSeq;
+						DFGInportSeq = portIter->dfgPort()->seqNo();
+
+						//20110615 liuxie
+						//portIter->setRIFRow( externFIFOIndex / FIFO_WIDTH_DATA);
+						//2011.5.11 liuxie for 16bit data
+						//portIter->setRIFCol(externFIFOIndex % FIFO_WIDTH_DATA);
+						portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
+						portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
+
+						//2011.5.11 liuxie  数据位宽为16bit
+						portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
+
+						++ externFIFOIndex;
+                    }
+					else		//2012.5.7 longlee 立即数输入
+					{
+						int value =static_cast<DFGImmPort*>(portIter->dfgPort())->value();
+						int CMIndex=0;
+						for (;CMIndex<16;++CMIndex)
+						{
+							if(ConstMem[CMIndex]==value)break;
+						}
+						assert(CMIndex!=16);		//2012.5.7 longlee immdt must be found!!
+						portIter->setCMRow( CMIndex / 32);
+						portIter->setCMCol( CMIndex % 32);
+
+					}
 				} 
 				else 
 				{  // It's a temp external port
 					//找到这个端口位于哪里
-					/*List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
-					List<int>::iterator tempListIntIter;
 
-					bool findFlag;
-					findFlag =false;
-
-					int thisPortLocalRow;
-					thisPortLocalRow =0;//init
-
-					int deltaValue;//偏移量
-					deltaValue=0;
-
-					for( ; tempListIter !=tempDataBlockList.end(); ++ tempListIter)
-					{
-						if(tempListIter->size())
-						{
-							tempListIntIter = (*tempListIter).begin();
-
-							for( ; tempListIntIter != (*tempListIter).end(); ++tempListIntIter)
-							{
-								if((portIter->dfgPort()->SSRAMAddress())== *tempListIntIter)
-								{
-									thisPortLocalRow += ((*tempListIntIter)/FIFO_WIDTH - (*((*tempListIter).begin()))/FIFO_WIDTH);
-
-									deltaValue = (*tempListIntIter) % FIFO_WIDTH;
-
-									findFlag=true;
-									break;
-								}
-							}
-
-							if(findFlag) break;
-
-							thisPortLocalRow = (*(--(*tempListIter).end()))/FIFO_WIDTH - (*(*tempListIter).begin())/FIFO_WIDTH;
-						}
-					}
-
-					externTempFIFOIndex = (externalRowNum + thisPortLocalRow) * FIFO_WIDTH + deltaValue;
-
-					portIter->setRIFRow( externTempFIFOIndex / FIFO_WIDTH_DATA );
-					portIter->setRIFCol( externTempFIFOIndex % FIFO_WIDTH_DATA );
-					*/
 					List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
 					List<int>::iterator tempListIntIter;
 
@@ -1224,12 +1203,16 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					} 
 					else //external input port
 					{
-						++ totalExternPort;
-						if( port->seqNo() > MaxExPortNo)
-							MaxExPortNo = port->seqNo();	
+						//2012.5.7 longlee SSRAM端口中已经没有了立即数
+						if (!port->isImmPort())
+						{
+							++ totalExternPort;
+							if( port->seqNo() > MaxExPortNo)
+								MaxExPortNo = port->seqNo();	
 
-						if( port->seqNo() <  MinExPortNo)
-							 MinExPortNo = port->seqNo();	
+							if( port->seqNo() <  MinExPortNo)
+								MinExPortNo = port->seqNo();
+						}	
 					}
 				}
 		}
@@ -1375,66 +1358,42 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					//2011.4.22 liuxie
 					//REDL完全顺序读入（无选择），CIDL完全顺序读入（无选择），则选不到相应的值
 					//如：在deblocking的简化函数中，第一个RCA读入13个外部port，顺序已经和DFG外部输入的17个输入不一样，不能单纯地一个个地读进RIF
-                    int DFGInportSeq;
-					DFGInportSeq = portIter->dfgPort()->seqNo();
-					                  	
-					//20110615 liuxie
-					//portIter->setRIFRow( externFIFOIndex / FIFO_WIDTH_DATA);
-					//2011.5.11 liuxie for 16bit data
-					//portIter->setRIFCol(externFIFOIndex % FIFO_WIDTH_DATA);
-					portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
-					portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
-					
-                    //2011.5.11 liuxie  数据位宽为16bit
-					portIter->dfgPort()->setSSRAMAddress(SSRAMInBaseAddr + DFGInportSeq*2);
-				
-					++ externFIFOIndex;
+					if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee 变量输入
+					{
+						int DFGInportSeq;
+						DFGInportSeq = portIter->dfgPort()->seqNo();
+
+						//20110615 liuxie
+						//portIter->setRIFRow( externFIFOIndex / FIFO_WIDTH_DATA);
+						//2011.5.11 liuxie for 16bit data
+						//portIter->setRIFCol(externFIFOIndex % FIFO_WIDTH_DATA);
+						portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
+						portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
+
+						//2011.5.11 liuxie  数据位宽为16bit
+						portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
+
+						++ externFIFOIndex;
+					}
+					else		//2012.5.7 longlee 立即数输入
+					{
+						int value =static_cast<DFGImmPort*>(portIter->dfgPort())->value();
+						int CMIndex=0;
+						for (;CMIndex<16;++CMIndex)
+						{
+							if(ConstMem[CMIndex]==value)break;
+						}
+						assert(CMIndex!=16);		//2012.5.7 longlee immdt must be found!!
+						portIter->setCMRow( CMIndex / 16);
+						portIter->setCMCol( CMIndex % 16);
+						portIter->setCMValid();
+
+					}
 				} 
 				else 
 				{  // It's a temp external port
 					//找到这个端口位于哪里
-					/*List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
-					List<int>::iterator tempListIntIter;
 
-					bool findFlag;
-					findFlag =false;
-
-					int thisPortLocalRow;
-					thisPortLocalRow =0;//init
-
-					int deltaValue;//偏移量
-					deltaValue=0;
-
-					for( ; tempListIter !=tempDataBlockList.end(); ++ tempListIter)
-					{
-						if(tempListIter->size())
-						{
-							tempListIntIter = (*tempListIter).begin();
-
-							for( ; tempListIntIter != (*tempListIter).end(); ++tempListIntIter)
-							{
-								if((portIter->dfgPort()->SSRAMAddress())== *tempListIntIter)
-								{
-									thisPortLocalRow += ((*tempListIntIter)/FIFO_WIDTH - (*((*tempListIter).begin()))/FIFO_WIDTH);
-
-									deltaValue = (*tempListIntIter) % FIFO_WIDTH;
-
-									findFlag=true;
-									break;
-								}
-							}
-
-							if(findFlag) break;
-
-							thisPortLocalRow = (*(--(*tempListIter).end()))/FIFO_WIDTH - (*(*tempListIter).begin())/FIFO_WIDTH;
-						}
-					}
-
-					externTempFIFOIndex = (externalRowNum + thisPortLocalRow) * FIFO_WIDTH + deltaValue;
-
-					portIter->setRIFRow( externTempFIFOIndex / FIFO_WIDTH_DATA );
-					portIter->setRIFCol( externTempFIFOIndex % FIFO_WIDTH_DATA );
-					*/
 					List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
 					List<int>::iterator tempListIntIter;
 

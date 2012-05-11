@@ -60,8 +60,14 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	bool buf2Enable = true;
 	bool buf3Enable = false;		//需要时再开启buf3
 	int Cnt = 0;
+	int ImmdtCnt=0;
 	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter, ++Cnt) 
 	{
+		if (portIter->dfgPort()->isImmPort())	
+		{
+			ImmdtCnt++;
+			continue;
+		}
 		if((portIter->RIFRow() > 7) || Cnt >= 64) break;
 		++buf1portCnt;
 	}
@@ -69,10 +75,15 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	int buf2Base = (rcaInport.begin() + buf1portCnt)->RIFRow();
 	for(portIter = rcaInport.begin() + buf1portCnt; portIter != rcaInport.end(); ++portIter,++Cnt)
 	{
+		if (portIter->dfgPort()->isImmPort())
+		{
+			ImmdtCnt++;
+			continue;
+		}
 		if((portIter->RIFRow() > buf2Base + 7) || Cnt >= 64) break;
 		++buf2portCnt;
 	}
-	if (buf1portCnt + buf2portCnt < rcaInport.size()) buf3Enable = true;	//说明前两个RCA未能放下所有的inports，需要第三个
+	if (buf1portCnt + buf2portCnt < rcaInport.size()-ImmdtCnt) buf3Enable = true;	//说明前两个RCA未能放下所有的inports，需要第三个
 	Cnt = 0;
 	if(buf3Enable)
 	{
@@ -84,88 +95,6 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 		}
 	}
 
-
-
-/*	int InnerBase = RIM_HEIGHT;
-	int InnerTop = -1;
-	int InnerRow = 0;
-	bool InnerEnable = false; 
-	int ExBase = RIM_HEIGHT;
-	int ExTop = -1;
-	int ExRow = 0;
-	bool ExEnable = false;
-	int ExTempBase = RIM_HEIGHT;
-	int ExTempTop = -1;
-	int ExTempRow = 0;
-	bool ExTempEnable = false;
-	Vector<int> rowCnt(32,0);		//统计RIF中行号的分布，以便确定需要多少remapRCA
-	int maxRow = -1;
-	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
-	{
-						
-		DFGPort * port = portIter->dfgPort();
-		assert( port!=0 );
-		++rowCnt.at(portIter->RIFRow());
-		if (portIter->RIFRow() > maxRow) maxRow = portIter->RIFRow();
-		
-		// for inner port
-		if( IsInnerPort( portIter->dfgPort() ) || ((IsTempExternPort(portIter->dfgPort())) && portIter->IsInSameGroup()))
-		{
-			InnerEnable = true;
-			InnerBase = (InnerBase > portIter->RIFRow())? portIter->RIFRow():InnerBase;
-			InnerTop = (InnerTop < portIter->RIFRow())? portIter->RIFRow(): InnerTop;
-			InnerRow = InnerTop - InnerBase + 1;
- 		}
-        //for external port or extern temp port
-		else if( IsTempExternPort( portIter->dfgPort()) && (!(portIter->IsInSameGroup())))   //external temp port
-		{
-			ExTempEnable = true;
-			ExTempBase = (ExTempBase > portIter->RIFRow())? portIter->RIFRow():ExTempBase;
-			ExTempTop = (ExTempTop < portIter->RIFRow())? portIter->RIFRow(): ExTempTop;
-			ExTempRow = ExTempTop - ExTempBase + 1;
-		}
-		else //external input port
-		{
-			ExEnable = true;
-			ExBase = (ExBase > portIter->RIFRow())? portIter->RIFRow():ExBase;
-			ExTop = (ExTop < portIter->RIFRow())? portIter->RIFRow(): ExTop;
-			ExRow = ExTop - ExBase + 1;
-		}
-	}
-
-	rowCnt.resize(maxRow+1);
-	int buf1Base = 0;
-	int buf2Base = 7;
-	int buf3Base;
-	Vector<int>::iterator rowIter = rowCnt.begin()+ buf1Base + 7;
-	for (;rowIter != rowCnt.end(); ++rowIter)
-	{
-		int row = * rowIter;
-		if (row == 0) continue;
-		buf2Base = rowIter - rowCnt.begin();
-		break;
-	}
-
-	bool buf2Enable = true;
-	bool buf3Enable = true;
-	if (buf2Base + 7 >=  rowCnt.size()) buf3Enable = false;
-	if(buf3Enable)
-	{
-		Vector<int>::iterator rowIter = rowCnt.begin()+ buf2Base + 7;
-		for (;rowIter != rowCnt.end(); ++rowIter)
-		{
-			int row = * rowIter;
-			if (row == 0) continue;
-			buf3Base = rowIter - rowCnt.begin();
-			break;
-		}
-	}
-	*/
-	//如果除外部直接端口外的所有其余端口在RIF中的总和不足8行，只需一个新加入的RCA即可
-	//删除第二个新加入的RCA，之后的RCA序号顺次减小1
-	//if ((ExTempEnable?ExTempRow:0) + (InnerEnable?InnerRow:0) <= 8 ) buf2Enable = false;
-	//if (InnerRow + ExTempRow + ExRow <= 8) buf2Enable = false;
-	//if (InnerRow + ExTempRow + ExRow > 14) buf3Enable = true;
 
 	if(buf2Enable)					//判断加入remapRCA后会不会导致CL1RCA个数越界
 	{
@@ -190,6 +119,13 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	Cnt = 0;
 	for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter,++Cnt)
 	{
+		//2012.5.7 longlee remapRCA 里不处理Immdt输入
+		if(portIter->dfgPort()->isImmPort()) 
+		{
+			Cnt--;
+			continue;
+		}
+
 		if (Cnt < buf1portCnt)
 		{
 			buf1Inport.push_back(portIter->dfgPort());

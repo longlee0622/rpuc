@@ -45,7 +45,8 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
         int inputTimes = 0, outputTimes = 0, outputBeginCycle = 0, outputBegin = 0
 	    , LoopInterval = 0, ConstOut0Flag = 0, LoopTimes = 0
 	    , ConstOut1Flag = 0, OutputGrain = 0, RIFSign = 0, InputAGrain = 1
-	    , InputBGrain = 1, InputTempGrain = 1, InputGrainMode = 0;
+	    , InputBGrain = 1, InputTempGrain = 1, InputGrainMode = 0, ConstGrain = 1;
+
 		// Set RC and Temp inter-connection context
 		/////////////////////////////////////////////////////////////
 
@@ -157,6 +158,13 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 						SRC_TYPE_FIFO
 						);
 					}
+					else if(rcaInport[inputA].CMValid())
+					{
+						std::cerr<<"Input A shouldn't be a immdt,ERROR!!! "<<std::endl;
+						//system("pause");
+						//exit(0);
+						while(1);		//2012.5.7 longlee 程序强制停止
+					}
 					else
 					{
 						//2011.6.9 liuxie
@@ -234,6 +242,14 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 							Index,  //当是TempExternPort时候，则要减去它的起始地址0x300（768）
 							SRC_TYPE_FIFO
 							);
+						}
+						else if (rcaInport[inputB].CMValid())	//2012.5.7 longlee 确认是个CM输入
+						{
+							CL2Contex.setInputB(
+							i,
+							srcBPort.CMRow() * FIFO_WIDTH_DATA
+								+ srcBPort.CMCol(),
+							SRC_TYPE_CONST);
 						}
 						else
 						{
@@ -461,27 +477,6 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 		if(outputBeginCycle <= 0 ) 
 			outputBeginCycle = 1;
 
-		/*for(nodenum = 0; nodenum < RC_REG_NUM; nodenum++)
-		{
-			nodetemp = thisRCA->temp(nodenum);
-			if(nodetemp.dfgNode() == 0)
-				continue;
-			if(nodetemp.dfgNode()->step() == -1)
-				continue;
-			if( nodetemp.dfgNode()->step() < MinStep2)
-				MinStep2 = nodetemp.dfgNode()->step();
-			if( MaxStep2 <  nodetemp.dfgNode()->step())
-				MaxStep2 = nodetemp.dfgNode()->step();
-		}
-		outputBeginCyclesTemp2 = MaxStep2 - MinStep2;
-
-		if( outputBeginCyclesTemp1 >= outputBeginCyclesTemp2)
-			outputBeginCycle = outputBeginCyclesTemp1;
-		else
-			outputBeginCycle = outputBeginCyclesTemp2;
-
-		*/
-
 
 
 
@@ -512,7 +507,8 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 				if(thisRCA->rcaSSRAMInTopAddr() >= thisRCA->rcaSSRAMInBaseAddr())
 				{
 					temp1 = thisRCA->rcaSSRAMInTopAddr() - DFGInBaseAddr;
-					if (temp1 == 0  && thisRCA->inports().begin()->dfgPort()->id() == 0)
+					//2012.5.7 longlee 没有外部输入时，base top都是0，如果inports第一个是立即数，会误认为是只有一个外部输入的情况，在判断条件中要排除CMValid的情况
+					if (temp1 == 0  && thisRCA->inports().begin()->dfgPort()->id() == 0 && !thisRCA->inports().begin()->CMValid())
 					{
 						temp1=1;    //20120223:temp1=0说明只有一个外部输入，也应有一行，没这个case就会导致少一行输入
 					}
@@ -580,6 +576,7 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 			CL2Contex.CL2ControlReg.setInputBGran(InputBGrain);
 			CL2Contex.CL2ControlReg.setInputTempGran(InputTempGrain);
 			CL2Contex.CL2ControlReg.setInputGranMode(InputGrainMode);
+			CL2Contex.CL2ControlReg.setConstGran(ConstGrain);
 			
 			//2011.5.11 changed by liuxie
 			//OutputGrain = 0x00;     	// default : 8bit 

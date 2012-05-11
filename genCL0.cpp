@@ -25,6 +25,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	GCGMAddrRecord += cl1config.totalLength();
 	
 	headReg.setSynMode(SYN_MODE_0);      //设置同步模式
+
+	headReg.setConstSelect(0);		//2012.5.7 longlee 设置const1的偏移地址有效
+	headReg.setConstOffset1(0);	//2012.5.7 longlee 设置const1的偏移地址为0
 	
 	CL0ContextTemp.push_back(headReg.reg());
 	C_CL0ContextTemp.push_back(headReg.reg());
@@ -77,7 +80,8 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			DFGPort * port = curPortIter->dfgPort();
 			assert( port!=0 );
 				
-			if( !((IsTempExternPort( curPortIter->dfgPort()))||(IsInnerPort( curPortIter->dfgPort()))) ) 
+			//2012.5.7 longlee 输入的立即数不触发REDL设置
+			if( !((IsTempExternPort( curPortIter->dfgPort()))||(IsInnerPort( curPortIter->dfgPort())) || curPortIter->CMValid()) ) 
 			{
 				REDLNum += 1;//说明肯定有一套REDL来加载外部直接输入
 				directSSRAMInputFlag = true;

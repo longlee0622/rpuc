@@ -32,10 +32,11 @@ public:
 	RCAPort(): portRIFRow(0), portRIFCol(0),
 		portROFRow(0), portROFCol(0),
 		portRIMRow(0), portRIMCol(0),
+		portCMRow(0), portCMCol(0),
 		rcaDFGPort(0), DFGExternPort(false),
-		InSameGroup(false) {}
+		InSameGroup(false),CMvalid(false){}
 
-	RCAPort(DFGPort * port): rcaDFGPort(port){}
+	RCAPort(DFGPort * port): rcaDFGPort(port),CMvalid(false){}
 
 	// Hardware location
 	int RIFRow() const { return portRIFRow; }
@@ -62,6 +63,20 @@ public:
 
 	void setRIMCol(int col) { portRIMCol = col; }
 
+
+	//2012.5.7 longlee 为CM操作添加的函数
+	int CMRow() const { return portCMRow; }
+
+	void setCMRow(int row) { portCMRow = row; }
+
+	int CMCol() const { return portCMCol; }
+
+	void setCMCol(int col) { portCMCol = col; }
+
+	bool CMValid() const {return CMvalid;}
+	
+	void setCMValid() {CMvalid=true;}
+
 	//2011.5.27   liuxie
 	void setInSameGroup(bool judge) {InSameGroup = judge;}
 
@@ -84,6 +99,8 @@ private:
 	int portROFRow, portROFCol;
 
 	int portRIMRow, portRIMCol;
+
+	int portCMRow,  portCMCol;		//2012.5.7 longlee 为了ConstMem添加
 	
 	DFGPort * rcaDFGPort;
 
@@ -91,6 +108,8 @@ private:
 	bool InSameGroup;   //当该节点为Inport节点时，同真正的ExternTempPort区分开
 
 	bool DFGExternPort;  //记录当前port是否是DFG的输出port,以防止其被改名字变成extern Temp Port
+	
+	bool CMvalid;
 };
 
 //--------------------------------------------------

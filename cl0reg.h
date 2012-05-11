@@ -141,7 +141,9 @@ inline void CL0HeadReg::setConstSelect(int sel) {
 
 	assert(0 <= sel && sel <= 1);
 
-	regst &= 0x0000e000;
+	//2012.5.7 longlee 之前代码居然有笔误！！！
+	//regst &= 0x0000e000;
+	regst &= 0xfffeffff;
 	regst |= static_cast<reg32>(sel) << 16;
 }
 
@@ -156,7 +158,8 @@ inline void CL0HeadReg::setConstOffset1(int offset){
 
 	//修改 by liuxie
 	//regst &= 0x00810000;
-	regst &= 0xffc0ffff;
+	//2012.5.7 longlee 之前代码有笔误
+	regst &= 0xff81ffff;
 	regst |= static_cast<reg32>(offset) << 17;
 }
 
