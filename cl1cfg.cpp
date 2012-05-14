@@ -1371,7 +1371,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 						portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
 
 						//2011.5.11 liuxie  数据位宽为16bit
-						portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
+						portIter->dfgPort()->setSSRAMAddress(SSRAMInBaseAddr + DFGInportSeq*2);
 
 						++ externFIFOIndex;
 					}
