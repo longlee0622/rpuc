@@ -48,6 +48,12 @@ public:
 
 	void setOffset(int offset) { dataOffset = offset; }
 
+	//2012.3.10 longlee for double 2D CIDL mode
+	int baseAddress2() const { return dataBaseAddr2; }
+	void setBaseAddress2(int addr) { dataBaseAddr2 = addr; }
+	int length2() const { return dataLength2; }
+	void setlength2(int length) { dataLength2 = length;}
+
 private:
 	
 	int dataSource;
@@ -55,8 +61,10 @@ private:
 	int dataInputMode;
 	int dataOutputMode;
 	int dataBaseAddr;
+	int dataBaseAddr2;	//2012.3.10 longlee for double 2D CIDL mode
 	int dataLength;
-	int dataWidth;
+	int dataLength2;		//2012.3.10 longlee for double 2D CIDL mode
+	int dataWidth;		
 	int dataHeight;
 	int dataOffset;
 	

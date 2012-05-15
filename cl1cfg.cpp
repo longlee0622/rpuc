@@ -20,6 +20,7 @@ extern bool IsInnerPort(DFGPort * port);
 extern bool IsTempExternPort (DFGPort *port);
 	
 extern void PortStyleSwitch(DFGPort * port);
+extern int CIDLChoice(bool occupy[],int base,int top,bool isRemap);
 
 extern int totalRCA;
 
@@ -1140,7 +1141,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		int MaxExPortNo = -1;              //针对Extern Port
 		int MinExPortNo = 10000;          //针对Extern Port
 
-
+		bool occupy[32] = {false};
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
 						
@@ -1177,6 +1178,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 						{
 							if((*r_tempPortInRIMIter)->dfgPort() == portIter->dfgPort())
 							{
+								occupy[(*r_tempPortInRIMIter)->RIMRow()] =true;
 								if( tempRIMBaseRow > ((*r_tempPortInRIMIter)->RIMRow()))
 									tempRIMBaseRow = (*r_tempPortInRIMIter)->RIMRow();
 
@@ -1216,9 +1218,21 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					}
 				}
 		}
+		//2012.3.10 longlee: 根据所需RIM数据的分布情况选择CIDL模式和对应高度
+		int bestHeight = CIDLChoice(occupy,tempRIMBaseRow,tempRIMTopRow,thisRCA->getRemapFlag());
+		int CIDLMode;
+
+		if (bestHeight == (tempRIMTopRow - tempRIMBaseRow +1) ) CIDLMode = MODE_IN_V2D; //选择单2D模式
+		else CIDLMode = MODE_IN_T2D;	//选择双2D模式
+
 
 		std::cout<<"tempRIMBaseRow = "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"tempRIMTopRow = "<<tempRIMTopRow<<std::endl;
+		if (CIDLMode == MODE_IN_T2D)
+		{
+			std::cout<<"CIDL Mode is T2D,Height is "<<bestHeight<<std::endl;
+		}
+		
 
 		std::cout<<"MaxPortSSRAMAddress = "<<MaxPortSSRAMAddress<<std::endl;
 		std::cout<<"MinPortSSRAMAddress = "<<MinPortSSRAMAddress<<std::endl;
@@ -1336,7 +1350,22 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 							portIter->setRIMRow((*r_tempPortInRIMIter)->RIMRow());
 							portIter->setRIMCol((*r_tempPortInRIMIter)->RIMCol());
 							//计算thisRCA的这个内部端口，通过CIDL加载后，在RIF的位置。
-							internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
+							if (CIDLMode ==MODE_IN_V2D)	//单2D和原来的方法一样
+							{
+								internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
+							}
+							else if(CIDLMode == MODE_IN_T2D)
+							{
+								if (portIter->RIMRow()<=tempRIMBaseRow+bestHeight-1)	//上半区和下半区的Index生成公式有区别
+								{
+									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
+								}
+								else
+								{
+									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + TEMP_REGION_WIDTH);
+								}
+							}
+							
 							break;
 						}
 					}
@@ -1610,22 +1639,41 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		
 		
 		////2011.5.11 liuxie 将CIDL的写模式从4行8byte拼接 修改成为 2行16Byte拼接
-		lowestBaseAddr = tempRIMBaseRow;
-		highestEndAddr = tempRIMTopRow + 1;//表明行数(高度)
-		//yin0909end
+		if (CIDLMode == MODE_IN_V2D)
+		{
+			lowestBaseAddr = tempRIMBaseRow;
+			highestEndAddr = tempRIMTopRow + 1;//表明行数(高度)
+			//yin0909end
 
-		block.CIDLData().setInputMode(MODE_IN_V2D);    //2D数据模式,首地址可变
+			block.CIDLData().setInputMode(MODE_IN_V2D);    //2D数据模式,首地址可变
 
-		block.CIDLData().setBaseAddress(lowestBaseAddr); 
-		//2011.5.11 liuxie
-        block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //全部以16Byte为长度写入
-		//setHeight 2011.4.25 liuxie
-		//////////////////////////////////////////////////////////////////
-		block.CIDLData().setHeight(highestEndAddr - lowestBaseAddr);
-		//////////////////////////////////////////////////////////////////
-		//2011.5.11 liuxie
-		block.CIDLData().setOutputMode(MODE_OUT_2L);    //输入2D数据每行2等分，逐行逐份拼接输出
-		block.CIDLData().setOffset(0);                
+			block.CIDLData().setBaseAddress(lowestBaseAddr); 
+			//2011.5.11 liuxie
+			block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //全部以16Byte为长度写入
+			//setHeight 2011.4.25 liuxie
+			//////////////////////////////////////////////////////////////////
+			block.CIDLData().setHeight(highestEndAddr - lowestBaseAddr);
+			//////////////////////////////////////////////////////////////////
+			//2011.5.11 liuxie
+			block.CIDLData().setOutputMode(MODE_OUT_2L);    //输入2D数据每行2等分，逐行逐份拼接输出
+			block.CIDLData().setOffset(0);                
+		}
+		else if (CIDLMode == MODE_IN_T2D)
+		{//2012.3.10 longlee for double 2D CIDL mode
+			block.CIDLData().setInputMode(MODE_IN_T2D);    //双2D数据模式,首地址可变
+
+			block.CIDLData().setBaseAddress(tempRIMBaseRow); 
+			block.CIDLData().setBaseAddress2(tempRIMTopRow-bestHeight+1);
+
+			block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //全部以16Byte为长度写入
+			block.CIDLData().setlength2(TEMP_REGION_WIDTH_BYTE);
+
+			block.CIDLData().setHeight(bestHeight);
+
+			block.CIDLData().setOutputMode(MODE_OUT_1L);    //输入2D数据每行2等分，逐行逐份拼接输出
+			block.CIDLData().setOffset(0);                
+		}
+		
 
 		// Set CDS
 		//--------------------------------------------
@@ -2298,20 +2346,43 @@ const Vector<reg32> & CL1Config::genRegs(const Vector<CL1Block> & blocks){
 		// (3) CIDL
 		if(curBlock.CIDLEnable()){
 			
-			CIDLReg & curCIDLReg = CL1ConfigRegs.CIDLContext(CoreIndex);
+			if(curBlock.CIDLData().inputMode()==3)	//单2D模式
+			{
+				CIDLReg & curCIDLReg = CL1ConfigRegs.CIDLContext(CoreIndex);
 
-			const CL1Data & dataCIDL = curBlock.CIDLData();
+				const CL1Data & dataCIDL = curBlock.CIDLData();
 
-			curCIDLReg.reset();
-			curCIDLReg.setInputMode(dataCIDL.inputMode());
-			curCIDLReg.setInput1BaseAddress(dataCIDL.baseAddress());
-	
-			curCIDLReg.setInput1Length(dataCIDL.length());
-			curCIDLReg.setInputHeight(dataCIDL.height());
-			
-			/* merge four line to one */
-			curCIDLReg.setOutputMode(dataCIDL.outputMode()); 
-			curCIDLReg.setInputOffset(dataCIDL.offset());
+				curCIDLReg.reset();
+				curCIDLReg.setInputMode(dataCIDL.inputMode());
+				curCIDLReg.setInput1BaseAddress(dataCIDL.baseAddress());
+
+				curCIDLReg.setInput1Length(dataCIDL.length());
+				curCIDLReg.setInputHeight(dataCIDL.height());
+
+				/* merge four line to one */
+				curCIDLReg.setOutputMode(dataCIDL.outputMode()); 
+				curCIDLReg.setInputOffset(dataCIDL.offset());
+			}
+			else if(curBlock.CIDLData().inputMode() == 1)	//双2D模式
+			{
+				CIDLReg & curCIDLReg = CL1ConfigRegs.CIDLContext(CoreIndex);
+
+				const CL1Data & dataCIDL = curBlock.CIDLData();
+
+				curCIDLReg.reset();
+				curCIDLReg.setInputMode(dataCIDL.inputMode());
+				curCIDLReg.setInput1BaseAddress(dataCIDL.baseAddress());
+				curCIDLReg.setInput2BaseAddress(dataCIDL.baseAddress2());
+
+				curCIDLReg.setInput1Length(dataCIDL.length());
+				curCIDLReg.setInput2Length(dataCIDL.length2());
+				curCIDLReg.setInputHeight(dataCIDL.height());
+
+				/* merge four line to one */
+				curCIDLReg.setOutputMode(dataCIDL.outputMode()); 
+				//2012.5.15 longlee Offset对双2D模式不适用
+				//curCIDLReg.setInputOffset(dataCIDL.offset());
+			}
 		
 		}
 
