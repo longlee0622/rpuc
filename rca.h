@@ -195,6 +195,10 @@ public:
 	int CL0GroupNumber() const {return Cl0GroupNum;}
 	void setCL0GroupNumber(int CL0GroupNo) {Cl0GroupNum = CL0GroupNo;}
 
+	//2012.5.24 longlee
+	int getRIMOutMode() const {return RIMoutMode;}
+	void setRIMOutMode(int mode) {RIMoutMode = mode;}
+
 private:
 
 	int seqNumber;
@@ -258,6 +262,8 @@ private:
 
     //2011.5.18 liuxie
 	int Cl0GroupNum;    //所在的CL0Group编号
+
+	int RIMoutMode;		//2012.5.24 longlee 定义RCA向RIM输出的模式
 
 };
 
@@ -339,7 +345,8 @@ inline RCA::RCA(int seqNo)
 	PseudoRCAMode(0),
 	RemapFlag(false),
 	MappedFlag(false),
-	TooManyFlag(false){
+	TooManyFlag(false),
+	RIMoutMode(-1){
 
 	for(int r =0; r <RCA_ROW; ++r)
 		for(int c =0; c <RCA_COL; ++c){
@@ -382,7 +389,8 @@ inline RCA::RCA(const RCA & rca)
 	ssramTempOutTopAddr(rca.ssramTempOutTopAddr),
 	RemapFlag(rca.RemapFlag),
 	MappedFlag(rca.MappedFlag),
-	TooManyFlag(rca.TooManyFlag){
+	TooManyFlag(rca.TooManyFlag),
+	RIMoutMode(rca.RIMoutMode){
 
 	for(int i =0; i <RC_REG_NUM; ++i){
 		nodes[i] = rca.nodes[i];

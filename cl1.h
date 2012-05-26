@@ -216,7 +216,7 @@ public:
 
 	CL1RIM();
 
-	CL1Data allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag);
+	CL1Data allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag,int RIMoutMode);
 
 	CL1Data getRCACIDLData(int RCAIndex) const;
 
@@ -234,7 +234,7 @@ public:
 
 	{ return freeOutSpace[addr]; }
 
-	Vector<int> free(int RCAIndex);//void free(int RCAIndex);
+	Vector<int> free(int RCAIndex,int RIMOutMode);//void free(int RCAIndex);
 
 	void clear();
 	void copy(CL1RIM RIM);

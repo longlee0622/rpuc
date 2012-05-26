@@ -41,6 +41,10 @@ extern int ConstMem[];
 
 #define BYTE_PER_LINE 16
 
+#define RIM_OUT_MODE_IN	0
+#define RIM_OUT_MODE_OUT	1
+#define RIM_OUT_MODE_MIX	2
+
 static bool RdyRCASort(
 	RCA* left, RCA* right){
 		if (!left->getRemapFlag() && right->getRemapFlag()) return left->getRemapFlag() && !right->getRemapFlag();
@@ -184,7 +188,16 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				++ totalInternPort : ++ totalExternPort;
 		}
 
-		
+		//2012.5.24 longlee 设置本RCA的RIM输出状态，辅助RIM空间划分
+		if (totalInternPort > 0)
+		{
+			if(totalExternPort == 0)	thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//只有内部节点
+			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//内部节点和dfg直接输出均有
+		}
+		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//只有dfg直接输出
+
+		assert(thisRCA->getRIMOutMode() >= 0 && thisRCA->getRIMOutMode() <= 2);
+
 		//将DFG图的输出节点标记，防止名字被改后被识别成Extern Temp Port
 		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 		{
@@ -218,7 +231,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		Vector<int> outAreaCounter_backup = outAreaCounter;
 		
 		RIM_backup.copy(RIM);
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag());
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode());
 
 
 		if(CDSData.baseAddress() == -1) 
@@ -245,68 +258,98 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		// Mark the ROF and RIM location of port, meanwhile record the output data.
 		//------------------------------------------------------------------------------
 
-		int outRegionIndex = 0, tempRegionIndex = 0;
-		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
+		if(thisRCA->getRIMOutMode() == RIM_OUT_MODE_MIX || thisRCA->getRIMOutMode() == RIM_OUT_MODE_OUT)
 		{
- 
-			if(IsInnerPort(portIter->dfgPort()))
-			{ //It is an internal port
-
-				//2011.6.9 liuxie
-				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
-				portIter->setRIMRow(CDSData.baseAddress() + a_temp);
-
-				//2011.5.11 liuxie
-				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
-				portIter->setRIMCol(b_temp *2);
-
-				++ tempRegionIndex;
-			
-				tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
-				
-				tempPortInRIM.push_back(&(*portIter));
-			
-			} 
-			else if(!(IsTempExternPort(portIter->dfgPort())))
-			{  //It is an external port
-
-				portIter->setROFRow(outRegionIndex % CDSData.height());			
-		
-				portIter->setRIMRow(CDSData.baseAddress() + portIter->ROFRow());
-				//2011.5.11 liuxie
-				portIter->setROFCol(CDSData.length() - outRegionIndex / CDSData.height() - 1);
-				portIter->setRIMCol(CDSData.offset() + portIter->ROFCol()*2);
-
-				++ outRegionIndex;
-			
-				/*****************************************************************************************/
-				outAreaCounter[areaBelongTo(portIter->RIMRow(), portIter->RIMCol())] ++;
-
-				outPortInRIM.push_back(&(*portIter));
-				/*****************************************************************************************/
-
-			}
-			else  //it's a external temp port,！！！！由于此处还没有进行类型转换，所以这个函数没有作用
+			int outRegionIndex = 0, tempRegionIndex = 0;
+			for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 			{
-				//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
-				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
-				portIter->setRIMRow(CDSData.baseAddress() + c_temp);
+ 
+				if(IsInnerPort(portIter->dfgPort()))
+				{ //It is an internal port
 
-				//2011.5.11 liuxie
-				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
-				portIter->setRIMCol(d_temp * 2);
+					//2011.6.9 liuxie
+					portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+					int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
+					portIter->setRIMRow(CDSData.baseAddress() + a_temp);
 
-				++ tempRegionIndex;
+					//2011.5.11 liuxie
+					portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+					int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
+					portIter->setRIMCol(b_temp *2);
+
+					++ tempRegionIndex;
 			
-				tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+					tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
 				
-				tempPortInRIM.push_back(&(*portIter));
+					tempPortInRIM.push_back(&(*portIter));
+			
+				} 
+				else if(!(IsTempExternPort(portIter->dfgPort())))
+				{  //It is an external port
+
+					portIter->setROFRow(outRegionIndex % CDSData.height());			
+		
+					portIter->setRIMRow(CDSData.baseAddress() + portIter->ROFRow());
+					//2011.5.11 liuxie
+					portIter->setROFCol(CDSData.length() - outRegionIndex / CDSData.height() - 1);
+					portIter->setRIMCol(CDSData.offset() + portIter->ROFCol()*2);
+
+					++ outRegionIndex;
+			
+					/*****************************************************************************************/
+					outAreaCounter[areaBelongTo(portIter->RIMRow(), portIter->RIMCol())] ++;
+
+					outPortInRIM.push_back(&(*portIter));
+					/*****************************************************************************************/
+
+				}
+				else  //it's a external temp port,！！！！由于此处还没有进行类型转换，所以这个函数没有作用
+				{
+					//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
+					portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+					int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
+					portIter->setRIMRow(CDSData.baseAddress() + c_temp);
+
+					//2011.5.11 liuxie
+					portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+					int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
+					portIter->setRIMCol(d_temp * 2);
+
+					++ tempRegionIndex;
+			
+					tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+				
+					tempPortInRIM.push_back(&(*portIter));
+				}
 			}
 		}
+		else if (thisRCA->getRIMOutMode() == RIM_OUT_MODE_IN)
+		{
+			int outRegionIndex = 0, tempRegionIndex = 0;
+			for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
+			{
+
+				if(IsInnerPort(portIter->dfgPort()))
+				{ //It is an internal port
+					portIter->setROFRow(tempRegionIndex / ROF_WIDTH_DATA);
+					int a_temp = tempRegionIndex / RIM_WIDTH_DATA;
+					portIter->setRIMRow(CDSData.baseAddress() + a_temp);
+
+					portIter->setROFCol(tempRegionIndex % ROF_WIDTH_DATA);
+					int b_temp = tempRegionIndex % RIM_WIDTH_DATA;
+					portIter->setRIMCol(b_temp *2);
+
+					++ tempRegionIndex;
+
+					//FIXME：此处有破绽，对于越界存放的Port不计数
+					if (portIter->RIMCol() < 16) tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+
+					tempPortInRIM.push_back(&(*portIter));
+				} 
+				else assert(0);
+			}
+		}
+		else assert(0);
 
 		// Mark the input ports ,which will be transfered into RIF.
 		//----------------------------------------------------------
@@ -698,7 +741,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			if(RemapBefore)
 			{
 				thisRCA->setState(STA_OVER);
-				RIM.free(thisRCA->seqNo());
+				RIM.free(thisRCA->seqNo(),thisRCA->getRIMOutMode());
 				continue;
 			}
 			//RIM状态回滚
@@ -958,6 +1001,14 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				++ totalInternPort : ++ totalExternPort;
 		}
 
+		//2012.5.24 longlee 设置本RCA的RIM输出状态，辅助RIM空间划分
+		if (totalInternPort > 0)
+		{
+			if(totalExternPort == 0)	
+				thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//只有内部节点
+			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//内部节点和dfg直接输出均有
+		}
+		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//只有dfg直接输出
 		
 		//将DFG图的输出节点标记，防止名字被改后被识别成Extern Temp Port
 		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
@@ -992,7 +1043,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		Vector<int> outAreaCounter_backup = outAreaCounter;
 		
 		RIM_backup.copy(RIM);
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag());
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode());
 
 
  		if(CDSData.baseAddress() == -1) 
@@ -1007,68 +1058,98 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		// Mark the ROF and RIM location of port, meanwhile record the output data.
 		//------------------------------------------------------------------------------
 
-		int outRegionIndex = 0, tempRegionIndex = 0;
-		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
+		if(thisRCA->getRIMOutMode() == RIM_OUT_MODE_MIX || thisRCA->getRIMOutMode() == RIM_OUT_MODE_OUT)
 		{
- 
-			if(IsInnerPort(portIter->dfgPort()))
-			{ //It is an internal port
-
-				//2011.6.9 liuxie
-				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
-				portIter->setRIMRow(CDSData.baseAddress() + a_temp);
-
-				//2011.5.11 liuxie
-				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
-				portIter->setRIMCol(b_temp *2);
-
-				++ tempRegionIndex;
-			
-				tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
-				
-				tempPortInRIM.push_back(&(*portIter));
-			
-			} 
-			else if(!(IsTempExternPort(portIter->dfgPort())))
-			{  //It is an external port
-
-				portIter->setROFRow(outRegionIndex % CDSData.height());			
-		
-				portIter->setRIMRow(CDSData.baseAddress() + portIter->ROFRow());
-				//2011.5.11 liuxie
-				portIter->setROFCol(CDSData.length() - outRegionIndex / CDSData.height() - 1);
-				portIter->setRIMCol(CDSData.offset() + portIter->ROFCol()*2);
-
-				++ outRegionIndex;
-			
-				/*****************************************************************************************/
-				outAreaCounter[areaBelongTo(portIter->RIMRow(), portIter->RIMCol())] ++;
-
-				outPortInRIM.push_back(&(*portIter));
-				/*****************************************************************************************/
-
-			}
-			else  //it's a external temp port,！！！！由于此处还没有进行类型转换，所以这个函数没有作用
+			int outRegionIndex = 0, tempRegionIndex = 0;
+			for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 			{
-				//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
-				portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
-				int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
-				portIter->setRIMRow(CDSData.baseAddress() + c_temp);
 
-				//2011.5.11 liuxie
-				portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
-				int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
-				portIter->setRIMCol(d_temp * 2);
+				if(IsInnerPort(portIter->dfgPort()))
+				{ //It is an internal port
 
-				++ tempRegionIndex;
-			
-				tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
-				
-				tempPortInRIM.push_back(&(*portIter));
+					//2011.6.9 liuxie
+					portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+					int a_temp = tempRegionIndex / TEMP_REGION_WIDTH;
+					portIter->setRIMRow(CDSData.baseAddress() + a_temp);
+
+					//2011.5.11 liuxie
+					portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+					int b_temp = tempRegionIndex % TEMP_REGION_WIDTH;
+					portIter->setRIMCol(b_temp *2);
+
+					++ tempRegionIndex;
+
+					tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+
+					tempPortInRIM.push_back(&(*portIter));
+
+				} 
+				else if(!(IsTempExternPort(portIter->dfgPort())))
+				{  //It is an external port
+
+					portIter->setROFRow(outRegionIndex % CDSData.height());			
+
+					portIter->setRIMRow(CDSData.baseAddress() + portIter->ROFRow());
+					//2011.5.11 liuxie
+					portIter->setROFCol(CDSData.length() - outRegionIndex / CDSData.height() - 1);
+					portIter->setRIMCol(CDSData.offset() + portIter->ROFCol()*2);
+
+					++ outRegionIndex;
+
+					/*****************************************************************************************/
+					outAreaCounter[areaBelongTo(portIter->RIMRow(), portIter->RIMCol())] ++;
+
+					outPortInRIM.push_back(&(*portIter));
+					/*****************************************************************************************/
+
+				}
+				else  //it's a external temp port,！！！！由于此处还没有进行类型转换，所以这个函数没有作用
+				{
+					//2011.6.9  liuxie   //此处已经将TEMP_REGION_WIDTH的宽度设置成8（TEMP_REGION_WIDTH_BYTE = 16 bytes）
+					portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
+					int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
+					portIter->setRIMRow(CDSData.baseAddress() + c_temp);
+
+					//2011.5.11 liuxie
+					portIter->setROFCol(tempRegionIndex % TEMP_REGION_WIDTH);
+					int d_temp = tempRegionIndex % TEMP_REGION_WIDTH;
+					portIter->setRIMCol(d_temp * 2);
+
+					++ tempRegionIndex;
+
+					tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+
+					tempPortInRIM.push_back(&(*portIter));
+				}
 			}
 		}
+		else if (thisRCA->getRIMOutMode() == RIM_OUT_MODE_IN)
+		{
+			int outRegionIndex = 0, tempRegionIndex = 0;
+			for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
+			{
+
+				if(IsInnerPort(portIter->dfgPort()))
+				{ //It is an internal port
+					portIter->setROFRow(tempRegionIndex / ROF_WIDTH_DATA);
+					int a_temp = tempRegionIndex / RIM_WIDTH_DATA;
+					portIter->setRIMRow(CDSData.baseAddress() + a_temp);
+
+					portIter->setROFCol(tempRegionIndex % ROF_WIDTH_DATA);
+					int b_temp = tempRegionIndex % RIM_WIDTH_DATA;
+					portIter->setRIMCol(b_temp *2);
+
+					++ tempRegionIndex;
+
+					//FIXME：此处有破绽，对于越界存放的Port不计数
+					if (portIter->RIMCol() < 16) tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
+
+					tempPortInRIM.push_back(&(*portIter));
+				} 
+				else assert(0);
+			}
+		}
+		else assert(0);
 
 		// Mark the input ports ,which will be transfered into RIF.
 		//----------------------------------------------------------
@@ -1352,17 +1433,23 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 							//计算thisRCA的这个内部端口，通过CIDL加载后，在RIF的位置。
 							if (CIDLMode ==MODE_IN_V2D)	//单2D和原来的方法一样
 							{
-								internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
+								//2012.5.24 longlee 取RIM全32byte为一行
+								//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
+								internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*RIM_WIDTH_DATA + ((*r_tempPortInRIMIter)->RIMCol()/2);
 							}
 							else if(CIDLMode == MODE_IN_T2D)
 							{
 								if (portIter->RIMRow()<=tempRIMBaseRow+bestHeight-1)	//上半区和下半区的Index生成公式有区别
 								{
-									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
+									//2012.5.24 longlee 取RIM全32byte为一行
+									//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
+									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*RIM_WIDTH_DATA*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
 								}
 								else
 								{
-									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + TEMP_REGION_WIDTH);
+									//2012.5.24 longlee 取RIM全32byte为一行
+									//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + TEMP_REGION_WIDTH);
+									internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*RIM_WIDTH_DATA*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + RIM_WIDTH_DATA);
 								}
 							}
 							
@@ -1649,13 +1736,13 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 			block.CIDLData().setBaseAddress(lowestBaseAddr); 
 			//2011.5.11 liuxie
-			block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //全部以16Byte为长度写入
+			block.CIDLData().setLength(RIM_WIDTH); //全部以16Byte为长度写入
 			//setHeight 2011.4.25 liuxie
 			//////////////////////////////////////////////////////////////////
 			block.CIDLData().setHeight(highestEndAddr - lowestBaseAddr);
 			//////////////////////////////////////////////////////////////////
 			//2011.5.11 liuxie
-			block.CIDLData().setOutputMode(MODE_OUT_2L);    //输入2D数据每行2等分，逐行逐份拼接输出
+			block.CIDLData().setOutputMode(MODE_OUT_1L);    //输入2D数据每行2等分，逐行逐份拼接输出
 			block.CIDLData().setOffset(0);                
 		}
 		else if (CIDLMode == MODE_IN_T2D)
@@ -1665,8 +1752,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			block.CIDLData().setBaseAddress(tempRIMBaseRow); 
 			block.CIDLData().setBaseAddress2(tempRIMTopRow-bestHeight+1);
 
-			block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //全部以16Byte为长度写入
-			block.CIDLData().setlength2(TEMP_REGION_WIDTH_BYTE);
+			block.CIDLData().setLength(RIM_WIDTH); //全部以16Byte为长度写入
+			block.CIDLData().setlength2(RIM_WIDTH);
 
 			block.CIDLData().setHeight(bestHeight);
 
@@ -1748,7 +1835,7 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 		if(canBeFree)
 		{
 			Vector<int> FreeRIMAddr;
-			FreeRIMAddr = RIM.free(thisRCA->seqNo());
+			FreeRIMAddr = RIM.free(thisRCA->seqNo(),thisRCA->getRIMOutMode());
 			/*
 			for(int i = 0; i < (int)FreeRIMAddr.size(); i++ )
 			  ( FreeRIMAddr[i] < RIM_HEIGHT/2 ) ? tempAreaCounter[0]--
@@ -1766,12 +1853,11 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 					if(  (*tempPortIter)->RIMRow() ==  portIter->RIMRow() &&  (*tempPortIter)->RIMCol() ==  portIter->RIMCol()  
 						&& (*tempPortIter)->dfgPort() == portIter->dfgPort())
  
-						{						
-						(portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]--
-															: tempAreaCounter[1]-- ;
+					{
+						(portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]-- : tempAreaCounter[1]-- ;
 						tempPortInRIM.erase( tempPortIter );
 						break;
-						}
+					}
 					
 				}
 				else
@@ -1783,9 +1869,9 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 							&& (*tempPortIter)->dfgPort() == portIter->dfgPort())
  
 							{						
-							(portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]--
-																: tempAreaCounter[1]-- ;
-							tempPortInRIM.erase( tempPortIter );
+								//FIXME: 和之前越过中线内部端口不计数的破绽对应，越过中线的内部端口消除时也不计数						
+								if(portIter->RIMCol() < RIM_WIDTH_DATA) (portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]-- : tempAreaCounter[1]-- ;
+								tempPortInRIM.erase( tempPortIter );
 							break;
 							}
 					}
