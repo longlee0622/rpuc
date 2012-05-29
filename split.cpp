@@ -430,18 +430,8 @@ int SplitMethod::splitDFG( RPUConfig & config ) const {
 
 				if(allDFGNode.empty())break;
 
-				// Set Start and End
-		//		if(nodeIter == endIter){ // Find from the begining
-
-					nodeIter = allDFGNode.begin();
-					endIter = allDFGNode.end();	
-		/*		} else { // Find from N2
-
-					endIter = nodeIter;
-
-					if(endIter != allDFGNode.begin()) -- endIter;
-					else endIter = allDFGNode.end();		
-				}*/
+				nodeIter = allDFGNode.begin();
+				endIter = allDFGNode.end();	
 
 				while(nodeIter != endIter)
 				{

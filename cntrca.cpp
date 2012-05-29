@@ -16,7 +16,115 @@ static bool rcaPortEquate(
 }
 
 
+int interRCANodeIndex = 5000;
 //////////////////////////////////////////////////////////////
+int RPUConfig::AddInterRCANode()
+{
+	List<Ptr<RCA> > & rcas = rcaList;
+	Vector<RCA*> rcaVecs;
+	for(List<Ptr<RCA> >::iterator rcaIter=rcas.begin();rcaIter !=rcas.end();++rcaIter)
+	{
+		RCA * thisRCA = rcaIter->get();
+		rcaVecs.push_back(thisRCA);
+	}
+	RCA * PreRCA = 0;
+	for(List<Ptr<RCA> >::iterator rcaIter=rcas.begin();rcaIter !=rcas.end();++rcaIter)
+	{
+		RCA * thisRCA = rcaIter->get();
+		for(int rc = 0;rc <2 * RC_REG_NUM;++rc)
+		{
+			RCANode * thisNode = (rc < RC_REG_NUM) ?
+				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
+			DFGNode * dfgNode = thisNode->dfgNode();
+			if(dfgNode == 0) continue;
+			for (int k = 0;k<dfgNode->sources().size();++k)
+			{
+				DFGVex * thisSrc = dfgNode->sources(k);
+
+				if(typeid(*thisSrc) == typeid(DFGNode))
+				{
+
+					DFGNode * srcNode = static_cast<DFGNode*>(thisSrc);
+					assert(srcNode != 0);
+
+					RCA * srcRCA = srcNode->rcaNode()->rca();
+					if(srcRCA != 0 && (srcRCA->seqNo() +2 == thisRCA->seqNo()))		//针对RCA2-》RCA4这种差2的情况专门处理
+					{
+						assert(PreRCA->seqNo()+1 == thisRCA->seqNo());
+						int empty = PreRCA->findCurEmptyNode();
+						assert(empty !=-1);
+						DFGNode * bypNode = newBypsNode();
+						bypNode->setSeqNo(interRCANodeIndex++);
+						for (int c = 0;c<srcNode->targets().size();++c)
+						{
+							if(srcNode->targets().at(c) == dfgNode) srcNode->targets().at(c)=bypNode;
+						}
+
+						bypNode->addSource(srcNode);
+						bypNode->addTarget(dfgNode);
+						for (int c = 0;c<dfgNode->sources().size();++c)
+						{
+							if(dfgNode->sources().at(c) == srcNode) dfgNode->sources().at(c)=bypNode;
+						}
+						PreRCA->temp(empty).setDFGNode(bypNode);
+
+						
+					}
+					if(srcRCA != 0 && (srcRCA->seqNo() +3 == thisRCA->seqNo()))		//针对RCA2-》RCA5这种差3的情况专门处理
+					{
+						RCA * Pre2RCA = 0;
+						for (Vector<RCA*>::iterator rIter = rcaVecs.begin();rIter !=rcaVecs.end();++rIter)
+						{
+							if((*rIter)->seqNo() == thisRCA->seqNo()-2) 
+							{
+								Pre2RCA = *rIter;
+								break;
+							}
+						}
+						assert(Pre2RCA != 0);
+						assert(PreRCA->seqNo()+1 == thisRCA->seqNo());
+						int empty2 = Pre2RCA->findCurEmptyNode();
+						assert(empty2 != -1);
+						DFGNode * bypNode2 = newBypsNode();
+						bypNode2->setSeqNo(interRCANodeIndex++);
+						for (int c = 0;c<srcNode->targets().size();++c)
+						{
+							if(srcNode->targets().at(c) == dfgNode) srcNode->targets().at(c)=bypNode2;
+						}
+						bypNode2->addSource(srcNode);
+						bypNode2->addTarget(dfgNode);
+						for (int c = 0;c<dfgNode->sources().size();++c)
+						{
+							if(dfgNode->sources().at(c) == srcNode) dfgNode->sources().at(c)=bypNode2;
+						}
+						Pre2RCA->temp(empty2).setDFGNode(bypNode2);
+						
+						int empty = PreRCA->findCurEmptyNode();
+						assert(empty !=-1);
+						DFGNode * bypNode = newBypsNode();
+						bypNode->setSeqNo(interRCANodeIndex++);
+						for (int c = 0;c<bypNode2->targets().size();++c)
+						{
+							if(bypNode2->targets().at(c) == dfgNode) bypNode2->targets().at(c)=bypNode;
+						}
+
+						bypNode->addSource(bypNode2);
+						bypNode->addTarget(dfgNode);
+						for (int c = 0;c<dfgNode->sources().size();++c)
+						{
+							if(dfgNode->sources().at(c) == bypNode2) dfgNode->sources().at(c)=bypNode;
+						}
+						PreRCA->temp(empty).setDFGNode(bypNode);
+						
+
+					}
+				}	
+			}
+		}
+		PreRCA=rcaIter->get();
+	}
+	return 0;
+}
 
 int RPUConfig::connectRCA()
 {
@@ -89,39 +197,52 @@ int RPUConfig::connectRCA()
 			DFGNode * dfgNode = thisNode->dfgNode();
 			DFGNode * dfgByps = thisTemp->dfgNode();
 
-			if(dfgNode == 0)continue;
+			//if(dfgNode == 0)continue;
 	
-			/// Source
-			const int srcSize = dfgNode->sourceSize();
-			for(int src =0; src < srcSize; ++ src)
-			{
+			if(dfgNode != 0)
+			{/// Source
+				const int srcSize = dfgNode->sourceSize();
+				for(int src =0; src < srcSize; ++ src)
+				{
 
-				DFGVex * thisSrc = dfgNode->sources(src);
+					DFGVex * thisSrc = dfgNode->sources(src);
 
-				if(typeid(*thisSrc) != typeid(DFGNode))
-					inport.push_back( 
-						RCAPort(static_cast<DFGPort*>(thisSrc)) 
-					);
+					if(typeid(*thisSrc) != typeid(DFGNode))
+						inport.push_back( 
+							RCAPort(static_cast<DFGPort*>(thisSrc)) 
+						);
+				}
+
+				/// Node Target
+				int tgtSize = dfgNode->targetSize();
+				for(int tgt =0; tgt < tgtSize; ++ tgt)
+				{
+
+					DFGVex * nodeTgt = dfgNode->targets(tgt);
+
+					if(typeid(*nodeTgt) != typeid(DFGNode))
+						outport.push_back( 
+							RCAPort(static_cast<DFGPort*>(nodeTgt)) 
+						);
+				}
 			}
 
-			/// Node Target
-			int tgtSize = dfgNode->targetSize();
-			for(int tgt =0; tgt < tgtSize; ++ tgt)
-			{
-
-				DFGVex * nodeTgt = dfgNode->targets(tgt);
-
-				if(typeid(*nodeTgt) != typeid(DFGNode))
-					outport.push_back( 
-						RCAPort(static_cast<DFGPort*>(nodeTgt)) 
-					);
-			}
-
-			// Temp Target
+			
 			if(dfgByps != 0)
 			{
 
-				tgtSize = dfgByps->targetSize();
+				//Temp Source
+				int srcSizeTemp = dfgByps->sourceSize();
+				for (int src =0; src < srcSizeTemp; ++ src)
+				{
+					DFGVex * tempSrc = dfgByps->sources(src);
+					if(typeid(*tempSrc) != typeid(DFGNode))
+						inport.push_back(
+							RCAPort(static_cast<DFGPort*>(tempSrc))
+							);
+				}
+				// Temp Target
+				int tgtSize = dfgByps->targetSize();
 				for(int tgt =0; tgt < tgtSize; ++ tgt)
 				{
 

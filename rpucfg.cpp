@@ -303,12 +303,15 @@ int RPUConfig::mapDFGraph(
 	){
 
 	int error = 0;
-	error |= optmize.optimizeDFG(dfgGraph);
+	//error |= optmize.optimizeDFG(dfgGraph);
 	error |= split.splitDFG(*this);
 
 	if(error)return error;
 
+	error |= AddInterRCANode();
+
 	error |= connectRCA();
+
 
 #ifndef NDEBUG
 

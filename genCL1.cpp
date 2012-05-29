@@ -334,7 +334,19 @@ int RPUConfig::genGroupContext()
 			RCA_MappedFalse.push_back( *CL1RCAIter );
 			CL1RCAIter = CL1RCA.erase(CL1RCAIter);
 		}
-
+		/*
+		std::ofstream srcINFO("SRCinfo.txt",std::ios::app);
+		for (Vector<RCA*>::iterator my= CL1RCA.begin();my != CL1RCA.end(); ++my)
+		{
+			RCA * your = *my;
+			srcINFO<<your->seqNo()<<":";
+			Vector<RCA*> yourSRC = your->sources();
+			for (Vector<RCA*>::iterator his = yourSRC.begin(); his != yourSRC.end();++his)
+				srcINFO<<(*his)->seqNo()<<"\t";
+			srcINFO<<std::endl;
+		}
+		srcINFO.close();
+		*/
 		/* Generate CL1 Block without PseudoRCA */
 		CL1BlockMapped = cl1config.genCL1Block(*this, CL1RCA);    //其中的mapRCA函数使得RCA的MappedFlag值改变
 

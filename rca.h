@@ -199,6 +199,8 @@ public:
 	int getRIMOutMode() const {return RIMoutMode;}
 	void setRIMOutMode(int mode) {RIMoutMode = mode;}
 
+	int findCurEmptyNode() const;
+
 private:
 
 	int seqNumber;
@@ -460,4 +462,14 @@ operator <<(std::ostream & out, const RCA & rca){
 	return out;
 }
 
+
+inline int RCA::findCurEmptyNode() const
+{
+	int index;
+	for (index = 0;index <RC_REG_NUM;++index)
+	{
+		if(tempNodes[index].dfgNode() == 0) return index;
+	}
+	return -1;
+}
 #endif

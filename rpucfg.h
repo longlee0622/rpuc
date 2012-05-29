@@ -162,6 +162,8 @@ private:
 
 	// This function used to get the source 
 	// and target information of RCA after splitting
+	int AddInterRCANode();
+
 	int connectRCA();
 
 	int genCL0Context( CL1Config & cl1config,Vector<RCA *> &CL1RCATemp,Vector<RCA *> &recordPseudoRCA); // GenerateCL0 context

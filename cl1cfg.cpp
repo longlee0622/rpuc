@@ -733,6 +733,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		bool remapFlag = false;
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
+			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	防跨平台的未定义值影响，CM的RIFrow在Win下是负数，在Linux下是正数
 			maxRIFRow = (portIter->RIFRow() > maxRIFRow)? portIter->RIFRow():maxRIFRow;
 			if (maxRIFRow >7)	remapFlag = true;	//说明需要进行remap;
 		}
@@ -1303,8 +1304,10 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		int bestHeight = CIDLChoice(occupy,tempRIMBaseRow,tempRIMTopRow,thisRCA->getRemapFlag());
 		int CIDLMode;
 
-		if (bestHeight == (tempRIMTopRow - tempRIMBaseRow +1) ) CIDLMode = MODE_IN_V2D; //选择单2D模式
-		else CIDLMode = MODE_IN_T2D;	//选择双2D模式
+		if (bestHeight == (tempRIMTopRow - tempRIMBaseRow +1) ) 
+			CIDLMode = MODE_IN_V2D; //选择单2D模式
+		else 
+			CIDLMode = MODE_IN_T2D;	//选择双2D模式
 
 
 		std::cout<<"tempRIMBaseRow = "<<tempRIMBaseRow<<std::endl;
@@ -1572,6 +1575,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		bool remapFlag = false;
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
+			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	防跨平台的未定义值影响，CM的RIFrow在Win下是负数，在Linux下是正数
 			maxRIFRow = (portIter->RIFRow() > maxRIFRow)? portIter->RIFRow():maxRIFRow;
 			if ( maxRIFRow > 7) 
 			{
