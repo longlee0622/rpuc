@@ -72,7 +72,7 @@ public:
 
 	DFGVarPort() : IsImmPort(false) {}
 
-	DFGVarPort(const String & name): varName(name) {}
+	DFGVarPort(const String & name): varName(name),IsImmPort(false){}
 
 	const String & name() const { return varName; }
 

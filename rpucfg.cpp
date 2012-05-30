@@ -310,6 +310,8 @@ int RPUConfig::mapDFGraph(
 
 	error |= AddInterRCANode();
 
+	error |= ExPortTrans();
+	
 	error |= connectRCA();
 
 

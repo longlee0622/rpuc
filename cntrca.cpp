@@ -1,7 +1,4 @@
-
 #include "rpucfg.h"
-
-
 
 static bool rcaPortLess(
 	RCAPort & left, RCAPort & right){ // uesd for sort()
@@ -18,6 +15,50 @@ static bool rcaPortEquate(
 
 int interRCANodeIndex = 5000;
 //////////////////////////////////////////////////////////////
+int RPUConfig::ExPortTrans()
+{
+	List<Ptr<RCA> > & RCAS = rcaList;
+	Vector<RCA*> rcas;
+	for (List<Ptr<RCA> >::iterator rcaIter = RCAS.begin();rcaIter !=RCAS.end();++rcaIter)
+	{
+		RCA * thisRCA =rcaIter->get();
+		rcas.push_back(thisRCA);
+	}
+	for (Vector<RCA*>::reverse_iterator rIter = rcas.rbegin();rIter !=rcas.rend();++rIter)
+	{
+		RCA * thisRCA = *rIter;
+		if(thisRCA->seqNo() == 0) break;	//第一个RCA，不用处理
+		RCA * PreRCA =  *(rIter+1);
+		for (int rc = 0;rc < 2 * RC_REG_NUM;++rc)
+		{
+			RCANode * thisNode = (rc < RC_REG_NUM) ?
+				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
+			DFGNode * dfgNode = thisNode->dfgNode();
+			if(dfgNode == 0) continue;
+			for(int k = 0;k<dfgNode->sources().size();++k)
+			{
+				DFGVex * thisSRC = dfgNode->sources(k);
+				if (typeid(*thisSRC) != typeid(DFGNode))
+				{
+					bool isImm = static_cast<DFGPort*>(thisSRC)->isImmPort();
+					if(!isImm)
+					{
+						int empty = PreRCA->findCurEmptyNode();
+						assert(empty !=-1);
+						DFGNode * bypNode = newBypsNode();
+						bypNode->setSeqNo(interRCANodeIndex++);
+						bypNode->addSource(thisSRC);
+						bypNode->addTarget(dfgNode);
+						dfgNode->sources(k) = bypNode;
+						PreRCA->temp(empty).setDFGNode(bypNode);
+					}
+				}
+			}
+		}
+		
+	}
+	return 0;
+}
 int RPUConfig::AddInterRCANode()
 {
 	List<Ptr<RCA> > & rcas = rcaList;

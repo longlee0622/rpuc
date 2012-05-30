@@ -162,6 +162,8 @@ private:
 
 	// This function used to get the source 
 	// and target information of RCA after splitting
+	int ExPortTrans();
+
 	int AddInterRCANode();
 
 	int connectRCA();
