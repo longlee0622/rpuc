@@ -164,6 +164,8 @@ private:
 	// and target information of RCA after splitting
 	int ExPortTrans();
 
+	int ExOutPortTrans();
+
 	int AddInterRCANode();
 
 	int connectRCA();

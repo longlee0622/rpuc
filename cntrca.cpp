@@ -15,6 +15,46 @@ static bool rcaPortEquate(
 
 int interRCANodeIndex = 5000;
 //////////////////////////////////////////////////////////////
+int RPUConfig::ExOutPortTrans()
+{
+	List<Ptr<RCA> > & RCAS = rcaList;
+	Vector<RCA*> rcas;
+	for (List<Ptr<RCA> >::iterator rcaIter = RCAS.begin();rcaIter !=RCAS.end();++rcaIter)
+	{
+		RCA * thisRCA =rcaIter->get();
+		rcas.push_back(thisRCA);
+	}
+	for (Vector<RCA*>::iterator rIter = rcas.begin();rIter !=rcas.end();++rIter)
+	{
+		RCA * thisRCA = *rIter;
+		if(thisRCA->seqNo() == rcas.size()-1) break;	//最后一个RCA，不用处理
+		RCA * NextRCA =  *(rIter+1);
+		for (int rc = 0;rc < 2 * RC_REG_NUM;++rc)
+		{
+			RCANode * thisNode = (rc < RC_REG_NUM) ?
+				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
+			DFGNode * dfgNode = thisNode->dfgNode();
+			if(dfgNode == 0) continue;
+			for(int k = 0;k<dfgNode->targets().size();++k)
+			{
+				DFGVex * thisTGT = dfgNode->targets(k);
+				if (typeid(*thisTGT) != typeid(DFGNode))		//dfg直接输出
+				{
+					int empty = NextRCA->findCurEmptyNode();
+					assert(empty !=-1);
+					DFGNode * bypNode = newBypsNode();
+					bypNode->setSeqNo(interRCANodeIndex++);
+					bypNode->addSource(dfgNode);
+					bypNode->addTarget(thisTGT);
+					dfgNode->targets(k) = bypNode;
+					NextRCA->temp(empty).setDFGNode(bypNode);
+				}
+			}
+		}
+
+	}
+	return 0;
+}
 int RPUConfig::ExPortTrans()
 {
 	List<Ptr<RCA> > & RCAS = rcaList;
