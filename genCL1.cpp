@@ -202,7 +202,7 @@ int RPUConfig::genGroupContext()
 			/*
 				1.REDL的数量不能超过8个；
 				2.REDS的数量不能超过8个；（这个问题不存在，因为最多也就有4个伪RCA）
-				3.RCA的数量不能超过12个；（MAX_CL1_RCA_NUM） ***
+				3.RCA的数量不能超过16个；（MAX_CL1_RCA_NUM） ***
 				4.RIM中的out region中的数据满；***
 				5.RIM中temp region的数据在不能被抹去的情况下满；（或者直接设置成满了就分第二组）；
 			*/
@@ -259,7 +259,7 @@ int RPUConfig::genGroupContext()
 			CL1RCA.push_back(rcaIter->get());
 			rcaIter++;	
 		}
-
+		/*
 		//PreGenCL1过程,检查加入Remap后的RCA数是否过多
 		//////////////////////////////////////////////////////
 		Vector<RCA> RCACopy;
@@ -334,6 +334,7 @@ int RPUConfig::genGroupContext()
 			RCA_MappedFalse.push_back( *CL1RCAIter );
 			CL1RCAIter = CL1RCA.erase(CL1RCAIter);
 		}
+		*/
 		/*
 		std::ofstream srcINFO("SRCinfo.txt",std::ios::app);
 		for (Vector<RCA*>::iterator my= CL1RCA.begin();my != CL1RCA.end(); ++my)
@@ -378,7 +379,7 @@ int RPUConfig::genGroupContext()
 		//并且将tempPortInRIM中相应port的信息更新！
 
   ////////////////////////////////////////////////start//////////////////////////////////////////////////////////
-        Vector<RCA *>::iterator CL1RCAtempIter2;
+		Vector<RCA *>::iterator CL1RCAtempIter2;
 		CL1RCAtempIter2= CL1RCATemp.begin();
 		
 		for(   ; CL1RCAtempIter2 != CL1RCATemp.end(); CL1RCAtempIter2++)
@@ -493,9 +494,8 @@ int RPUConfig::genGroupContext()
 		//std::cout<<"PortStyleSwitch success? "<<test<<std::endl;
 		
 		/* Append the pseudo-RCA */
-		const Vector<CL1Block> 
-			pseudoBlock = cl1config.insertPseudoRCA(*this,CL1RCA,recordPseudoRCA);
-
+	//	const Vector<CL1Block> 		pseudoBlock = cl1config.insertPseudoRCA(*this,CL1RCA,recordPseudoRCA);
+		 /*
 		Vector<RCA *>::iterator PseudoRCAIter;
 		PseudoRCAIter = recordPseudoRCA.begin();
 		for( ; PseudoRCAIter != recordPseudoRCA.end(); PseudoRCAIter++)
@@ -509,8 +509,9 @@ int RPUConfig::genGroupContext()
 
 			CL1BlockMapped.push_back(*blockIter);
 		}
-
-		
+		*/
+		 RCA * OUTPUT_RCA = *(CL1RCA.begin()+(CL1RCA.size()-1));
+		recordPseudoRCA.push_back(OUTPUT_RCA);
 		Vector<CL1Block>::iterator BlockIter;
 		int lx = 0; 
 

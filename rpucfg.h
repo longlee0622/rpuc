@@ -28,7 +28,7 @@ class CL1Block;
 #define MAX_CL1BLOCK_NUM		16 // 
 #define MAX_CL0_OUTREGION_SIZE  (24*32)  //upper limit of momery in RIM OutRegion
 */
-#define MAX_CL1_RCA_NUM		12     
+#define MAX_CL1_RCA_NUM		16     
 #define MAX_CL1BLOCK_NUM	16       //由于out region只有512Bytes，所以一个Group最多也就只有四个伪RCA，即四个REDS
 #define MAX_CL0_OUTREGION_SIZE  (16*32)  //upper limit of momery in RIM OutRegion
 
@@ -78,9 +78,7 @@ public:
 
 	// This funnction use to optimizing and splitiing a DFG, 
 	// and map the subgraph into a series of RCA.
-	int mapDFGraph(
-		const OptimizeMethod & optmize, const SplitMethod & split
-	);
+	int mapDFGraph(const SplitMethod & split);
 	
 	// This function used to generate the CL0, CL1, CL2 context
 	int genContext();

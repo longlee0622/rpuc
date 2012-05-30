@@ -182,9 +182,9 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 	REDSNum =recordPseudoRCA.size();   //有多少个伪RCA就有多少个REDS
 
 	unsigned int directSSRAMOutPseudoRCANum;//直接输出的伪RCA的个数，即是rim区域内的0~1区，因为大小最多为512bytes，所以所有的out region最多使用2个REDS
-	directSSRAMOutPseudoRCANum =0;
+	directSSRAMOutPseudoRCANum =1;
 
-
+	/*
 	for(pseudoRCAIter = recordPseudoRCA.begin() ; pseudoRCAIter != recordPseudoRCA.end() ; ++ pseudoRCAIter)
 	{
 		RCA * currentPseudoRCA = *pseudoRCAIter;
@@ -216,7 +216,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 
 
 	std::cout<<"directSSRAMOutPseudoRCANum = "<<directSSRAMOutPseudoRCANum<<std::endl;
-
+	*/
 
 	/*unsigned int pseudoRCAcounter;
 	pseudoRCAcounter=0;

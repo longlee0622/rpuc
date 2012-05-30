@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
 					"#include \""<<patchFile<<"\"\n";
 
 
-				err |= config.mapDFGraph(OptimizeMethod(), SplitMethod());
+				err |= config.mapDFGraph(SplitMethod());
 				err |= config.genContext();
 
 				err |= config.createPatchFile(patchFile);

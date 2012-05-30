@@ -297,10 +297,8 @@ DFGNode * RPUConfig::insertBypassBetween(
 }
 
 
-int RPUConfig::mapDFGraph(
-		const OptimizeMethod & optmize, 
-		const SplitMethod & split
-	){
+int RPUConfig::mapDFGraph(const SplitMethod & split)
+{
 
 	int error = 0;
 	//error |= optmize.optimizeDFG(dfgGraph);
