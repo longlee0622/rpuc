@@ -216,7 +216,7 @@ public:
 
 	CL1RIM();
 
-	CL1Data allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag,int RIMoutMode);
+	CL1Data allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag,int RIMoutMode,int loop);
 
 	CL1Data getRCACIDLData(int RCAIndex) const;
 

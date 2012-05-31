@@ -12,7 +12,7 @@ CL1RIM::CL1RIM(){
 
 }
 
-CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag, int RIMoutMode)
+CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag, int RIMoutMode,int loop)
 {
 	assert(RCAIndex >= 0);
 	if(tempNum == 0) tempNum = outNum;
@@ -39,13 +39,16 @@ CL1Data CL1RIM::allocate(int RCAIndex, int tempNum, int outNum, bool remapFlag, 
 			CL1Data data;
 				
 			data.setBaseAddress(bestBaseAddr);
-			data.setHeight(bestHeight);
+			data.setHeight(bestHeight * loop);
 			data.setLength((tempNum>=16)?16:tempNum);
 			data.setOffset(0);
 
 			return data;
 		}
 	}
+	assert(0);
+	CL1Data data_exception;
+	return data_exception;
 }
 
 

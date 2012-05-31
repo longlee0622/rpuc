@@ -340,12 +340,10 @@ int main(int argc, char *argv[])
 
 
 				String portName;
-				int immPortValue;
 				int  portSSRAM;
 				DFGPort * currInport;
 				DFGPort * currOutport;
 				DFGVarPort * varPort;
-				DFGImmPort * immPort;
 
 				char tempUperString[256];
 				strcpy(tempUperString,graphName.c_str());

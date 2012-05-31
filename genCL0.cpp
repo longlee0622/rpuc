@@ -99,11 +99,12 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			//修改完成，与264原版配置无差异，mpeg和avs代码效果待检验
 			if(delta < FIFO_WIDTH_DATA)
 			{
+				//FIXME:多循环时是不是要改成looptime-1呢？
 				REDL.word1().setSSRAMHeight(0);//modified 20111229 by longlee
 			}
 			else
 			{
-				REDL.word1().setSSRAMHeight( (delta / FIFO_WIDTH_DATA) - 1 );//20101117added "-1"
+				REDL.word1().setSSRAMHeight( (delta / FIFO_WIDTH_DATA)*LoopTime - 1 );//20101117added "-1"
 			}
 			REDL.word1().setSSRAMLength(FIFO_WIDTH-1);
 			REDL.word1().setSSRAMJump(0);
@@ -117,7 +118,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			
 		}
 
-
+		
 		//2：当前RCA还有Extern Temp port外部输入；注意，可能来自多块（因为RIM的temp区域倒出到ssram后，可能被多个后续RCA使用）
 
 		List<List<int> > curRCATempDataBlockList = currentRCA->gettempDataBlockList();
@@ -139,7 +140,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 		std::cout<<"REDLTempPortNum = "<<REDLTempPortNum<<std::endl;
 
 		REDLTempPortTotalNum +=REDLTempPortNum;
-
+		
 		//2011.5.29 liuxie
 		
 		if(ExternSrcRCAExist)
@@ -162,6 +163,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 			C_CL0ContextTemp.push_back(REDL.word0().reg());
 			C_CL0ContextTemp.push_back(REDL.word1().reg());
 		}
+		
 				
 
 				
@@ -270,7 +272,7 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 				//REDS.word0().setSSRAMAddress(SSRAMSToreBase + pseudoRCASSRAMOutBaseAddr);
 				REDS.word0().setSSRAMAddress(pseudoRCASSRAMOutBaseAddr);
 	
-				REDS.word1().setSSRAMHeight(pseudoRCASSRAMOutHeight -1);//20101117added "-1"
+				REDS.word1().setSSRAMHeight(pseudoRCASSRAMOutHeight*LoopTime -1);//20101117added "-1"
 				REDS.word1().setSSRAMLength(FIFO_WIDTH-1);	
 				REDS.word1().setSSRAMJump(0);
 				REDS.word1().setMode(REDS_MODE_ML);

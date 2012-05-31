@@ -153,6 +153,10 @@ public:
 
 	List<Ptr<DFGPort> > & getInnerPortList() {return innerDFGPorts;}
 
+	void setLoopTime(int n) {LoopTime = n;}
+
+	int getLoopTime() const {return LoopTime;}
+
 
 	// ----------------------------------------------------
 
@@ -246,11 +250,10 @@ private:
 	int GroupRCANum;    //当前Group中的RCA编号
 
 	int RPUGroupNum;    //当前组的组号
+
+	int LoopTime;		//本dfg的循环次数
 };
 
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 #define MAX_GROUP_NUM 20
 
 
@@ -267,7 +270,8 @@ inline RPUConfig::RPUConfig( void ) :
       GroupSSRAMTempInTop(MAX_GROUP_NUM,0),
       GroupSSRAMTempOutBase(MAX_GROUP_NUM,0),
       GroupSSRAMTempOutTop(MAX_GROUP_NUM,0),
-      GroupGCGMAddress(MAX_GROUP_NUM,0)
+      GroupGCGMAddress(MAX_GROUP_NUM,0),
+	  LoopTime(4)
         {
         }
     

@@ -231,7 +231,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		Vector<int> outAreaCounter_backup = outAreaCounter;
 		
 		RIM_backup.copy(RIM);
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode());
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode(),config.getLoopTime());
 
 
 		if(CDSData.baseAddress() == -1) 
@@ -1218,7 +1218,6 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		//internFIFOIndexBase 在外部输入的后面，表示从这这个地方开始是内部输入；所以注意这个值的变化。因为CIDL在CEDL后面执行。
 
 		int internFIFOIndex=0;
-		int externTempFIFOIndex;
 		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdata在SSRAM中最远地址（离externdata的起始地址： 0x00）
 		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndata在SSRAM中最远地址（离tempexterndata的起始地址 地址未定义）
 
@@ -1492,7 +1491,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		// Set CEDL
 		block.CEDLData().setTarget(CEDL_TGT_RIF);         //CEDL的目标可以是RIF也可以是RIM
-		block.CEDLData().setHeight(externDataHeight);	
+		block.CEDLData().setHeight(externDataHeight * config.getLoopTime());	
 
 		// Set CIDL
 		//--------------------------------------------
@@ -1556,7 +1555,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			block.CIDLData().setLength(RIM_WIDTH); //全部以16Byte为长度写入
 			//setHeight 2011.4.25 liuxie
 			//////////////////////////////////////////////////////////////////
-			block.CIDLData().setHeight(highestEndAddr - lowestBaseAddr);
+			block.CIDLData().setHeight((highestEndAddr - lowestBaseAddr) * config.getLoopTime());
 			//////////////////////////////////////////////////////////////////
 			//2011.5.11 liuxie
 			block.CIDLData().setOutputMode(MODE_OUT_1L);    //输入2D数据每行2等分，逐行逐份拼接输出
@@ -1631,7 +1630,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		}
 
-		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode());
+		int loop = config.getLoopTime();
+		CL1Data CDSData = RIM.allocate(thisRCA->seqNo(), totalInternPort, totalExternPort, thisRCA->getRemapFlag(),thisRCA->getRIMOutMode(),loop);
 
  		if(CDSData.baseAddress() == -1) 
 		{ // Allocation fail
@@ -1683,7 +1683,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		// Set Core
 
 		block.setRCAIndex(thisRCA->seqNo());
-		block.setRCACoreLoop(1);
+		block.setRCACoreLoop(config.getLoopTime());
 		block.setConst1Address(0);
 		block.setConst2Address(0);
 		block.setRIDLEnable(false);
