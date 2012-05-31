@@ -8,6 +8,7 @@ log:
 #include "cl2reg.h"
 #include "rpucfg.h"
 #include "dfgraph.h"
+#include "cl2opt.h"
 
 extern bool IsInnerPort(DFGPort * port);
 extern bool IsTempExternPort (DFGPort *port);
@@ -620,7 +621,25 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 
 		for(int i =0; i <IN_HBIT_SUM; ++i)
 			context.push_back(CL2Contex.inputHBitReg(i).reg());
-
+#if 1		
+		int cfgCnt = 0;
+		CONTEXT_NODE ctx_no[64];
+		STRUCT_CONTEXT *p_cc, core_ctx;
+		p_cc=&core_ctx;
+		reg32 CL2info[107];
+		Vector<reg32>::iterator regIter=context.begin();
+		for (++regIter;regIter != context.end();++regIter)
+		{
+			CL2info[cfgCnt++]=*regIter;
+		}
+		assert(cfgCnt == 107);
+		std::cout<<"RCA "<<thisRCA->seqNo()<<": "<<std::hex<<CL2info[100];
+		parse_context(p_cc, (reg32 *)(&CL2info));
+		parse_context_node(ctx_no,p_cc);
+		reg32 C100_new = optimize_c100(ctx_no,(reg32 *)(&CL2info));
+		context.at(101) = C100_new;
+		std::cout<<" -> "<<std::hex<<C100_new<<std::endl;
+#endif
 		CL2Context.push_back(context);
 	}
 
