@@ -2,7 +2,7 @@
 #include "cl1.h"
 #include "platf.h"
 #include <cassert>
-gjhgkhbk.jbk.jbkjb.jb
+
 CL1RIM::CL1RIM(){
 
 	for(int i =0; i < RIM_HEIGHT; ++ i){

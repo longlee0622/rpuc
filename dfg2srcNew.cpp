@@ -25,6 +25,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <cstring>
 
 int totalRCA = 0;
 int CL0Size = 0;
@@ -43,8 +45,7 @@ int main(int argc, char *argv[])
 	for (int i= 0;i <16;++i) ConstMem[i]=-1;
 
 	char * MultifileName = "dfg.list";
-
-
+	
 	std::ifstream multiDfgFile(MultifileName);
 	if(!multiDfgFile)
 	{
@@ -188,6 +189,42 @@ int main(int argc, char *argv[])
 
 				RPUConfig config;
 
+				//const char * underline = "__"; 
+				//const char * mapPostfix = "_formal_map.h\0";
+				//char fileNameTemp1[50];
+				//int fileNamePos = DFGNameTemp1.find(underline, 0);
+				//strncpy(fileNameTemp1, DFGNameTemp1.c_str(), fileNamePos);
+				//std::string fileNameTemp2 = fileNameTemp1;
+				//fileNameTemp2.replace(fileNamePos, 13, "_formal_map.h");
+				//fileNameTemp2 = fileNameTemp2 + "_formal_map.h";
+				//int fileNameLength = fileNamePos + 13;
+				//fileNameTemp2.erase(fileNameLength);
+				String mapNameTemp = DFGName[hh] + "_formal_map.h";
+				const char * mapFileName = mapNameTemp.c_str();
+				std::ifstream mapFile(mapFileName);
+				if(!mapFile)
+				{
+					cerr<<"Can't open file data.txt'\""<<mapFileName<<"\""<<endl;
+					return -1;
+				}
+
+				int mapLoopTime = 0;
+				std::string line;
+				std::string tempLoopData;
+				getline(mapFile, line);
+				std::istringstream stream(line);
+				while (stream>>tempLoopData)
+				{
+					mapLoopTime++;
+				}
+
+				mapLoopTime = mapLoopTime - 2;
+				config.setLoopTime(mapLoopTime);
+
+
+				const int loopTime = config.getLoopTime();
+
+
 				int DFGBaseInAddress;
 
 
@@ -274,7 +311,7 @@ int main(int argc, char *argv[])
 				   RCA2 baseAddr = 6144;
 				   RCA3 baseAddr = 7168;
 				 */
-
+				//RCA * ptr =config.rcas().begin()->get();
 				if(RPUSeqNo == 0)
 				{
 					if(onRCANum[hh] == 0)
@@ -321,14 +358,11 @@ int main(int argc, char *argv[])
 						int SSRAMOutBaseAddr = 7992;
 					}
 				}
-
-				const String SSRAM_interface =config.graph().name()+"_interface.h";
-
-
-				std::ofstream SSRAMinterfaceFile(SSRAM_interface.c_str());
-				assert(SSRAMinterfaceFile);
-
-
+				/******************************************************************************************/
+				// Read map.h
+				int inNum = 0;
+				int outNum = 0;
+				char * equal = "_scalar";
 				DFGraph dfg_graph;
 				dfg_graph = config.graph();
 
@@ -336,20 +370,84 @@ int main(int argc, char *argv[])
 
 				int inportSize = dfg_graph.inSize();
 				int outportSize = dfg_graph.outSize();
-				int z;
 
+				
+				std::string tempScalar[32];
+				std::string **In = new std::string *[inportSize];
+				for(int j=0; j<inportSize; j++)
+				{
+					In[j] = new std::string[loopTime];
+				}
+
+				std::string **Out = new std::string *[outportSize];
+				for(int j=0; j<outportSize; j++)
+				{
+					Out[j] = new std::string[loopTime];
+				}
+				
+
+				do {
+					if (line == "") continue;
+					std::istringstream stream(line);
+					for (int i=0; i<(loopTime+2); i++)
+					{
+						stream>>tempScalar[i];
+					}
+
+					if (strncmp(tempScalar[0].data(), equal,7) == 0)
+					{
+						for (int j=0; j<loopTime; j++)
+						{
+							In[inNum][j] = tempScalar[j+2];
+						}
+						inNum++;
+					}
+					else if (strncmp(tempScalar[loopTime+1].data(), equal,7) == 0)
+					{
+						for (int j=0; j<loopTime; j++)
+						{
+							Out[outNum][j] = tempScalar[j];
+						}
+						outNum++;
+					}
+					else std::cout<<"Incorrect!"<<std::endl;
+				}
+				while (getline(mapFile, line));
+
+				const String SSRAM_interface =config.graph().name()+"_interface.h";
+
+
+				std::ofstream SSRAMinterfaceFile(SSRAM_interface.c_str());
+				assert(SSRAMinterfaceFile);
 
 				String portName;
 				int  portSSRAM;
 				DFGPort * currInport;
 				DFGPort * currOutport;
 				DFGVarPort * varPort;
+	
+				int z;
+				int scalarInNum;
+				int ssramOutTopAddr, ssramOutBaseAddr;
+
+
+				RCA * ssramInPtr = config.rcas().begin()->get();
+				ssramOutTopAddr = config.rcas().back()->rcaSSRAMOutTopAddr();
+				ssramOutBaseAddr = config.rcas().back()->rcaSSRAMOutBaseAddr();
+			/*	RCA ssramOutTopSize =config.rcas().back()->rcaSSRAMOutBaseAddr();*/
+				int ssramInSize = ssramInPtr->rcaSSRAMInTopAddr() - ssramInPtr->rcaSSRAMInBaseAddr();
+				int ssramOutSize = ssramOutTopAddr - ssramOutBaseAddr;
+			/*	ssramInPtr = ssramInPtr + config.allRCAs().size()-1;*/
+	/*			int ssramOutTopSize = ssramOutPtr->rcaSSRAMOutTopAddr();
+				int	ssramOutBaseSize =  ssramOutPtr->rcaSSRAMOutBaseAddr();*/
+				
+
 
 				char tempUperString[256];
 				strcpy(tempUperString,graphName.c_str());
 				int graphNamelength,i;
 				graphNamelength=strlen(tempUperString);
-				for(i=0;i<graphNamelength;i++)
+				for(int i=0;i<graphNamelength;i++)
 				{
 					tempUperString[i]=toupper(tempUperString[i]);
 				}
@@ -357,84 +455,62 @@ int main(int argc, char *argv[])
 				SSRAMinterfaceFile<<
 					"#define "<<tempUperString<<"_DIN \\\n";
 
-				for(z=0; z< inportSize ; z++)
+
+				for (int currLoopTime=0; currLoopTime < loopTime; currLoopTime++)	
 				{
-					currInport = (&dfg_graph.inport(z));
-					if(!(currInport->isImmPort()))
+					scalarInNum = 0;
+					for(z=0; z<inportSize; z++)
 					{
-						varPort = static_cast<DFGVarPort*>(currInport);
-						portName = (*varPort).name();
-
-						int mm, last,newCopy;
-						int nameSize = portName.size();
-						const char *a = portName.c_str();
-						for( mm = 0; mm < nameSize; mm++)
+						currInport = (&dfg_graph.inport(z));
+						if(!(currInport->isImmPort()))
 						{
-							if(a[mm] == '.')
-								break;
+							portName = static_cast<DFGVarPort*>(currInport)->name();
+							if (portName.find("scalar") != -1)
+							{
+								portName = In[scalarInNum][currLoopTime];
+								portSSRAM = (*currInport).SSRAMAddress() + currLoopTime * ssramInSize;
+								SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
+								scalarInNum++;
+							}
+							else
+							{
+								portName = portName.substr(portName.find(".")+1);
+								portSSRAM = (*currInport).SSRAMAddress() + currLoopTime * ssramInSize;
+								SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
+								scalarInNum++;
+							}
+							
 						}
-						last = nameSize-mm-1;
-						mm++;
-						char newChar[50];
-						String portNameNew;
-
-						for(newCopy = 0; newCopy < last ; newCopy++,mm++)
+			
+						else
 						{
-							newChar[newCopy] = a[mm];
+							//2012.5.7 longlee 立即数不进入SSRAM输入区
+							//immPort = static_cast<DFGImmPort*>(currInport);
+							//immPortValue = immPort->value();
+							//portSSRAM = (*currInport).SSRAMAddress();
+							//SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";						}
 						}
-						newChar[last]='\0';
-
-						portNameNew = newChar;
-
-						portSSRAM = (*currInport).SSRAMAddress();
-						SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portNameNew<<";\\\n";
-					}
-					else
-					{
-						//2012.5.7 longlee 立即数不进入SSRAM输入区
-						//immPort = static_cast<DFGImmPort*>(currInport);
-						//immPortValue = immPort->value();
-						//portSSRAM = (*currInport).SSRAMAddress();
-						//SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<std::dec<<immPortValue<<";\\\n";
 					}
 				}
 
 				SSRAMinterfaceFile<<"\n\n\n";
 				SSRAMinterfaceFile<<"#define "<<tempUperString<<"_DOUT \\\n";
-				for(z=0; z< outportSize ; z++)
+				for (int currLoopTime=0; currLoopTime < loopTime; currLoopTime++)
 				{
-					currOutport = (&dfg_graph.outport(z));
-					varPort = static_cast<DFGVarPort*>(currOutport);
-					portName = (*varPort).name();
-
-					int mm, last,newCopy;
-					int nameSize = portName.size();
-					const char *a = portName.c_str();
-					for( mm = 0; mm < nameSize; mm++)
+					for(z=0; z<outNum ; z++)
 					{
-						if(a[mm] == '.')
-							break;
+						currOutport = (&dfg_graph.outport(z));
+						portName = Out[z][currLoopTime];
+
+						portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
+						SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 					}
-					last = nameSize-mm-1;
-					mm++;
-					char newChar[50];
-					String portNameNew;
-
-					for(newCopy = 0; newCopy < last ; newCopy++,mm++)
-					{
-						newChar[newCopy] = a[mm];
-					}
-					newChar[last]='\0';	
-					portNameNew = newChar;
-
-
-					portSSRAM = (*currOutport).SSRAMAddress();
-					SSRAMinterfaceFile<<portNameNew<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 				}
 
 				SSRAMinterfaceFile<<std::endl;
 
 				/**************************** end ***************************************************/
+
 
 				Vector<Vector<reg32> > curCL0 = config.CL0ContextCopy();
 				Vector<Vector<reg32> > C_CL0 = config.C_CL0ContextCopy();
