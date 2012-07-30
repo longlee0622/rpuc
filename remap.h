@@ -24,6 +24,7 @@ static bool PortSort(
 		else return left.RIFCol() < right.RIFCol();
 }
 
+/*
 void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPUConfig & config,int PreFlag) {
 
 	
@@ -329,7 +330,7 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 							/*Node->sources().erase(srcIter);
 							Node->sources().push_back(static_cast <DFGVarPort*>(fakePort));
 							*/
-							*srcIter = static_cast <DFGVarPort*>(fakePort);
+							/**srcIter = static_cast <DFGVarPort*>(fakePort);
 							break;
 						}
 					
@@ -382,6 +383,6 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	}
 	return;
 }
-
+*/
 
 

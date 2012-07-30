@@ -93,8 +93,10 @@ int main(int argc, char *argv[])
 		//使用的RPU的编号
 		RPUSeqNo = std::atoi(& a[3]);
 
+		if(RPUSeqNo == 0)
+		{
 		allPatchfile<<"#include \"RPU"<<RPUSeqNo<<"_CWI.h\"\n\n\n";
-
+		}				
 		String CL0FileName;
 		String CL1FileName;
 		String CL2FileName;
@@ -176,7 +178,8 @@ int main(int argc, char *argv[])
 			{
 
 				String DFGNameTemp1 = DFGName[hh]+".dfg";
-
+				
+				std::cout<<DFGNameTemp1<<std::endl;	
 				const char * DFGNameTemp2 = DFGNameTemp1.c_str();
 
 				std::ifstream dfgFile(DFGNameTemp2);
@@ -477,7 +480,7 @@ int main(int argc, char *argv[])
 								portName = portName.substr(portName.find(".")+1);
 								portSSRAM = (*currInport).SSRAMAddress() + currLoopTime * ssramInSize;
 								SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
-								scalarInNum++;
+								//scalarInNum++;
 							}
 							
 						}
@@ -518,7 +521,7 @@ int main(int argc, char *argv[])
 				for(Vector<Vector<reg32> >::iterator CL0GrpIter = curCL0.begin(); CL0GrpIter != curCL0.end(); ++CL0GrpIter)
 				{
 					Vector<reg32> curCtx = * CL0GrpIter;
-					CL0file<<"#define GROUP"<<config.RPUGroupNumber()<<"_"<<config.onRCANumber()<<"_"<<(CL0GrpIter-curCL0.begin())<<"_CWI\\\n";
+					CL0file<<"#define GROUP"<<std::dec<<config.RPUGroupNumber()<<"_"<<config.onRCANumber()<<"_"<<(CL0GrpIter-curCL0.begin())<<"_CWI\\\n";
 					char buf[30];
 					sprintf(buf,"GROUP%d_%d_%d_CWI",config.RPUGroupNumber(),config.onRCANumber(),CL0GrpIter-curCL0.begin());
 					GRPLink<<"\t\t\t"<<buf<<"\\"<<std::endl;

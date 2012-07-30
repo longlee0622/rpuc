@@ -17,7 +17,6 @@
 
 #include "reg.h"
 #include <cassert>
-
 #include "platf.h"
 
 

@@ -520,6 +520,7 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 					tempRow1 = temp1/FIFO_WIDTH_DATA + ((temp1 % FIFO_WIDTH_DATA)?1:0);
 				}
 			}
+/*
 			if(thisRCA->getSSRAMTempInTopAddr() >=0 && thisRCA->getSSRAMTempInBaseAddr() >= 0)
 			{
 				if(thisRCA->getSSRAMTempInTopAddr()>= thisRCA->getSSRAMTempInBaseAddr())
@@ -530,7 +531,7 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 					//tempRow2 = temp2/FIFO_WIDTH_DATA + ((temp2 % FIFO_WIDTH_DATA)?1:0);
 				}
 			}
-
+*/
 			Vector<RCAPort> & rcaInport = thisRCA->inports();
 			Vector<RCAPort>::iterator portIter;
 
@@ -548,7 +549,10 @@ int RPUConfig::genCL2Context( Vector<RCA *> CL1RCA )
 				tempRow3 = tempRIFTopRow - tempRIFBaseRow + 1;
 
 			if(thisRCA->getPseudoRCAFlag() != 1)
-				tempRow= tempRow1+tempRow2+tempRow3 - 1;
+			{
+				//tempRow= tempRow1+tempRow2+tempRow3 - 1;
+				tempRow=tempRow1+tempRow3 -1;
+			}
 			else
 				tempRow = 7;
 			////////////////////////////////end/////////////////////////////////////////////////////
