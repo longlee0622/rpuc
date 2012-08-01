@@ -500,13 +500,26 @@ int main(int argc, char *argv[])
 				SSRAMinterfaceFile<<"#define "<<tempUperString<<"_DOUT \\\n";
 				for (int currLoopTime=0; currLoopTime < loopTime; currLoopTime++)
 				{
-					for(z=0; z<outNum ; z++)
+					int scalarOutNum = 0;
+					for(z=0; z<outportSize ; z++)
 					{
 						currOutport = (&dfg_graph.outport(z));
-						portName = Out[z][currLoopTime];
+						portName = static_cast<DFGVarPort*>(currOutport)->name();
+						//portName = Out[z][currLoopTime];
+						if (portName.find("scalar") != -1)
+						{
+							portName = Out[scalarOutNum][currLoopTime];
+							portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
+							SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
+							scalarOutNum++;
+						}
+						else
+						{
+							portName = portName.substr(portName.find(".")+1);
+							portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
+							SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
+						}
 
-						portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
-						SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 					}
 				}
 
