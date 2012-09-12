@@ -472,14 +472,18 @@ int main(int argc, char *argv[])
 							{
 								portName = In[scalarInNum][currLoopTime];
 								portSSRAM = (*currInport).SSRAMAddress() + currLoopTime * ssramInSize;
-								SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
+								if ((z == inportSize-1) && (currLoopTime == loopTime-1))
+									SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\n";
+								else SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
 								scalarInNum++;
 							}
 							else
 							{
 								portName = portName.substr(portName.find(".")+1);
 								portSSRAM = (*currInport).SSRAMAddress() + currLoopTime * ssramInSize;
-								SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
+								if ((z == inportSize-1) && (currLoopTime == loopTime-1))
+									SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\n";
+								else SSRAMinterfaceFile<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<") = (short)"<<portName<<";\\\n";
 								//scalarInNum++;
 							}
 							
@@ -510,14 +514,18 @@ int main(int argc, char *argv[])
 						{
 							portName = Out[scalarOutNum][currLoopTime];
 							portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
-							SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
+							if ((z==outportSize-1) && (currLoopTime==loopTime-1))
+								SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\n";
+							else SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 							scalarOutNum++;
 						}
 						else
 						{
 							portName = portName.substr(portName.find(".")+1);
 							portSSRAM = (*currOutport).SSRAMAddress() + currLoopTime * ssramOutSize;
-							SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
+							if ((z==outportSize-1) && (currLoopTime==loopTime-1))
+								SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\n";
+							else SSRAMinterfaceFile<<portName<<" = "<<"*(RP16)( AHB0_S2_EMI_SSRAM + 0x"<<std::hex<<portSSRAM<<");"<<"\\\n";
 						}
 
 					}
@@ -539,7 +547,8 @@ int main(int argc, char *argv[])
 					sprintf(buf,"GROUP%d_%d_%d_CWI",config.RPUGroupNumber(),config.onRCANumber(),CL0GrpIter-curCL0.begin());
 					GRPLink<<"\t\t\t"<<buf<<"\\"<<std::endl;
 					GRPLink<<"\t\t\twhile(!RPU0_done){}\\"<<std::endl;
-					GRPLink<<"\t\t\tRPU0_done = 0;\\"<<std::endl;
+					//GRPLink<<"\t\t\tRPU0_done = 0;\\"<<std::endl;
+					GRPLink<<"\t\t\tRPU0_done = 0;"<<std::endl;
 					CL0file.fill('0');
 					for(Vector<reg32>::iterator CtxIter = curCtx.begin(); CtxIter != curCtx.end(); ++CtxIter)
 					{
