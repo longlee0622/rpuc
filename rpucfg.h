@@ -91,11 +91,15 @@ public:
 	//2011.6.19 liuxie for PortInterface file
 	//int createHeadFile(const String & fileName);
 
-	int createInterface(const String & fileName);
+	//2012.7.20 TangSZ for extern int createInterface 
+	//int createInterface(const String & fileName, RPUConfig &config);
 
 	int createPatchFile(const String & fileName);
 
-	//int createCL0File(const String & fileName);
+	//int createCL0File(const String & fileName,const String &C_fileName);
+	//int createCL0File (std::ofstream &CL0FileRef, std::ofstream &GRPLinkRef);
+
+	//int createC_CL0File(std::ofstream &C_CL0FileRef);
 
 	int createCL1File(const String & fileName,const String &C_fileName);
 
@@ -109,7 +113,9 @@ public:
 	Vector<Vector<reg32> > CL0ContextCopy() {return CL0Context;}
 	Vector<Vector<reg32> > C_CL0ContextCopy() {return C_CL0Context;}
 
-	//void pasteCL0Context(Vector<reg32> CL0ContextTemp) { CL0Context = CL0ContextTemp;}
+	void pasteCL0Context(Vector<Vector<reg32> > CL0ContextTemp) { CL0Context = CL0ContextTemp;}
+
+	void pasteC_CL0Context(Vector<Vector<reg32> > C_CL0ContextTemp) { C_CL0Context = C_CL0ContextTemp;}
 
 	Vector<Vector<reg32> > CL1ContextCopy() {return CL1Context;}
 
@@ -155,7 +161,14 @@ public:
 
 	void setLoopTime(int n) {LoopTime = n;}
 
+	//2012.7.20 TangSZ for model library
+	int libGenContext(const String & fileLibPath, const String & DFGName, int curGCGMAddr);
+
 	int getLoopTime() const {return LoopTime;}
+
+	void setLibPath(String fileLibPath) {libPath = fileLibPath;}
+
+	const String getLibPath() {return libPath;}
 
 
 	// ----------------------------------------------------
@@ -177,6 +190,8 @@ private:
 	int genGroupContext( ); // Generate Groups context
 
 	int genCL2Context( Vector<RCA *> CL1RCA ); // GenerateCL2 context
+
+
 
 private:
 
@@ -252,6 +267,8 @@ private:
 	int RPUGroupNum;    //当前组的组号
 
 	int LoopTime;		//本dfg的循环次数
+
+	String libPath;     //模板库路径
 };
 
 #define MAX_GROUP_NUM 20

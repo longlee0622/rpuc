@@ -180,7 +180,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		int totalInternPort = 0, totalExternPort = 0, totalTempExternPort = 0;
 		Vector<RCAPort>::iterator portIter;
 
-		//Í³¼ÆÄÚ²¿½ÚµãºÍÍâ²¿½Úµã
+		//Í³ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Úµï¿½ï¿½ï¿½â²¿ï¿½Úµï¿½
 		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 		{
 
@@ -188,17 +188,17 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				++ totalInternPort : ++ totalExternPort;
 		}
 
-		//2012.5.24 longlee ÉèÖÃ±¾RCAµÄRIMÊä³ö×´Ì¬£¬¸¨ÖúRIM¿Õ¼ä»®·Ö
+		//2012.5.24 longlee ï¿½ï¿½ï¿½Ã±ï¿½RCAï¿½ï¿½RIMï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIMï¿½Õ¼ä»®ï¿½ï¿½
 		if (totalInternPort > 0)
 		{
-			if(totalExternPort == 0)	thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//Ö»ÓÐÄÚ²¿½Úµã
-			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//ÄÚ²¿½ÚµãºÍdfgÖ±½ÓÊä³ö¾ùÓÐ
+			if(totalExternPort == 0)	thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//Ö»ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Úµï¿½
+			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//ï¿½Ú²ï¿½ï¿½Úµï¿½ï¿½dfgÖ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
-		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//Ö»ÓÐdfgÖ±½ÓÊä³ö
+		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//Ö»ï¿½ï¿½dfgÖ±ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		assert(thisRCA->getRIMOutMode() >= 0 && thisRCA->getRIMOutMode() <= 2);
 
-		//½«DFGÍ¼µÄÊä³ö½Úµã±ê¼Ç£¬·ÀÖ¹Ãû×Ö±»¸Äºó±»Ê¶±ð³ÉExtern Temp Port
+		//ï¿½ï¿½DFGÍ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ç£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Äºï¿½Ê¶ï¿½ï¿½ï¿½Extern Temp Port
 		for(portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 		{
 
@@ -212,7 +212,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		}
 
 		/* Allocate the RIM for CDS */
-		//2011.7.19 longlee£ºÉèÖÃRIM×´Ì¬±¸·Ý£¬µ±³öÏÖRIFÔ½½ç´íÎóÊ±ÓÃRIM±¸·Ý»Ö¸´mapRCAÖ®Ç°µÄ×´Ì¬
+		//2011.7.19 longleeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIM×´Ì¬ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIFÔ½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½RIMï¿½ï¿½ï¿½Ý»Ö¸ï¿½mapRCAÖ®Ç°ï¿½ï¿½×´Ì¬
 		CL1RIM RIM_backup;		
 		Vector<RCAPort*> tempPortInRIM_backup,outPortInRIM_backup;
 		Vector<RCAPort*>::iterator tempPortInRIMIter,outPortInRIMIter;
@@ -303,9 +303,9 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 					/*****************************************************************************************/
 
 				}
-				else  //it's a external temp port,£¡£¡£¡£¡ÓÉÓÚ´Ë´¦»¹Ã»ÓÐ½øÐÐÀàÐÍ×ª»»£¬ËùÒÔÕâ¸öº¯ÊýÃ»ÓÐ×÷ÓÃ
+				else  //it's a external temp port,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´Ë´ï¿½ï¿½ï¿½Ã»ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
-					//2011.6.9  liuxie   //´Ë´¦ÒÑ¾­½«TEMP_REGION_WIDTHµÄ¿í¶ÈÉèÖÃ³É8£¨TEMP_REGION_WIDTH_BYTE = 16 bytes£©
+					//2011.6.9  liuxie   //ï¿½Ë´ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½TEMP_REGION_WIDTHï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½8ï¿½ï¿½TEMP_REGION_WIDTH_BYTE = 16 bytesï¿½ï¿½
 					portIter->setROFRow(tempRegionIndex / TEMP_REGION_WIDTH);
 					int c_temp = tempRegionIndex / TEMP_REGION_WIDTH;
 					portIter->setRIMRow(CDSData.baseAddress() + c_temp);
@@ -341,7 +341,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 					++ tempRegionIndex;
 
-					//FIXME£º´Ë´¦ÓÐÆÆÕÀ£¬¶ÔÓÚÔ½½ç´æ·ÅµÄPort²»¼ÆÊý
+					//FIXMEï¿½ï¿½ï¿½Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Åµï¿½Portï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					if (portIter->RIMCol() < 16) tempAreaCounter[(portIter->RIMRow() < RIM_HEIGHT/2) ? 0 : 1] ++;
 
 					tempPortInRIM.push_back(&(*portIter));
@@ -356,11 +356,11 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 		Vector<RCAPort> & rcaInport = thisRCA->inports();
 
-		//Í³¼Æµ±Ç°RCAµÄÊäÈëÖÐµÄtempPort´Ó¼¸¸ö¶ÀÁ¢ssramÊý¾ÝÇøÊäÈëÊý¾Ý
+		//Í³ï¿½Æµï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½tempPortï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ssramï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-		Vector<RCA*> & currentRCASource = thisRCA->sources();//µ±Ç°RCAµÄÔ´RCA
+		Vector<RCA*> & currentRCASource = thisRCA->sources();//ï¿½ï¿½Ç°RCAï¿½ï¿½Ô´RCA
 		int numberOfSection;
-		numberOfSection = currentRCASource.size();            //¼´ÓÐ¶àÉÙ¸ö¸¸RCA
+		numberOfSection = currentRCASource.size();            //ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½RCA
 
 		List<List<int> > tempDataBlockList(numberOfSection);
 
@@ -374,7 +374,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				
 			if( IsTempExternPort( portIter->dfgPort()) && !(portIter->IsInSameGroup()) ) 
 			{	
-				//²éÕÒÕâ¸ötempExternPortÊÇ´ÓÄÄ¸öÔ´RCAÀ´µÄ£¿
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tempExternPortï¿½Ç´ï¿½ï¿½Ä¸ï¿½Ô´RCAï¿½ï¿½ï¿½Ä£ï¿½
 
 				for(unsigned int counterSourceRCA_i=0; counterSourceRCA_i < currentRCASource.size(); counterSourceRCA_i ++ )
 				{
@@ -399,7 +399,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			}
 		}
 
-		thisRCA->setTempDataBlockList(tempDataBlockList);//ÔÝ´æ´Ëlist£¬ÓÃÓÚºóÐøÉú³ÉREDL;
+		thisRCA->setTempDataBlockList(tempDataBlockList);//ï¿½Ý´ï¿½ï¿½listï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½REDL;
 
 
 		// Count the input inner ports and external ports
@@ -408,18 +408,18 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		
 
 		Vector<RCAPort*>::reverse_iterator r_tempPortInRIMIter;
-		//tempRIMBaseRow & tempRIMTopRow ÓÃÀ´¼ÇÂ¼µ±Ç°RCAÊäÈëÖÐµÄÄÚ²¿¶Ë¿ÚÔÚRIM tempÇøÓòÖÐ»ùµØÖ·ºÍ¶¥µØÖ·£¬±íÃ÷ÕâÒ»ÇøÓòÐèÒªCIDL¼ÓÔØÈëRIFÖÐ¡£
+		//tempRIMBaseRow & tempRIMTopRow ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Ú²ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½RIM tempï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ö·ï¿½Í¶ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªCIDLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIFï¿½Ð¡ï¿½
 		int tempRIMBaseRow;
 		int tempRIMTopRow;
 
 		tempRIMBaseRow = RIM_HEIGHT;
 		tempRIMTopRow  = 0;
 
-		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();                //Õë¶ÔexternTemp Port
-		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();            //Õë¶ÔexternTemp Port
+		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();                //ï¿½ï¿½ï¿½externTemp Port
+		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();            //ï¿½ï¿½ï¿½externTemp Port
 
-		int MaxExPortNo = -1;              //Õë¶ÔExtern Port
-		int MinExPortNo = 10000;          //Õë¶ÔExtern Port
+		int MaxExPortNo = -1;              //ï¿½ï¿½ï¿½Extern Port
+		int MinExPortNo = 10000;          //ï¿½ï¿½ï¿½Extern Port
 
 
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
@@ -433,8 +433,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				{
 					++ totalInternPort ;
 
-					//ÊäÈëÀ´×ÔÄÚ²¿¶Ë¿Ú£¬Òò´ËÐèÒª²éÕÒ³öÕâÐ©¶Ë¿ÚÔÚRIMÖÐtempÇøÓòµÄ·¶Î§£¬ÒÔ±ãCIDLÔØÈëµ½RIFÖÐ£¬Í¬Ê±Ò²ÎªÁË·½±ãthisRCAµÄRIF¶¨Î»¡£
-					//¶ÔÓÚremapÐÂ¼ÓÈëµÄRCA£¬ÔÚRIMÖÐÓ¦ÓÐ2¸öÏàÍ¬µÄinport£¬µÚÒ»¸öÎªÕæÊµÐèÒªµÄinport£¬µÚ¶þ¸öÎªRCA×Ô¼ºµÄÊä³ö£¬ÕýÏò±éÀú£¬È¡µÚÒ»¸ö
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Ð©ï¿½Ë¿ï¿½ï¿½ï¿½RIMï¿½ï¿½tempï¿½ï¿½ï¿½ï¿½Ä·ï¿½Î§ï¿½ï¿½ï¿½Ô±ï¿½CIDLï¿½ï¿½ï¿½ëµ½RIFï¿½Ð£ï¿½Í¬Ê±Ò²Îªï¿½Ë·ï¿½ï¿½ï¿½thisRCAï¿½ï¿½RIFï¿½ï¿½Î»ï¿½ï¿½
+					//ï¿½ï¿½ï¿½ï¿½remapï¿½Â¼ï¿½ï¿½ï¿½ï¿½RCAï¿½ï¿½ï¿½ï¿½RIMï¿½ï¿½Ó¦ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½inportï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Îªï¿½ï¿½Êµï¿½ï¿½Òªï¿½ï¿½inportï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ÎªRCAï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½
 					if(thisRCA->getRemapFlag())		
 					{
 						for(tempPortInRIMIter = tempPortInRIM.begin(); tempPortInRIMIter != tempPortInRIM.end(); tempPortInRIMIter ++ )
@@ -451,7 +451,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 							}
 						}
 					}
-					//¶ÔÓÚÕý³£µÄRCA£¬Ó¦¸ÃÒ²ÓÐ2¸öÏàÍ¬µÄinportÔÚRIMÖÐ£¬Ó¦¸ÃÄæÏò±éÀúÈ¡ÐÂRCAµÄÊä³ö£¬·ñÔòremap¹ý³ÌÃ»ÓÐÐ§¹û
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RCAï¿½ï¿½Ó¦ï¿½ï¿½Ò²ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½inportï¿½ï¿½RIMï¿½Ð£ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½remapï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ð§ï¿½ï¿½
 					else
 					{
 						for(r_tempPortInRIMIter = tempPortInRIM.rbegin(); r_tempPortInRIMIter != tempPortInRIM.rend(); r_tempPortInRIMIter ++ )
@@ -517,17 +517,17 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		int externInportSize;
 
 		if(MaxExPortNo >= 0  && MinExPortNo>=0)
-			externInportSize = MaxExPortNo - 0 + 1;  //´Ó×î³õµÄ»ùµØÖ·È¡Öµ
+			externInportSize = MaxExPortNo - 0 + 1;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·È¡Öµ
 		else
 			externInportSize = 0;
 
 		
-		//¼ÆËãÍâ²¿Ö±½ÓÊäÈëµÄÐÐÊý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½â²¿Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		//2011.5.11 liuxie
 		//const int externalRowNum = (totalExternPort/FIFO_WIDTH_DATA + ((totalExternPort % FIFO_WIDTH_DATA)? 1:0));
 		const int externalRowNum = (externInportSize/FIFO_WIDTH_DATA + ((externInportSize % FIFO_WIDTH_DATA)? 1:0));
 
-		//¼ÆËãÍâ²¿tempÊäÈëµÄÐÐÊý ¼ÆËãtemp Extern PortÕ¼ÓÃµÄ×îÐ¡¿Õ¼ä
+		//ï¿½ï¿½ï¿½ï¿½ï¿½â²¿tempï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½temp Extern PortÕ¼ï¿½Ãµï¿½ï¿½ï¿½Ð¡ï¿½Õ¼ï¿½
 		int externalTempRow=0;	
 		
 		int ExterntempSSRAMBaseAddr = 816 + config.DFGInBaseAddress();
@@ -572,12 +572,12 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 
 		int internFIFOIndexBase = externDataHeight * FIFO_WIDTH_DATA ;
-		//internFIFOIndexBase ÔÚÍâ²¿ÊäÈëµÄºóÃæ£¬±íÊ¾´ÓÕâÕâ¸öµØ·½¿ªÊ¼ÊÇÄÚ²¿ÊäÈë£»ËùÒÔ×¢ÒâÕâ¸öÖµµÄ±ä»¯¡£ÒòÎªCIDLÔÚCEDLºóÃæÖ´ÐÐ¡£
+		//internFIFOIndexBase ï¿½ï¿½ï¿½â²¿ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½æ£¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ë£»ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ä»¯ï¿½ï¿½ï¿½ï¿½ÎªCIDLï¿½ï¿½CEDLï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð¡ï¿½
 
 		int internFIFOIndex=0;
 		int externTempFIFOIndex;
-		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdataÔÚSSRAMÖÐ×îÔ¶µØÖ·£¨ÀëexterndataµÄÆðÊ¼µØÖ·£º 0x00£©
-		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndataÔÚSSRAMÖÐ×îÔ¶µØÖ·£¨ÀëtempexterndataµÄÆðÊ¼µØÖ· µØÖ·Î´¶¨Òå£©
+		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdataï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½externdataï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ö·ï¿½ï¿½ 0x00ï¿½ï¿½
+		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndataï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½tempexterndataï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ö· ï¿½ï¿½Ö·Î´ï¿½ï¿½ï¿½å£©
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
@@ -590,26 +590,26 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			if( IsInnerPort(portIter->dfgPort()) || ((IsTempExternPort(portIter->dfgPort())) && portIter->IsInSameGroup()))
 			{   // It's an internal port
 
-				//ÊäÈëÀ´×ÔÄÚ²¿¶Ë¿Ú£¬Òò´ËÐèÒª²éÕÒ³öÕâÐ©¶Ë¿ÚÔÚRIMÖÐtempÇøÓòµÄ·¶Î§£¬ÒÔ±ãCIDLÔØÈëµ½RIFÖÐ£¬Í¬Ê±Ò²ÎªÁË·½±ãthisRCAµÄRIF¶¨Î»¡£
-				if(thisRCA->getRemapFlag())		//remapRCAµÄRIM¶Ë¿ÚÕýÏò±éÀú
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Ð©ï¿½Ë¿ï¿½ï¿½ï¿½RIMï¿½ï¿½tempï¿½ï¿½ï¿½ï¿½Ä·ï¿½Î§ï¿½ï¿½ï¿½Ô±ï¿½CIDLï¿½ï¿½ï¿½ëµ½RIFï¿½Ð£ï¿½Í¬Ê±Ò²Îªï¿½Ë·ï¿½ï¿½ï¿½thisRCAï¿½ï¿½RIFï¿½ï¿½Î»ï¿½ï¿½
+				if(thisRCA->getRemapFlag())		//remapRCAï¿½ï¿½RIMï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					for(tempPortInRIMIter = tempPortInRIM.begin(); tempPortInRIMIter != tempPortInRIM.end(); tempPortInRIMIter ++ )
 					{
 						if((*tempPortInRIMIter)->dfgPort() == portIter->dfgPort())
 						{
-							//¼ÆËãthisRCAµÄÕâ¸öÄÚ²¿¶Ë¿Ú£¬Í¨¹ýCIDL¼ÓÔØºó£¬ÔÚRIFµÄÎ»ÖÃ¡£
+							//ï¿½ï¿½ï¿½ï¿½thisRCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½Í¨ï¿½ï¿½CIDLï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½RIFï¿½ï¿½Î»ï¿½Ã¡ï¿½
 							internFIFOIndex = internFIFOIndexBase + (((*tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*tempPortInRIMIter)->RIMCol()/2);
 							break;
 						}
 					}
 				}
-				else		//·ÇremapRCAµÄRIM¶Ë¿ÚÄæÏò±éÀú
+				else		//ï¿½ï¿½remapRCAï¿½ï¿½RIMï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					for(r_tempPortInRIMIter = tempPortInRIM.rbegin(); r_tempPortInRIMIter != tempPortInRIM.rend(); r_tempPortInRIMIter ++ )
 					{
 						if((*r_tempPortInRIMIter)->dfgPort() == portIter->dfgPort())
 						{
-							//¼ÆËãthisRCAµÄÕâ¸öÄÚ²¿¶Ë¿Ú£¬Í¨¹ýCIDL¼ÓÔØºó£¬ÔÚRIFµÄÎ»ÖÃ¡£
+							//ï¿½ï¿½ï¿½ï¿½thisRCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½Í¨ï¿½ï¿½CIDLï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½RIFï¿½ï¿½Î»ï¿½Ã¡ï¿½
 							internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
 							break;
 						}
@@ -626,13 +626,13 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				int PortSSRAMAddress = portIter->dfgPort()->SSRAMAddress();    //for external temp data
 				
 				/* SSRAM memory allocation */
-				//¶ÔÓÚExtern PortÊý¾ÝµÄSSRAM allocation
+				//ï¿½ï¿½ï¿½ï¿½Extern Portï¿½ï¿½Ýµï¿½SSRAM allocation
 				if( !(IsTempExternPort(portIter->dfgPort())) ) 
 				{   //It's an external port
 					//2011.4.22 liuxie
-					//REDLÍêÈ«Ë³Ðò¶ÁÈë£¨ÎÞÑ¡Ôñ£©£¬CIDLÍêÈ«Ë³Ðò¶ÁÈë£¨ÎÞÑ¡Ôñ£©£¬ÔòÑ¡²»µ½ÏàÓ¦µÄÖµ
-					//Èç£ºÔÚdeblockingµÄ¼ò»¯º¯ÊýÖÐ£¬µÚÒ»¸öRCA¶ÁÈë13¸öÍâ²¿port£¬Ë³ÐòÒÑ¾­ºÍDFGÍâ²¿ÊäÈëµÄ17¸öÊäÈë²»Ò»Ñù£¬²»ÄÜµ¥´¿µØÒ»¸ö¸öµØ¶Á½øRIF
-                    if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee ±äÁ¿ÊäÈë
+					//REDLï¿½ï¿½È«Ë³ï¿½ï¿½ï¿½ï¿½ë£¨ï¿½ï¿½Ñ¡ï¿½ñ£©£ï¿½CIDLï¿½ï¿½È«Ë³ï¿½ï¿½ï¿½ï¿½ë£¨ï¿½ï¿½Ñ¡ï¿½ñ£©£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Öµ
+					//ï¿½ç£ºï¿½ï¿½deblockingï¿½Ä¼ò»¯ºï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½RCAï¿½ï¿½ï¿½ï¿½13ï¿½ï¿½ï¿½â²¿portï¿½ï¿½Ë³ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½DFGï¿½â²¿ï¿½ï¿½ï¿½ï¿½ï¿½17ï¿½ï¿½ï¿½ï¿½ï¿½ë²»Ò»ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½RIF
+                    if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     {
 						int DFGInportSeq;
 						DFGInportSeq = portIter->dfgPort()->seqNo();
@@ -644,12 +644,12 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 						portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
 						portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
 
-						//2011.5.11 liuxie  Êý¾ÝÎ»¿íÎª16bit
+						//2011.5.11 liuxie  ï¿½ï¿½ï¿½Î»ï¿½ï¿½Îª16bit
 						portIter->dfgPort()->setSSRAMAddress(config.DFGInBaseAddress() +  SSRAMInBaseAddr + DFGInportSeq*2);
 
 						++ externFIFOIndex;
                     }
-					else		//2012.5.7 longlee Á¢¼´ÊýÊäÈë
+					else		//2012.5.7 longlee ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					{
 						int value =static_cast<DFGImmPort*>(portIter->dfgPort())->value();
 						int CMIndex=0;
@@ -665,7 +665,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				} 
 				else 
 				{  // It's a temp external port
-					//ÕÒµ½Õâ¸ö¶Ë¿ÚÎ»ÓÚÄÄÀï
+					//ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 					List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
 					List<int>::iterator tempListIntIter;
@@ -718,7 +718,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			}
 		}
 
-		//2011.11.1 longlee ·ÀÖ¹¶þ´ÎRemap
+		//2011.11.1 longlee ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½Remap
 		bool RemapBefore = false;
 		int srcRemapCnt = 0;
 		for(Vector<RCA*>::iterator srcIter = thisRCA->sources().begin(); srcIter != thisRCA->sources().end(); ++ srcIter)
@@ -728,14 +728,14 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		}
 		if((srcRemapCnt != 0) &&(srcRemapCnt == thisRCA->sources().size())) RemapBefore = true;
 		
-		//2011.7.19 longlee RIFÔ½½ç¼ì²é¼°ÖØÅÅ²Ù×÷
+		//2011.7.19 longlee RIFÔ½ï¿½ï¿½ï¿½é¼°ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½
         int maxRIFRow = 0;
 		bool remapFlag = false;
 		for(portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
-			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	·À¿çÆ½Ì¨µÄÎ´¶¨ÒåÖµÓ°Ïì£¬CMµÄRIFrowÔÚWinÏÂÊÇ¸ºÊý£¬ÔÚLinuxÏÂÊÇÕýÊý
+			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	ï¿½ï¿½ï¿½ï¿½Æ½Ì¨ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ÖµÓ°ï¿½ì£¬CMï¿½ï¿½RIFrowï¿½ï¿½Winï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½Linuxï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			maxRIFRow = (portIter->RIFRow() > maxRIFRow)? portIter->RIFRow():maxRIFRow;
-			if (maxRIFRow >7)	remapFlag = true;	//ËµÃ÷ÐèÒª½øÐÐremap;
+			if (maxRIFRow >7)	remapFlag = true;	//Ëµï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½remap;
 		}
 		if ( remapFlag) 
 		{
@@ -745,7 +745,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				RIM.free(thisRCA->seqNo(),thisRCA->getRIMOutMode());
 				continue;
 			}
-			//RIM×´Ì¬»Ø¹ö
+			//RIM×´Ì¬ï¿½Ø¹ï¿½
 			RIM.copy(RIM_backup);
 			tempPortInRIM.clear();
 			outPortInRIM.clear();
@@ -758,7 +758,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			tempAreaCounter = tempAreaCounter_backup;
 			outAreaCounter = outAreaCounter_backup;
 
-			//»ñÈ¡µ±Ç°RCAÔÚ×éÄÚÎ»ÖÃ
+			//ï¿½ï¿½È¡ï¿½ï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 			Vector<RCA*>::iterator RCAIter;
 			int index = 0;
 			for (RCAIter = RCAS.begin();RCAIter != RCAS.end(); RCAIter++,index ++)
@@ -766,10 +766,10 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 				if(*RCAIter != *rcaIter) continue;
 				else break;
 			}
-			//ÖØÐÂÅÅ²¼×éÄÚRCA£¬ÐÞ¸Ä¶Ë¿Ú¹ØÏµ
+			//ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½ï¿½ï¿½RCAï¿½ï¿½ï¿½Þ¸Ä¶Ë¿Ú¹ï¿½Ïµ
 			//int index = (*RCAIter)->seqNo();
-			//remap(RCAS,index,tempPortInRIM,config,1);
-			//±ê¼Çµ±Ç°RCAmapÊ§°Ü£¬Ìø³ö
+			remap(RCAS,index,tempPortInRIM,config,1);
+			//ï¿½ï¿½Çµï¿½Ç°RCAmapÊ§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½
 
 			thisRCA->setMappedFlag(false);
 			CL1Block RemapBlock;
@@ -817,7 +817,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		if (REDLCnt > 8) return mapBlocks;
 		//******************************************start**********************************************************************
 		
-		//ÓÉÓÚÖ±½Ó´ÓÆ¬ÍâSSRAMÊäÈëµÄ»ùµØÖ·Îª0£¬ËùÒÔÒª±éÀúËùÓÐµÄinportÕÒµ½Àë»ùµØÖ·×îÔ¶µÄÄÇ¸öportµÄÎ»ÖÃÎªtop addressÌá¹©¸øREDL
+		//ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó´ï¿½Æ¬ï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½inportï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Ç¸ï¿½portï¿½ï¿½Î»ï¿½ï¿½Îªtop addressï¿½á¹©ï¿½ï¿½REDL
 		Vector<RCAPort>::iterator RCAInportIter;
 		for( RCAInportIter = rcaInport.begin(); RCAInportIter != rcaInport.end(); ++  RCAInportIter)
 		{
@@ -838,7 +838,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 					else
 					{    //external input port					
 						 if(port->SSRAMAddress() > farestexterndata)
-							farestexterndata=port->SSRAMAddress();     //Ö¸Ïò×îÔ¶µÄÄÇ¸ödataÔÚSSRAMÖÐµÄÆðÊ¼Î»ÖÃ
+							farestexterndata=port->SSRAMAddress();     //Ö¸ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Ç¸ï¿½dataï¿½ï¿½SSRAMï¿½Ðµï¿½ï¿½ï¿½Ê¼Î»ï¿½ï¿½
 					}
 				}
 		}
@@ -846,7 +846,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 
 		
 		//2011.5.28 liuxie for extern input Port		
-		thisRCA->setRCASSRAMInBaseAddr(0 + config.DFGInBaseAddress());//ÉèÖÃµ±Ç°RCAÍâ²¿Ö±½ÓÊäÈëµÄ»ùµØÖ·		
+		thisRCA->setRCASSRAMInBaseAddr(0 + config.DFGInBaseAddress());//ï¿½ï¿½ï¿½Ãµï¿½Ç°RCAï¿½â²¿Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·		
         
         if(farestexterndata!=0 + config.DFGInBaseAddress())
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
@@ -871,7 +871,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		CL1Block block;
 
 		// Set CEDL
-		block.CEDLData().setTarget(CEDL_TGT_RIF);         //CEDLµÄÄ¿±ê¿ÉÒÔÊÇRIFÒ²¿ÉÒÔÊÇRIM
+		block.CEDLData().setTarget(CEDL_TGT_RIF);         //CEDLï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIFÒ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIM
 		block.CEDLData().setHeight(externDataHeight);	
 
 		// Set CIDL
@@ -882,8 +882,8 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		//  find the lowest base address and height of
 		//  the end address first.
 
-		int lowestBaseAddr = RIM_HEIGHT;    //µ±Ç°rcaµÄsource rcaÔÚRIMÖÐµÄ×îµÍµØÖ·
-		int highestEndAddr = 0;             //µ±Ç°rcaµÄsource rcaÔÚRIMÖÐµÄ×î¸ßµØÖ·
+		int lowestBaseAddr = RIM_HEIGHT;    //ï¿½ï¿½Ç°rcaï¿½ï¿½source rcaï¿½ï¿½RIMï¿½Ðµï¿½ï¿½ï¿½Íµï¿½Ö·
+		int highestEndAddr = 0;             //ï¿½ï¿½Ç°rcaï¿½ï¿½source rcaï¿½ï¿½RIMï¿½Ðµï¿½ï¿½ï¿½ßµï¿½Ö·
 
 		Vector<RCA*>::iterator srcIter;
 		Vector<RCA*> & thisRCASource = thisRCA->sources();
@@ -899,7 +899,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 			
 			for(tmpGrpRCAIter = tmpGrpRCA.begin();tmpGrpRCAIter != tmpGrpRCA.end();++tmpGrpRCAIter)
 			{
-				if(((*srcIter)->seqNo()) == ((*tmpGrpRCAIter)->seqNo()))//yin0831 ÔÚÍ¬Ò»groupÀï£¬²ÅÒª¿¼ÂÇcidlµÄÅäÖÃ
+				if(((*srcIter)->seqNo()) == ((*tmpGrpRCAIter)->seqNo()))//yin0831 ï¿½ï¿½Í¬Ò»groupï¿½ï£¬ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½cidlï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CIDLEnableValue=true;//Setting CIDLEnableValue
 
@@ -922,22 +922,22 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 		
 		
 		
-		////2011.5.11 liuxie ½«CIDLµÄÐ´Ä£Ê½´Ó4ÐÐ8byteÆ´½Ó ÐÞ¸Ä³ÉÎª 2ÐÐ16ByteÆ´½Ó
+		////2011.5.11 liuxie ï¿½ï¿½CIDLï¿½ï¿½Ð´Ä£Ê½ï¿½ï¿½4ï¿½ï¿½8byteÆ´ï¿½ï¿½ ï¿½Þ¸Ä³ï¿½Îª 2ï¿½ï¿½16ByteÆ´ï¿½ï¿½
 		lowestBaseAddr = tempRIMBaseRow;
-		highestEndAddr = tempRIMTopRow + 1;//±íÃ÷ÐÐÊý(¸ß¶È)
+		highestEndAddr = tempRIMTopRow + 1;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ß¶ï¿½)
 		//yin0909end
 
-		block.CIDLData().setInputMode(MODE_IN_V2D);    //2DÊý¾ÝÄ£Ê½,Ê×µØÖ·¿É±ä
+		block.CIDLData().setInputMode(MODE_IN_V2D);    //2Dï¿½ï¿½ï¿½Ä£Ê½,ï¿½×µï¿½Ö·ï¿½É±ï¿½
 
 		block.CIDLData().setBaseAddress(lowestBaseAddr); 
 		//2011.5.11 liuxie
-        block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //È«²¿ÒÔ16ByteÎª³¤¶ÈÐ´Èë
+        block.CIDLData().setLength(TEMP_REGION_WIDTH_BYTE); //È«ï¿½ï¿½ï¿½ï¿½16ByteÎªï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½
 		//setHeight 2011.4.25 liuxie
 		//////////////////////////////////////////////////////////////////
 		block.CIDLData().setHeight(highestEndAddr - lowestBaseAddr);
 		//////////////////////////////////////////////////////////////////
 		//2011.5.11 liuxie
-		block.CIDLData().setOutputMode(MODE_OUT_2L);    //ÊäÈë2DÊý¾ÝÃ¿ÐÐ2µÈ·Ö£¬ÖðÐÐÖð·ÝÆ´½ÓÊä³ö
+		block.CIDLData().setOutputMode(MODE_OUT_2L);    //ï¿½ï¿½ï¿½ï¿½2Dï¿½ï¿½ï¿½Ã¿ï¿½ï¿½2ï¿½È·Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½
 		block.CIDLData().setOffset(0);                
 
 		// Set CDS
@@ -973,7 +973,7 @@ const Vector<CL1Block> CL1Config::PreMapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpG
 	return mapBlocks;
 }
 
-//2011.4.20 liuxie mapRCAº¯Êý¹æ¶¨ÁËRIF£¬RIMµÄ·ÖÅäÔ­Ôò
+//2011.4.20 liuxie mapRCAï¿½ï¿½ï¿½ï¿½æ¶¨ï¿½ï¿½RIFï¿½ï¿½RIMï¿½Ä·ï¿½ï¿½ï¿½Ô­ï¿½ï¿½
 Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vector<RCA*> &RCAS,RPUConfig & config)
 {
 	Vector<CL1Block> mapBlocks;
@@ -991,11 +991,11 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		Vector<RCAPort> & rcaInport = thisRCA->inports();
 
-		//Í³¼Æµ±Ç°RCAµÄÊäÈëÖÐµÄtempPort´Ó¼¸¸ö¶ÀÁ¢ssramÊý¾ÝÇøÊäÈëÊý¾Ý
+		//Í³ï¿½Æµï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½tempPortï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ssramï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		/*
-		Vector<RCA*> & currentRCASource = thisRCA->sources();//µ±Ç°RCAµÄÔ´RCA
+		Vector<RCA*> & currentRCASource = thisRCA->sources();//ï¿½ï¿½Ç°RCAï¿½ï¿½Ô´RCA
 		int numberOfSection;
-		numberOfSection = currentRCASource.size();            //¼´ÓÐ¶àÉÙ¸ö¸¸RCA
+		numberOfSection = currentRCASource.size();            //ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½RCA
 
 		List<List<int> > tempDataBlockList(numberOfSection);
 
@@ -1009,7 +1009,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				
 			if( IsTempExternPort( portIter->dfgPort()) && !(portIter->IsInSameGroup()) ) 
 			{	
-				//²éÕÒÕâ¸ötempExternPortÊÇ´ÓÄÄ¸öÔ´RCAÀ´µÄ£¿
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tempExternPortï¿½Ç´ï¿½ï¿½Ä¸ï¿½Ô´RCAï¿½ï¿½ï¿½Ä£ï¿½
 
 				for(unsigned int counterSourceRCA_i=0; counterSourceRCA_i < currentRCASource.size(); counterSourceRCA_i ++ )
 				{
@@ -1034,7 +1034,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			}
 		}
 
-		thisRCA->setTempDataBlockList(tempDataBlockList);//ÔÝ´æ´Ëlist£¬ÓÃÓÚºóÐøÉú³ÉREDL;
+		thisRCA->setTempDataBlockList(tempDataBlockList);//ï¿½Ý´ï¿½ï¿½listï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½REDL;
 
 		*/
 		// Count the input inner ports and external ports
@@ -1045,18 +1045,18 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		Vector<RCAPort*>::reverse_iterator r_tempPortInRIMIter;
 		
-		//tempRIMBaseRow & tempRIMTopRow ÓÃÀ´¼ÇÂ¼µ±Ç°RCAÊäÈëÖÐµÄÄÚ²¿¶Ë¿ÚÔÚRIM tempÇøÓòÖÐ»ùµØÖ·ºÍ¶¥µØÖ·£¬±íÃ÷ÕâÒ»ÇøÓòÐèÒªCIDL¼ÓÔØÈëRIFÖÐ¡£
+		//tempRIMBaseRow & tempRIMTopRow ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Ú²ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½RIM tempï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ö·ï¿½Í¶ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªCIDLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIFï¿½Ð¡ï¿½
 		int tempRIMBaseRow;
 		int tempRIMTopRow;
 
 		tempRIMBaseRow = RIM_HEIGHT;
 		tempRIMTopRow  = 0;
 		
-		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();		//Õë¶ÔexternTemp Port
-		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();	//Õë¶ÔexternTemp Port
+		int MaxPortSSRAMAddress = 0 + config.DFGInBaseAddress();		//ï¿½ï¿½ï¿½externTemp Port
+		int MinPortSSRAMAddress = 0x330 + config.DFGInBaseAddress();	//ï¿½ï¿½ï¿½externTemp Port
 
-		int MaxExPortNo = -1;              //Õë¶ÔExtern Port
-		int MinExPortNo = 10000;          //Õë¶ÔExtern Port
+		int MaxExPortNo = -1;              //ï¿½ï¿½ï¿½Extern Port
+		int MinExPortNo = 10000;          //ï¿½ï¿½ï¿½Extern Port
 
 		bool occupy[32] = {false};
 		for(Vector<RCAPort>::iterator portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
@@ -1070,7 +1070,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				{
 					++ totalInternPort ;
 
-					//¶ÔÓÚÕý³£µÄRCA£¬Ó¦¸ÃÒ²ÓÐ2¸öÏàÍ¬µÄinportÔÚRIMÖÐ£¬Ó¦¸ÃÄæÏò±éÀúÈ¡ÐÂRCAµÄÊä³ö£¬·ñÔòremap¹ý³ÌÃ»ÓÐÐ§¹û
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RCAï¿½ï¿½Ó¦ï¿½ï¿½Ò²ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½inportï¿½ï¿½RIMï¿½Ð£ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½remapï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ð§ï¿½ï¿½
 					for(Vector<RCAPort*>::reverse_iterator r_tempPortInRIMIter = tempPortInRIM.rbegin(); r_tempPortInRIMIter != tempPortInRIM.rend(); r_tempPortInRIMIter ++ )
 					{
 						if((*r_tempPortInRIMIter)->dfgPort() == portIter->dfgPort())
@@ -1102,7 +1102,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					} 
 					else //external input port
 					{
-						//2012.5.7 longlee SSRAM¶Ë¿ÚÖÐÒÑ¾­Ã»ÓÐÁËÁ¢¼´Êý
+						//2012.5.7 longlee SSRAMï¿½Ë¿ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						if (!port->isImmPort())
 						{
 							++ totalExternPort;
@@ -1114,7 +1114,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 						}	
 					}
 					*/
-					//2012.5.7 longlee SSRAM¶Ë¿ÚÖÐÒÑ¾­Ã»ÓÐÁËÁ¢¼´Êý
+					//2012.5.7 longlee SSRAMï¿½Ë¿ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					if (!port->isImmPort())
 					{
 						++ totalExternPort;
@@ -1126,14 +1126,14 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					}
 				}
 		}
-		//2012.3.10 longlee: ¸ù¾ÝËùÐèRIMÊý¾ÝµÄ·Ö²¼Çé¿öÑ¡ÔñCIDLÄ£Ê½ºÍ¶ÔÓ¦¸ß¶È
+		//2012.3.10 longlee: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIMï¿½ï¿½ÝµÄ·Ö²ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½CIDLÄ£Ê½ï¿½Í¶ï¿½Ó¦ï¿½ß¶ï¿½
 		int bestHeight = CIDLChoice(occupy,tempRIMBaseRow,tempRIMTopRow,thisRCA->getRemapFlag());
 		int CIDLMode;
 
 		if (bestHeight == (tempRIMTopRow - tempRIMBaseRow +1) ) 
-			CIDLMode = MODE_IN_V2D; //Ñ¡Ôñµ¥2DÄ£Ê½
+			CIDLMode = MODE_IN_V2D; //Ñ¡ï¿½ï¿½2DÄ£Ê½
 		else 
-			CIDLMode = MODE_IN_T2D;	//Ñ¡ÔñË«2DÄ£Ê½
+			CIDLMode = MODE_IN_T2D;	//Ñ¡ï¿½ï¿½Ë«2DÄ£Ê½
 
 
 		std::cout<<"tempRIMBaseRow = "<<tempRIMBaseRow<<std::endl;
@@ -1156,18 +1156,18 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		int externInportSize;
 
 		if(MaxExPortNo >= 0 && MinExPortNo>=0 )
-			externInportSize = MaxExPortNo- 0 + 1;  //´Ó×î³õµÄ»ùµØÖ·È¡Öµ
+			externInportSize = MaxExPortNo- 0 + 1;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·È¡Öµ
 		else
 			externInportSize = 0;
 
 		
-		//¼ÆËãÍâ²¿Ö±½ÓÊäÈëµÄÐÐÊý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½â²¿Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		//2011.5.11 liuxie
 		//const int externalRowNum = (totalExternPort/FIFO_WIDTH_DATA + ((totalExternPort % FIFO_WIDTH_DATA)? 1:0));
 		const int externDataHeight = (externInportSize/FIFO_WIDTH_DATA + ((externInportSize % FIFO_WIDTH_DATA)? 1:0));
 
 		/*
-		//¼ÆËãÍâ²¿tempÊäÈëµÄÐÐÊý ¼ÆËãtemp Extern PortÕ¼ÓÃµÄ×îÐ¡¿Õ¼ä
+		//ï¿½ï¿½ï¿½ï¿½ï¿½â²¿tempï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½temp Extern PortÕ¼ï¿½Ãµï¿½ï¿½ï¿½Ð¡ï¿½Õ¼ï¿½
 		int externalTempRow;
 		externalTempRow=0;		
 		
@@ -1215,11 +1215,11 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		//int internFIFOIndexBase = externDataHeight * FIFO_WIDTH_DATA ;
 		int internFIFOIndexBase = externDataHeight * FIFO_WIDTH_DATA;
-		//internFIFOIndexBase ÔÚÍâ²¿ÊäÈëµÄºóÃæ£¬±íÊ¾´ÓÕâÕâ¸öµØ·½¿ªÊ¼ÊÇÄÚ²¿ÊäÈë£»ËùÒÔ×¢ÒâÕâ¸öÖµµÄ±ä»¯¡£ÒòÎªCIDLÔÚCEDLºóÃæÖ´ÐÐ¡£
+		//internFIFOIndexBase ï¿½ï¿½ï¿½â²¿ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½æ£¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ë£»ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ä»¯ï¿½ï¿½ï¿½ï¿½ÎªCIDLï¿½ï¿½CEDLï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð¡ï¿½
 
 		int internFIFOIndex=0;
-		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdataÔÚSSRAMÖÐ×îÔ¶µØÖ·£¨ÀëexterndataµÄÆðÊ¼µØÖ·£º 0x00£©
-		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndataÔÚSSRAMÖÐ×îÔ¶µØÖ·£¨ÀëtempexterndataµÄÆðÊ¼µØÖ· µØÖ·Î´¶¨Òå£©
+		int farestexterndata = 0 + config.DFGInBaseAddress();        //externdataï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½externdataï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ö·ï¿½ï¿½ 0x00ï¿½ï¿½
+		int faresttempexterndata = 0 + config.DFGInBaseAddress();    //tempexterndataï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½tempexterndataï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ö· ï¿½ï¿½Ö·Î´ï¿½ï¿½ï¿½å£©
 
 		std::cout<<"The tempRIMBaseRow is "<<tempRIMBaseRow<<std::endl;
 		std::cout<<"The tempRIMTopRow is "<<tempRIMTopRow<<std::endl;
@@ -1232,7 +1232,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			if( IsInnerPort(portIter->dfgPort()) || ((IsTempExternPort(portIter->dfgPort())) && portIter->IsInSameGroup()))
 			{   // It's an internal port
 
-				//ÊäÈëÀ´×ÔÄÚ²¿¶Ë¿Ú£¬Òò´ËÐèÒª²éÕÒ³öÕâÐ©¶Ë¿ÚÔÚRIMÖÐtempÇøÓòµÄ·¶Î§£¬ÒÔ±ãCIDLÔØÈëµ½RIFÖÐ£¬Í¬Ê±Ò²ÎªÁË·½±ãthisRCAµÄRIF¶¨Î»¡£
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Ð©ï¿½Ë¿ï¿½ï¿½ï¿½RIMï¿½ï¿½tempï¿½ï¿½ï¿½ï¿½Ä·ï¿½Î§ï¿½ï¿½ï¿½Ô±ï¿½CIDLï¿½ï¿½ï¿½ëµ½RIFï¿½Ð£ï¿½Í¬Ê±Ò²Îªï¿½Ë·ï¿½ï¿½ï¿½thisRCAï¿½ï¿½RIFï¿½ï¿½Î»ï¿½ï¿½
 
 					for(Vector<RCAPort*>::reverse_iterator r_tempPortInRIMIter = tempPortInRIM.rbegin(); r_tempPortInRIMIter != tempPortInRIM.rend(); r_tempPortInRIMIter ++ )
 					{
@@ -1240,24 +1240,24 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					{
 						portIter->setRIMRow((*r_tempPortInRIMIter)->RIMRow());
 						portIter->setRIMCol((*r_tempPortInRIMIter)->RIMCol());
-						//¼ÆËãthisRCAµÄÕâ¸öÄÚ²¿¶Ë¿Ú£¬Í¨¹ýCIDL¼ÓÔØºó£¬ÔÚRIFµÄÎ»ÖÃ¡£
-						if (CIDLMode ==MODE_IN_V2D)	//µ¥2DºÍÔ­À´µÄ·½·¨Ò»Ñù
+						//ï¿½ï¿½ï¿½ï¿½thisRCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú£ï¿½Í¨ï¿½ï¿½CIDLï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½RIFï¿½ï¿½Î»ï¿½Ã¡ï¿½
+						if (CIDLMode ==MODE_IN_V2D)	//ï¿½ï¿½2Dï¿½ï¿½Ô­ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 						{
-							//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ÐÐ
+							//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ï¿½ï¿½
 							//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH + ((*r_tempPortInRIMIter)->RIMCol()/2);
 							internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*RIM_WIDTH_DATA + ((*r_tempPortInRIMIter)->RIMCol()/2);
 						}
 						else if(CIDLMode == MODE_IN_T2D)
 						{
-							if (portIter->RIMRow()<=tempRIMBaseRow+bestHeight-1)	//ÉÏ°ëÇøºÍÏÂ°ëÇøµÄIndexÉú³É¹«Ê½ÓÐÇø±ð
+							if (portIter->RIMRow()<=tempRIMBaseRow+bestHeight-1)	//ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ï¿½Indexï¿½ï¿½É¹ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½
 							{
-								//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ÐÐ
+								//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ï¿½ï¿½
 								//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
 								internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - tempRIMBaseRow)*RIM_WIDTH_DATA*2 + ((*r_tempPortInRIMIter)->RIMCol()/2);
 							}
 							else
 							{
-								//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ÐÐ
+								//2012.5.24 longlee È¡RIMÈ«32byteÎªÒ»ï¿½ï¿½
 								//internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*TEMP_REGION_WIDTH*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + TEMP_REGION_WIDTH);
 								internFIFOIndex = internFIFOIndexBase + (((*r_tempPortInRIMIter)->RIMRow()) - (tempRIMTopRow - bestHeight + 1))*RIM_WIDTH_DATA*2 + ((*r_tempPortInRIMIter)->RIMCol()/2 + RIM_WIDTH_DATA);
 							}
@@ -1277,13 +1277,13 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				int PortSSRAMAddress = portIter->dfgPort()->SSRAMAddress();    //for external temp data
 				
 				/* SSRAM memory allocation */
-				//¶ÔÓÚExtern PortÊý¾ÝµÄSSRAM allocation
+				//ï¿½ï¿½ï¿½ï¿½Extern Portï¿½ï¿½Ýµï¿½SSRAM allocation
 				if( !(IsTempExternPort(portIter->dfgPort())) ) 
 				{   //It's an external port
 					//2011.4.22 liuxie
-					//REDLÍêÈ«Ë³Ðò¶ÁÈë£¨ÎÞÑ¡Ôñ£©£¬CIDLÍêÈ«Ë³Ðò¶ÁÈë£¨ÎÞÑ¡Ôñ£©£¬ÔòÑ¡²»µ½ÏàÓ¦µÄÖµ
-					//Èç£ºÔÚdeblockingµÄ¼ò»¯º¯ÊýÖÐ£¬µÚÒ»¸öRCA¶ÁÈë13¸öÍâ²¿port£¬Ë³ÐòÒÑ¾­ºÍDFGÍâ²¿ÊäÈëµÄ17¸öÊäÈë²»Ò»Ñù£¬²»ÄÜµ¥´¿µØÒ»¸ö¸öµØ¶Á½øRIF
-					if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee ±äÁ¿ÊäÈë
+					//REDLï¿½ï¿½È«Ë³ï¿½ï¿½ï¿½ï¿½ë£¨ï¿½ï¿½Ñ¡ï¿½ñ£©£ï¿½CIDLï¿½ï¿½È«Ë³ï¿½ï¿½ï¿½ï¿½ë£¨ï¿½ï¿½Ñ¡ï¿½ñ£©£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Öµ
+					//ï¿½ç£ºï¿½ï¿½deblockingï¿½Ä¼ò»¯ºï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½RCAï¿½ï¿½ï¿½ï¿½13ï¿½ï¿½ï¿½â²¿portï¿½ï¿½Ë³ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½DFGï¿½â²¿ï¿½ï¿½ï¿½ï¿½ï¿½17ï¿½ï¿½ï¿½ï¿½ï¿½ë²»Ò»ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½RIF
+					if (!(portIter->dfgPort()->isImmPort()))		//2012.5.7 longlee ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					{
 						int DFGInportSeq;
 						DFGInportSeq = portIter->dfgPort()->seqNo();
@@ -1295,12 +1295,12 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 						portIter->setRIFRow( DFGInportSeq / FIFO_WIDTH_DATA);
 						portIter->setRIFCol( DFGInportSeq % FIFO_WIDTH_DATA);
 
-						//2011.5.11 liuxie  Êý¾ÝÎ»¿íÎª16bit
+						//2011.5.11 liuxie  ï¿½ï¿½ï¿½Î»ï¿½ï¿½Îª16bit
 						portIter->dfgPort()->setSSRAMAddress(SSRAMInBaseAddr + DFGInportSeq*2);
 
 						++ externFIFOIndex;
 					}
-					else		//2012.5.7 longlee Á¢¼´ÊýÊäÈë
+					else		//2012.5.7 longlee ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					{
 						int value =static_cast<DFGImmPort*>(portIter->dfgPort())->value();
 						int CMIndex=0;
@@ -1320,7 +1320,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				{  
 					assert(0);
 					// It's a temp external port
-					//ÕÒµ½Õâ¸ö¶Ë¿ÚÎ»ÓÚÄÄÀï
+					//ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					/*
 					List<List<int> >::iterator tempListIter =tempDataBlockList.begin();
 					List<int>::iterator tempListIntIter;
@@ -1380,18 +1380,18 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			}
 		}
 
-		//2011.7.19 longlee RIFÔ½½ç¼ì²é¼°ÖØÅÅ²Ù×÷
+		//2011.7.19 longlee RIFÔ½ï¿½ï¿½ï¿½é¼°ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½
         int maxRIFRow = 0;
 		bool remapFlag = false;
 		for(Vector<RCAPort>::iterator portIter = rcaInport.begin();portIter != rcaInport.end(); ++ portIter) 
 		{
-			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	·À¿çÆ½Ì¨µÄÎ´¶¨ÒåÖµÓ°Ïì£¬CMµÄRIFrowÔÚWinÏÂÊÇ¸ºÊý£¬ÔÚLinuxÏÂÊÇÕýÊý
+			if(portIter->RIFRow()<0 || portIter->RIFRow()>20)	 continue;	//	ï¿½ï¿½ï¿½ï¿½Æ½Ì¨ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ÖµÓ°ï¿½ì£¬CMï¿½ï¿½RIFrowï¿½ï¿½Winï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½Linuxï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			maxRIFRow = (portIter->RIFRow() > maxRIFRow)? portIter->RIFRow():maxRIFRow;
 			if ( maxRIFRow > 7) 
 			{
 				assert(0);
-				/*remapFlag = true;	//ËµÃ÷ÐèÒª½øÐÐremap;
-				//RIM×´Ì¬»Ø¹ö
+				/*remapFlag = true;	//Ëµï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½remap;
+				//RIM×´Ì¬ï¿½Ø¹ï¿½
 			
 				RIM.copy(RIM_backup);
 				tempPortInRIM.clear();
@@ -1409,7 +1409,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 				tempAreaCounter = tempAreaCounter_backup;
 				outAreaCounter = outAreaCounter_backup;
 
-				//»ñÈ¡µ±Ç°RCAÔÚ×éÄÚÎ»ÖÃ
+				//ï¿½ï¿½È¡ï¿½ï¿½Ç°RCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 				Vector<RCA*>::iterator RCAIter;
 				int index = 0;
 				for (RCAIter = RCAS.begin();RCAIter != RCAS.end(); RCAIter++,index ++)
@@ -1417,10 +1417,10 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					if(*RCAIter != *rcaIter) continue;
 					else break;
 				}
-				//ÖØÐÂÅÅ²¼×éÄÚRCA£¬ÐÞ¸Ä¶Ë¿Ú¹ØÏµ
+				//ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½ï¿½ï¿½RCAï¿½ï¿½ï¿½Þ¸Ä¶Ë¿Ú¹ï¿½Ïµ
 				//int index = (*RCAIter)->seqNo();
 				remap(RCAS,index,tempPortInRIM,config,0);
-				//±ê¼Çµ±Ç°RCAmapÊ§°Ü£¬Ìø³ö
+				//ï¿½ï¿½Çµï¿½Ç°RCAmapÊ§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½
 				break;*/
 			}
 		}
@@ -1438,7 +1438,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 		//******************************************start**********************************************************************
 		
-		//ÓÉÓÚÖ±½Ó´ÓÆ¬ÍâSSRAMÊäÈëµÄ»ùµØÖ·Îª0£¬ËùÒÔÒª±éÀúËùÓÐµÄinportÕÒµ½Àë»ùµØÖ·×îÔ¶µÄÄÇ¸öportµÄÎ»ÖÃÎªtop addressÌá¹©¸øREDL
+		//ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó´ï¿½Æ¬ï¿½ï¿½SSRAMï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½inportï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Ç¸ï¿½portï¿½ï¿½Î»ï¿½ï¿½Îªtop addressï¿½á¹©ï¿½ï¿½REDL
 		for(Vector<RCAPort>::iterator RCAInportIter = rcaInport.begin(); RCAInportIter != rcaInport.end(); ++  RCAInportIter)
 		{
 			    DFGPort * port = RCAInportIter->dfgPort();
@@ -1458,7 +1458,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 					else
 					{    //external input port					
 						 if(port->SSRAMAddress() > farestexterndata)
-							farestexterndata=port->SSRAMAddress();     //Ö¸Ïò×îÔ¶µÄÄÇ¸ödataÔÚSSRAMÖÐµÄÆðÊ¼Î»ÖÃ
+							farestexterndata=port->SSRAMAddress();     //Ö¸ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Ç¸ï¿½dataï¿½ï¿½SSRAMï¿½Ðµï¿½ï¿½ï¿½Ê¼Î»ï¿½ï¿½
 					}
 				}
 		}
@@ -1466,7 +1466,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 
 
 		//2011.5.28 liuxie for extern input Port		
-		thisRCA->setRCASSRAMInBaseAddr(SSRAMInBaseAddr);//ÉèÖÃµ±Ç°RCAÍâ²¿Ö±½ÓÊäÈëµÄ»ùµØÖ·		
+		thisRCA->setRCASSRAMInBaseAddr(SSRAMInBaseAddr);//ï¿½ï¿½ï¿½Ãµï¿½Ç°RCAï¿½â²¿Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ö·		
         
         if(farestexterndata!=0 + config.DFGInBaseAddress())
 			SSRAMInTopAddr = (farestexterndata/FIFO_WIDTH + ((farestexterndata+1)%FIFO_WIDTH?1:0))*FIFO_WIDTH;
@@ -1491,7 +1491,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		CL1Block block;
 
 		// Set CEDL
-		block.CEDLData().setTarget(CEDL_TGT_RIF);         //CEDLµÄÄ¿±ê¿ÉÒÔÊÇRIFÒ²¿ÉÒÔÊÇRIM
+		block.CEDLData().setTarget(CEDL_TGT_RIF);         //CEDLï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIFÒ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIM
 		block.CEDLData().setHeight(externDataHeight * config.getLoopTime());	
 
 		// Set CIDL
@@ -1502,8 +1502,8 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		//  find the lowest base address and height of
 		//  the end address first.
 
-		int lowestBaseAddr = RIM_HEIGHT;    //µ±Ç°rcaµÄsource rcaÔÚRIMÖÐµÄ×îµÍµØÖ·
-		int highestEndAddr = 0;             //µ±Ç°rcaµÄsource rcaÔÚRIMÖÐµÄ×î¸ßµØÖ·
+		int lowestBaseAddr = RIM_HEIGHT;    //ï¿½ï¿½Ç°rcaï¿½ï¿½source rcaï¿½ï¿½RIMï¿½Ðµï¿½ï¿½ï¿½Íµï¿½Ö·
+		int highestEndAddr = 0;             //ï¿½ï¿½Ç°rcaï¿½ï¿½source rcaï¿½ï¿½RIMï¿½Ðµï¿½ï¿½ï¿½ßµï¿½Ö·
 
 		Vector<RCA*>::iterator srcIter;
 		Vector<RCA*> & thisRCASource = thisRCA->sources();
@@ -1519,7 +1519,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 			
 			for(tmpGrpRCAIter = tmpGrpRCA.begin();tmpGrpRCAIter != tmpGrpRCA.end();++tmpGrpRCAIter)
 			{
-				if(((*srcIter)->seqNo()) == ((*tmpGrpRCAIter)->seqNo()))//yin0831 ÔÚÍ¬Ò»groupÀï£¬²ÅÒª¿¼ÂÇcidlµÄÅäÖÃ
+				if(((*srcIter)->seqNo()) == ((*tmpGrpRCAIter)->seqNo()))//yin0831 ï¿½ï¿½Í¬Ò»groupï¿½ï£¬ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½cidlï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CIDLEnableValue=true;//Setting CIDLEnableValue
 
@@ -1542,39 +1542,39 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		
 		
 		
-		////2011.5.11 liuxie ½«CIDLµÄÐ´Ä£Ê½´Ó4ÐÐ8byteÆ´½Ó ÐÞ¸Ä³ÉÎª 2ÐÐ16ByteÆ´½Ó
+		////2011.5.11 liuxie ï¿½ï¿½CIDLï¿½ï¿½Ð´Ä£Ê½ï¿½ï¿½4ï¿½ï¿½8byteÆ´ï¿½ï¿½ ï¿½Þ¸Ä³ï¿½Îª 2ï¿½ï¿½16ByteÆ´ï¿½ï¿½
 		if (CIDLMode == MODE_IN_V2D)
 		{
 			lowestBaseAddr = tempRIMBaseRow;
-			highestEndAddr = tempRIMTopRow + 1;//±íÃ÷ÐÐÊý(¸ß¶È)
+			highestEndAddr = tempRIMTopRow + 1;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ß¶ï¿½)
 			//yin0909end
 
-			block.CIDLData().setInputMode(MODE_IN_V2D);    //2DÊý¾ÝÄ£Ê½,Ê×µØÖ·¿É±ä
+			block.CIDLData().setInputMode(MODE_IN_V2D);    //2Dï¿½ï¿½ï¿½Ä£Ê½,ï¿½×µï¿½Ö·ï¿½É±ï¿½
 
 			block.CIDLData().setBaseAddress(lowestBaseAddr); 
 			//2011.5.11 liuxie
-			block.CIDLData().setLength(RIM_WIDTH); //È«²¿ÒÔ16ByteÎª³¤¶ÈÐ´Èë
+			block.CIDLData().setLength(RIM_WIDTH); //È«ï¿½ï¿½ï¿½ï¿½16ByteÎªï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½
 			//setHeight 2011.4.25 liuxie
 			//////////////////////////////////////////////////////////////////
 			block.CIDLData().setHeight((highestEndAddr - lowestBaseAddr) * config.getLoopTime());
 			//////////////////////////////////////////////////////////////////
 			//2011.5.11 liuxie
-			block.CIDLData().setOutputMode(MODE_OUT_1L);    //ÊäÈë2DÊý¾ÝÃ¿ÐÐ2µÈ·Ö£¬ÖðÐÐÖð·ÝÆ´½ÓÊä³ö
+			block.CIDLData().setOutputMode(MODE_OUT_1L);    //ï¿½ï¿½ï¿½ï¿½2Dï¿½ï¿½ï¿½Ã¿ï¿½ï¿½2ï¿½È·Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½
 			block.CIDLData().setOffset(0);                
 		}
 		else if (CIDLMode == MODE_IN_T2D)
 		{//2012.3.10 longlee for double 2D CIDL mode
-			block.CIDLData().setInputMode(MODE_IN_T2D);    //Ë«2DÊý¾ÝÄ£Ê½,Ê×µØÖ·¿É±ä
+			block.CIDLData().setInputMode(MODE_IN_T2D);    //Ë«2Dï¿½ï¿½ï¿½Ä£Ê½,ï¿½×µï¿½Ö·ï¿½É±ï¿½
 
 			block.CIDLData().setBaseAddress(tempRIMBaseRow); 
 			block.CIDLData().setBaseAddress2(tempRIMTopRow-bestHeight+1);
 
-			block.CIDLData().setLength(RIM_WIDTH); //È«²¿ÒÔ16ByteÎª³¤¶ÈÐ´Èë
+			block.CIDLData().setLength(RIM_WIDTH); //È«ï¿½ï¿½ï¿½ï¿½16ByteÎªï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½
 			block.CIDLData().setlength2(RIM_WIDTH);
 
 			block.CIDLData().setHeight(bestHeight);
 
-			block.CIDLData().setOutputMode(MODE_OUT_1L);    //ÊäÈë2DÊý¾ÝÃ¿ÐÐ2µÈ·Ö£¬ÖðÐÐÖð·ÝÆ´½ÓÊä³ö
+			block.CIDLData().setOutputMode(MODE_OUT_1L);    //ï¿½ï¿½ï¿½ï¿½2Dï¿½ï¿½ï¿½Ã¿ï¿½ï¿½2ï¿½È·Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½
 			block.CIDLData().setOffset(0);                
 		}
 		
@@ -1600,7 +1600,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		totalExternPort = 0;
 		totalTempExternPort = 0;
 
-		//Í³¼ÆÄÚ²¿½ÚµãºÍÍâ²¿½Úµã
+		//Í³ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Úµï¿½ï¿½ï¿½â²¿ï¿½Úµï¿½
 		for(Vector<RCAPort>::iterator portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 		{
 
@@ -1609,16 +1609,16 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		}
 
 
-		//2012.5.24 longlee ÉèÖÃ±¾RCAµÄRIMÊä³ö×´Ì¬£¬¸¨ÖúRIM¿Õ¼ä»®·Ö
+		//2012.5.24 longlee ï¿½ï¿½ï¿½Ã±ï¿½RCAï¿½ï¿½RIMï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RIMï¿½Õ¼ä»®ï¿½ï¿½
 		if (totalInternPort > 0)
 		{
 			if(totalExternPort == 0)	
-				thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//Ö»ÓÐÄÚ²¿½Úµã
-			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//ÄÚ²¿½ÚµãºÍdfgÖ±½ÓÊä³ö¾ùÓÐ
+				thisRCA->setRIMOutMode(RIM_OUT_MODE_IN);	//Ö»ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Úµï¿½
+			else thisRCA->setRIMOutMode(RIM_OUT_MODE_MIX);	//ï¿½Ú²ï¿½ï¿½Úµï¿½ï¿½dfgÖ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
-		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//Ö»ÓÐdfgÖ±½ÓÊä³ö
+		else if(totalInternPort == 0 && totalExternPort > 0) thisRCA->setRIMOutMode(RIM_OUT_MODE_OUT);	//Ö»ï¿½ï¿½dfgÖ±ï¿½ï¿½ï¿½ï¿½ï¿½
 		
-		//½«DFGÍ¼µÄÊä³ö½Úµã±ê¼Ç£¬·ÀÖ¹Ãû×Ö±»¸Äºó±»Ê¶±ð³ÉExtern Temp Port
+		//ï¿½ï¿½DFGÍ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ç£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Äºï¿½Ê¶ï¿½ï¿½ï¿½Extern Temp Port
 		for(Vector<RCAPort>::iterator portIter = rcaOutport.begin();portIter != rcaOutport.end(); ++ portIter) 
 		{
 
@@ -1694,7 +1694,7 @@ Vector<CL1Block> CL1Config::mapRCA(Vector<RCA*> rcas,Vector<RCA*> &tmpGrpRCA,Vec
 		thisRCA->setMappedFlag(true);
 
 		tmpGrpRCA.push_back(thisRCA);	
-/*		//longlee Ö»ÊÍ·Åµ±Ç°RCAµÄsource
+/*		//longlee Ö»ï¿½Í·Åµï¿½Ç°RCAï¿½ï¿½source
 		//freeRIMSpace(RCAS);
 		Vector<RCA*> srcVec = thisRCA->sources();
 		if(!thisRCA->getRemapFlag()) freeRIMSpace(srcVec);
@@ -1752,7 +1752,7 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 			//FIXME : aglrithm can be better
 			for(portIter = rcaOutport.begin(); 
 			    portIter != rcaOutport.end(); ++ portIter)
-				if (thisRCA->getRemapFlag())	//remapRCAµÄËùÓÐÊä³ö¿Ú¶¼¿ÉÒÔÊÍ·Å
+				if (thisRCA->getRemapFlag())	//remapRCAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½
 				{
 					for(tempPortIter = tempPortInRIM.begin(); tempPortIter != tempPortInRIM.end(); ++tempPortIter )
 					if(  (*tempPortIter)->RIMRow() ==  portIter->RIMRow() &&  (*tempPortIter)->RIMCol() ==  portIter->RIMCol()  
@@ -1767,14 +1767,14 @@ void CL1Config::freeRIMSpace(const Vector<RCA*> rcas){
 				}
 				else
 				{
-					if (IsInnerPort(portIter->dfgPort()))		//Õý³£RCAµÄÄÚ²¿Êä³ö¿ÉÒÔÊÍ·Å
+					if (IsInnerPort(portIter->dfgPort()))		//ï¿½ï¿½RCAï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½
 					{
 					for(tempPortIter = tempPortInRIM.begin(); tempPortIter != tempPortInRIM.end(); ++tempPortIter )
 						if(  (*tempPortIter)->RIMRow() ==  portIter->RIMRow() &&  (*tempPortIter)->RIMCol() ==  portIter->RIMCol()  
 							&& (*tempPortIter)->dfgPort() == portIter->dfgPort())
  
 							{						
-								//FIXME: ºÍÖ®Ç°Ô½¹ýÖÐÏßÄÚ²¿¶Ë¿Ú²»¼ÆÊýµÄÆÆÕÀ¶ÔÓ¦£¬Ô½¹ýÖÐÏßµÄÄÚ²¿¶Ë¿ÚÏû³ýÊ±Ò²²»¼ÆÊý						
+								//FIXME: ï¿½ï¿½Ö®Ç°Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ë¿Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½Ú²ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½Ê±Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½						
 								if(portIter->RIMCol() < RIM_WIDTH_DATA) (portIter->RIMRow() < RIM_HEIGHT/2) ? tempAreaCounter[0]-- : tempAreaCounter[1]-- ;
 								tempPortInRIM.erase( tempPortIter );
 							break;
@@ -1863,11 +1863,11 @@ int i;
 			//bytes 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
             //data   0     1     2     3     4     5     6     7    |  0     1     2     3     4     5     6     7
             //                       temp                           |                     out
-			//                       ÇøÓò2                          |                     ÇøÓò0
-			//                       ÇøÓò3                          |                     ÇøÓò1 
+			//                       ï¿½ï¿½ï¿½ï¿½2                          |                     ï¿½ï¿½ï¿½ï¿½0
+			//                       ï¿½ï¿½ï¿½ï¿½3                          |                     ï¿½ï¿½ï¿½ï¿½1 
 			//data  15    14    13    12    11    10     9     8    |  7     6     5     4     3     2     1     0  
 				
-			const int colIndex = RIM_WIDTH/2 - 1 - thisPort->RIMCol()/2;   //½«Õû¸öRIMÐÐµÄ±àºÅ·­×ª¹ýÀ´
+			const int colIndex = RIM_WIDTH/2 - 1 - thisPort->RIMCol()/2;   //ï¿½ï¿½ï¿½ï¿½ï¿½RIMï¿½ÐµÄ±ï¿½Å·ï¿½×ªï¿½ï¿½ï¿½ï¿½
 
 			bool colBelongTo = (i/2 * DATA_PER_LINE <= colIndex) && (colIndex < (i/2+1) * DATA_PER_LINE); 
 
@@ -1902,7 +1902,7 @@ int i;
 		}
 
 		// Set port location in RIF and ROF
-		//ÓÉÓÚÒ»¸öÇøÓòµÄÒ»ÐÐÊÇ16bytes£¬¶øRIF£¬ROFÒ»ÐÐÊÇ32bytes£¬ËùÒÔÎ±RCAµÄ¶ÁÈëÎªRIMÖÐÁ½ÐÐÆ´½Ó³ÉRIF£¬ROFÒ»ÐÐ£»
+		//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½16bytesï¿½ï¿½ï¿½ï¿½RIFï¿½ï¿½ROFÒ»ï¿½ï¿½ï¿½ï¿½32bytesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î±RCAï¿½Ä¶ï¿½ï¿½ï¿½ÎªRIMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½Ó³ï¿½RIFï¿½ï¿½ROFÒ»ï¿½Ð£ï¿½
 		Vector<RCAPort>::iterator portIter;
 
 		for(portIter = rcaInports.begin();portIter != rcaInports.end(); ++ portIter)
@@ -1950,8 +1950,8 @@ int i;
 		CIDLData.setLength(BYTE_PER_LINE);
 		CIDLData.setHeight(height);
 		CIDLData.setOffset(RIM_WIDTH - BYTE_PER_LINE);
-		CIDLData.setInputMode(MODE_IN_V2D);    //2DÊý¾ÝÊ×µØÖ·¿É±ä
-		CIDLData.setOutputMode(MODE_OUT_2L);   //Ã¿ÐÐ2µÈ·Ý£¬ÖðÐÐÖð·ÝÆ´½ÓÊä³ö
+		CIDLData.setInputMode(MODE_IN_V2D);    //2Dï¿½ï¿½ï¿½ï¿½×µï¿½Ö·ï¿½É±ï¿½
+		CIDLData.setOutputMode(MODE_OUT_2L);   //Ã¿ï¿½ï¿½2ï¿½È·Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		CL1Data & CDSData = block.CDSData();
 		CDSData.setTarget(CDS_TGT_ESDF);
@@ -1967,7 +1967,7 @@ int i;
 
 		pseudoBlock.push_back(block);
 	
-		config.addRCAToAllRCAVec(thisRCA);//yin0901-°ÑÎ±RCA¼Óµ½VecÖÐ´æ´¢ÆðÀ´
+		config.addRCAToAllRCAVec(thisRCA);//yin0901-ï¿½ï¿½Î±RCAï¿½Óµï¿½Vecï¿½Ð´æ´¢ï¿½ï¿½ï¿½ï¿½
 	}
 
 	int curTempSSRAMBase = 0;
@@ -2101,8 +2101,8 @@ int i;
 		CIDLData.setLength(BYTE_PER_LINE);
 		CIDLData.setHeight(height);
 		CIDLData.setOffset(0);
-		CIDLData.setInputMode(MODE_IN_V2D);    //2DÊý¾ÝÊ×µØÖ·¿É±ä
-		CIDLData.setOutputMode(MODE_OUT_2L);   //Ã¿ÐÐ2µÈ·Ý£¬ÖðÐÐÖð·ÝÆ´½ÓÊä³ö
+		CIDLData.setInputMode(MODE_IN_V2D);    //2Dï¿½ï¿½ï¿½ï¿½×µï¿½Ö·ï¿½É±ï¿½
+		CIDLData.setOutputMode(MODE_OUT_2L);   //Ã¿ï¿½ï¿½2ï¿½È·Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		CL1Data & CDSData = block.CDSData();
 		CDSData.setTarget(CDS_TGT_ESDF);
@@ -2118,7 +2118,7 @@ int i;
 
 		pseudoBlock.push_back(block);
 
-		config.addRCAToAllRCAVec(thisRCA);//yin0901-°ÑÎ±RCA¼Óµ½VecÖÐ´æ´¢ÆðÀ´
+		config.addRCAToAllRCAVec(thisRCA);//yin0901-ï¿½ï¿½Î±RCAï¿½Óµï¿½Vecï¿½Ð´æ´¢ï¿½ï¿½ï¿½ï¿½
 	
 		//return pseudoBlock;
 
@@ -2155,7 +2155,7 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas, int DFGInBase)
 	int &remainRCANum =remainRCANumber;
 	remainRCANum=0;
 
-	Vector<RCA*> tmpGroupRCA;//ÔÝ´æÍ¬Ò»groupµÄRCA,²»°üÀ¨PseudoRCA
+	Vector<RCA*> tmpGroupRCA;//ï¿½Ý´ï¿½Í¬Ò»groupï¿½ï¿½RCA,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PseudoRCA
 	tmpGroupRCA.reserve( MAX_CL1_RCA_NUM );
 
 	int remapSeqNo_backup = remapSeqNo;
@@ -2180,8 +2180,8 @@ int CL1Config::PreGenCL1(Vector<RCA*> & rcas, int DFGInBase)
 	
 	remapSeqNo = remapSeqNo_backup;
 
-	int TotalOrigin = 0;	//¼ÇÂ¼¿ÉÒÔ±£´æÔÚCL1RCAÖÐµÄÔ­Ê¼RCA¸öÊý
-	int TotalRemap = 0;	//¼ÇÂ¼¼ÓÈëµ½CL1CopyÖÐµÄRemap×ÜÊý
+	int TotalOrigin = 0;	//ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½CL1RCAï¿½Ðµï¿½Ô­Ê¼RCAï¿½ï¿½ï¿½ï¿½
+	int TotalRemap = 0;	//ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ëµ½CL1Copyï¿½Ðµï¿½Remapï¿½ï¿½ï¿½ï¿½
 	for (rcaIter = rcas.begin(); rcaIter != rcas.end(); ++rcaIter)
 	{
 		RCA * thisRCA =* rcaIter;
@@ -2223,7 +2223,7 @@ CL1Config::genCL1Block( RPUConfig & config, Vector<RCA*> & rcas){
 	int &remainRCANum =remainRCANumber;
 	remainRCANum=0;
 
-	Vector<RCA*> tmpGroupRCA;//ÔÝ´æÍ¬Ò»groupµÄRCA,²»°üÀ¨PseudoRCA
+	Vector<RCA*> tmpGroupRCA;//ï¿½Ý´ï¿½Í¬Ò»groupï¿½ï¿½RCA,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PseudoRCA
 	tmpGroupRCA.reserve( MAX_CL1_RCA_NUM );
 
 	while(!scheduleOver(rcas))
@@ -2263,7 +2263,7 @@ CL1Config::genCL1Block( RPUConfig & config, Vector<RCA*> & rcas){
 
 	Vector<RCA*>::iterator tmpGrpRCAIter_0;
 	for(tmpGrpRCAIter_0 = tmpGroupRCA.begin();tmpGrpRCAIter_0!=tmpGroupRCA.end(); tmpGrpRCAIter_0++)
-		config.addRCAToAllRCAVec(*tmpGrpRCAIter_0);//yin0901-°Ñmapped RCA¼Óµ½VecÖÐ´æ´¢ÆðÀ´
+		config.addRCAToAllRCAVec(*tmpGrpRCAIter_0);//yin0901-ï¿½ï¿½mapped RCAï¿½Óµï¿½Vecï¿½Ð´æ´¢ï¿½ï¿½ï¿½ï¿½
 
 
 	return blockMapped;	
@@ -2315,8 +2315,8 @@ const Vector<reg32> & CL1Config::genRegs(const Vector<CL1Block> & blocks){
 		//20110719 liuxie for CL2 Number
 		
 
-		//curCoreReg.setCoreIndex(BlcokMappedBefore + curBlock.RCAIndex());    //Ñ¡ÔñÏàÓ¦µÄCL2£¬Í¨¹ýµ±Ç°blockËù´ú±íµÄµ±Ç°×éµÄRCA±àºÅ
-		curCoreReg.setCoreIndex(totalRCA + curBlock.RCAIndex());    //Ñ¡ÔñÏàÓ¦µÄCL2£¬Í¨¹ýµ±Ç°blockËù´ú±íµÄµ±Ç°×éµÄRCA±àºÅ
+		//curCoreReg.setCoreIndex(BlcokMappedBefore + curBlock.RCAIndex());    //Ñ¡ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½CL2ï¿½ï¿½Í¨ï¿½ï¿½Ç°blockï¿½ï¿½ï¿½ï¿½Äµï¿½Ç°ï¿½ï¿½ï¿½RCAï¿½ï¿½ï¿½
+		curCoreReg.setCoreIndex(totalRCA + curBlock.RCAIndex());    //Ñ¡ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½CL2ï¿½ï¿½Í¨ï¿½ï¿½Ç°blockï¿½ï¿½ï¿½ï¿½Äµï¿½Ç°ï¿½ï¿½ï¿½RCAï¿½ï¿½ï¿½
 		curCoreReg.setCoreLoop(curBlock.RCACoreLoop());
 		curCoreReg.setConst1Address(curBlock.const1Address());
 		curCoreReg.setConst2Address(curBlock.const2Address());
@@ -2337,7 +2337,7 @@ const Vector<reg32> & CL1Config::genRegs(const Vector<CL1Block> & blocks){
 		// (3) CIDL
 		if(curBlock.CIDLEnable()){
 			
-			if(curBlock.CIDLData().inputMode()==3)	//µ¥2DÄ£Ê½
+			if(curBlock.CIDLData().inputMode()==3)	//ï¿½ï¿½2DÄ£Ê½
 			{
 				CIDLReg & curCIDLReg = CL1ConfigRegs.CIDLContext(CoreIndex);
 
@@ -2371,7 +2371,7 @@ const Vector<reg32> & CL1Config::genRegs(const Vector<CL1Block> & blocks){
 
 				/* merge four line to one */
 				curCIDLReg.setOutputMode(dataCIDL.outputMode()); 
-				//2012.5.15 longlee Offset¶ÔË«2DÄ£Ê½²»ÊÊÓÃ
+				//2012.5.15 longlee Offsetï¿½ï¿½Ë«2DÄ£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				//curCIDLReg.setInputOffset(dataCIDL.offset());
 			}
 		

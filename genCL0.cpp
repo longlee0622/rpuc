@@ -257,11 +257,11 @@ int RPUConfig::genCL0Context( CL1Config & cl1config, Vector<RCA *> &CL1RCATemp,V
 
 		if(pseudoRCAcounter <= directSSRAMOutPseudoRCANum)
 		{
-			if((*pseudoRCAIter)->rcaSSRAMOutBaseAddr() < pseudoRCASSRAMOutBaseAddr)
+			if(static_cast<unsigned int>((*pseudoRCAIter)->rcaSSRAMOutBaseAddr()) < pseudoRCASSRAMOutBaseAddr)
 				pseudoRCASSRAMOutBaseAddr = (*pseudoRCAIter)->rcaSSRAMOutBaseAddr();
 
 
-			if((*pseudoRCAIter)->rcaSSRAMOutTopAddr() > pseudoRCASSRAMOutTopAddr)
+			if(static_cast<unsigned int>((*pseudoRCAIter)->rcaSSRAMOutTopAddr()) > pseudoRCASSRAMOutTopAddr)
 				pseudoRCASSRAMOutTopAddr = (*pseudoRCAIter)->rcaSSRAMOutTopAddr();
 
 

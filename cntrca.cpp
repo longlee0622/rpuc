@@ -35,7 +35,7 @@ int RPUConfig::ExOutPortTrans()
 				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
 			DFGNode * dfgNode = thisNode->dfgNode();
 			if(dfgNode == 0) continue;
-			for(int k = 0;k<dfgNode->targets().size();++k)
+			for(unsigned int k = 0;k<dfgNode->targets().size();++k)
 			{
 				DFGVex * thisTGT = dfgNode->targets(k);
 				if (typeid(*thisTGT) != typeid(DFGNode))		//dfgÖ±½ÓÊä³ö
@@ -75,7 +75,7 @@ int RPUConfig::ExPortTrans()
 				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
 			DFGNode * dfgNode = thisNode->dfgNode();
 			if(dfgNode == 0) continue;
-			for(int k = 0;k<dfgNode->sources().size();++k)
+			for(unsigned int k = 0;k<dfgNode->sources().size();++k)
 			{
 				DFGVex * thisSRC = dfgNode->sources(k);
 				if (typeid(*thisSRC) != typeid(DFGNode))
@@ -118,7 +118,7 @@ int RPUConfig::AddInterRCANode()
 				& thisRCA->node(rc) : & thisRCA->temp(rc - RC_REG_NUM);
 			DFGNode * dfgNode = thisNode->dfgNode();
 			if(dfgNode == 0) continue;
-			for (int k = 0;k<dfgNode->sources().size();++k)
+			for (unsigned int k = 0;k<dfgNode->sources().size();++k)
 			{
 				DFGVex * thisSrc = dfgNode->sources(k);
 
@@ -136,14 +136,14 @@ int RPUConfig::AddInterRCANode()
 						assert(empty !=-1);
 						DFGNode * bypNode = newBypsNode();
 						bypNode->setSeqNo(interRCANodeIndex++);
-						for (int c = 0;c<srcNode->targets().size();++c)
+						for (unsigned int c = 0;c<srcNode->targets().size();++c)
 						{
 							if(srcNode->targets().at(c) == dfgNode) srcNode->targets().at(c)=bypNode;
 						}
 
 						bypNode->addSource(srcNode);
 						bypNode->addTarget(dfgNode);
-						for (int c = 0;c<dfgNode->sources().size();++c)
+						for (unsigned int c = 0;c<dfgNode->sources().size();++c)
 						{
 							if(dfgNode->sources().at(c) == srcNode) dfgNode->sources().at(c)=bypNode;
 						}
@@ -168,13 +168,13 @@ int RPUConfig::AddInterRCANode()
 						assert(empty2 != -1);
 						DFGNode * bypNode2 = newBypsNode();
 						bypNode2->setSeqNo(interRCANodeIndex++);
-						for (int c = 0;c<srcNode->targets().size();++c)
+						for (unsigned int c = 0;c<srcNode->targets().size();++c)
 						{
 							if(srcNode->targets().at(c) == dfgNode) srcNode->targets().at(c)=bypNode2;
 						}
 						bypNode2->addSource(srcNode);
 						bypNode2->addTarget(dfgNode);
-						for (int c = 0;c<dfgNode->sources().size();++c)
+						for (unsigned int c = 0;c<dfgNode->sources().size();++c)
 						{
 							if(dfgNode->sources().at(c) == srcNode) dfgNode->sources().at(c)=bypNode2;
 						}
@@ -184,14 +184,14 @@ int RPUConfig::AddInterRCANode()
 						assert(empty !=-1);
 						DFGNode * bypNode = newBypsNode();
 						bypNode->setSeqNo(interRCANodeIndex++);
-						for (int c = 0;c<bypNode2->targets().size();++c)
+						for (unsigned int c = 0;c<bypNode2->targets().size();++c)
 						{
 							if(bypNode2->targets().at(c) == dfgNode) bypNode2->targets().at(c)=bypNode;
 						}
 
 						bypNode->addSource(bypNode2);
 						bypNode->addTarget(dfgNode);
-						for (int c = 0;c<dfgNode->sources().size();++c)
+						for (unsigned int c = 0;c<dfgNode->sources().size();++c)
 						{
 							if(dfgNode->sources().at(c) == bypNode2) dfgNode->sources().at(c)=bypNode;
 						}

@@ -208,3 +208,74 @@ int RPUConfig::createCL0File(const String &fileName){
 	return 0;
 }
 */
+
+// 2012.7.21 TangSZ tmp
+// C_CL0 and GRPLink generated with each DFG (one group)
+// CL0 generated once
+// configTotal hasn't been initilized except Context
+// RPUGroupNumber, onRCANumber incorrect values
+
+//int RPUConfig::createCL0File(const String &fileName, const String &C_fileName){
+//
+//	std::ofstream CL0File(fileName.c_str());
+//	std::ofstream C_CL0File(C_fileName.c_str());
+//
+//	assert(CL0File);
+//	assert(C_CL0File);
+	
+// 2012.7.21 TangSZ
+//
+//int RPUConfig::createCL0File(std::ofstream &CL0FileRef, std::ofstream &GRPLinkRef){
+//	// CL0 Context Generator
+//	for(Vector<Vector<reg32> >::iterator CL0GrpIter = CL0Context.begin(); CL0GrpIter != CL0Context.end(); ++CL0GrpIter)
+//	{	
+//		Vector<reg32> curCtx = * CL0GrpIter;
+//		CL0FileRef<<"#define GROUP"<<RPUGroupNumber()<<"_"<<onRCANumber()<<"_"<<(CL0GrpIter-CL0Context.begin())<<"_CWI\\\n";
+//		char buf[30];
+//		sprintf(buf,"GROUP%d_%d_%d_CWI",RPUGroupNumber(),onRCANumber(),CL0GrpIter-CL0Context.begin());
+//		GRPLinkRef<<"\t\t\t"<<buf<<"\\"<<std::endl;
+//		GRPLinkRef<<"\t\t\twhile(!RPU0_done){}\\"<<std::endl;
+//		GRPLinkRef<<"\t\t\tRPU0_done = 0;\\"<<std::endl;
+//		CL0FileRef.fill('0');
+//		for(Vector<reg32>::iterator CtxIter = curCtx.begin(); CtxIter != curCtx.end(); ++CtxIter)
+//		{
+//			CL0FileRef<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x"<<std::setw(8)<<std::hex<<(*CtxIter)<<");\\\n";
+//		}
+//					
+//		CL0FileRef<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x0000000"<<std::setw(1)<<std::hex<<onRCANumber()<<");\\\n";
+//		CL0FileRef<<"\t\t\twrite_reg(AHB1_S1_RPU0,0x00008000);\n\n\n\n\n";
+//	}
+//	return 0;
+//}
+//
+//
+//int RPUConfig::createC_CL0File(std::ofstream &C_CL0FileRef){		
+//	std::size_t cl0cnt = 0;
+//			
+//	for(Vector<Vector<reg32> >::iterator C_CtxGrpIter = C_CL0Context.begin(); C_CtxGrpIter != C_CL0Context.end(); ++ C_CtxGrpIter)
+//	{
+//		Vector<reg32> C_CtxGrp = * C_CtxGrpIter;
+//		cl0cnt += C_CtxGrp.size();
+//	}
+//
+//	C_CL0FileRef<<"[CWIPACKET]\n"<<"Config Word Cnt="<<std::dec<<cl0cnt<<"\n";
+//
+//	C_CL0FileRef.fill('0');
+//
+//	std::size_t ctxCnt = 0;
+//	for(Vector<Vector<reg32> >::iterator C_CtxGrpIter = C_CL0Context.begin(); C_CtxGrpIter != C_CL0Context.end(); ++ C_CtxGrpIter)
+//	{
+//		Vector<reg32> C_CtxGrp = * C_CtxGrpIter;
+//		for(Vector<reg32>::iterator C_CtxIter = C_CtxGrp.begin(); C_CtxIter != C_CtxGrp.end(); ++C_CtxIter)
+//		{
+//			C_CL0FileRef<<"ConfigWord["<<std::dec<<ctxCnt<<"]=0x"<<std::setw(8)<<std::hex<<(*C_CtxIter)<<";\n";
+//			ctxCnt++;
+//		}
+//	}
+//
+//	C_CL0FileRef<<"\n\n\n\n";
+//	C_CL0FileRef.close();
+//
+//	return 0;
+//}
+

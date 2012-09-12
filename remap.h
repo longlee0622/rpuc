@@ -24,7 +24,6 @@ static bool PortSort(
 		else return left.RIFCol() < right.RIFCol();
 }
 
-/*
 void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPUConfig & config,int PreFlag) {
 
 	
@@ -84,7 +83,7 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 		if((portIter->RIFRow() > buf2Base + 7) || Cnt >= 64) break;
 		++buf2portCnt;
 	}
-	if (buf1portCnt + buf2portCnt < rcaInport.size()-ImmdtCnt) buf3Enable = true;	//说明前两个RCA未能放下所有的inports，需要第三个
+	if (buf1portCnt + buf2portCnt < static_cast<int>(rcaInport.size()-ImmdtCnt)) buf3Enable = true;	//说明前两个RCA未能放下所有的inports，需要第三个
 	Cnt = 0;
 	if(buf3Enable)
 	{
@@ -330,7 +329,7 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 							/*Node->sources().erase(srcIter);
 							Node->sources().push_back(static_cast <DFGVarPort*>(fakePort));
 							*/
-							/**srcIter = static_cast <DFGVarPort*>(fakePort);
+							*srcIter = static_cast <DFGVarPort*>(fakePort);
 							break;
 						}
 					
@@ -383,6 +382,6 @@ void remap(Vector<RCA*> & rcas, int index, Vector<RCAPort *> & tempPortInRIM,RPU
 	}
 	return;
 }
-*/
+
 
 

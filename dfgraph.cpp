@@ -214,6 +214,9 @@ int DFGraph::parse(std::istream & dfgFile){
 			case 7: opecode = SUB;     break;
 			case 9: opecode = LMT;     break;
 			case 10: opecode = HMT;	   break;
+			case 17: opecode = AND;    break;
+            case 18: opecode = ORR;    break;
+            case 19: opecode = XOR;    break;
 			case 20: opecode = LSR;    break;
 			case 21: opecode = LSL;    break;
 			case 22: opecode = BYP;    break;
